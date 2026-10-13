@@ -27,6 +27,7 @@ export function MobileNav() {
     { label: "Kitchen Overview", href: "/dashboard", icon: LayoutDashboard },
     { label: "Family Kitchens", href: "/kitchens", icon: FolderHeart },
     { label: "Saved Recipes", href: "/recipes", icon: BookOpen },
+    { label: "Cooking Videos", href: "/videos", icon: PlayCircle },
     { label: "Preserve Recipe", href: "/upload", icon: UploadCloud },
     { label: "Settings & Security", href: "/settings", icon: Settings },
     { label: "AI Review Editor", href: "/review/demo", icon: CheckSquare },

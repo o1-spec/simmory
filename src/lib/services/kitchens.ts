@@ -15,6 +15,7 @@ export async function listUserKitchens(userId: string) {
             select: {
               recipes: true,
               members: true,
+              videos: true,
             },
           },
         },
@@ -36,6 +37,7 @@ export async function listUserKitchens(userId: string) {
     isOwner: m.kitchen.ownerId === userId,
     recipeCount: m.kitchen._count.recipes,
     memberCount: m.kitchen._count.members,
+    videoCount: m.kitchen._count.videos,
     createdAt: m.kitchen.createdAt,
     updatedAt: m.kitchen.updatedAt,
   }));
@@ -78,6 +80,25 @@ export async function getKitchenDetails(kitchenId: string, userId: string) {
           },
         },
         orderBy: { updatedAt: "desc" },
+      },
+      videos: {
+        select: {
+          id: true,
+          originalFilename: true,
+          contentType: true,
+          expectedSize: true,
+          actualSize: true,
+          uploadStatus: true,
+          processingStatus: true,
+          createdAt: true,
+          recipe: {
+            select: { id: true, title: true, cookName: true },
+          },
+          uploadedBy: {
+            select: { id: true, name: true },
+          },
+        },
+        orderBy: { createdAt: "desc" },
       },
     },
   });

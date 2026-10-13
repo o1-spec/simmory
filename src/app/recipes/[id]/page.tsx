@@ -11,6 +11,7 @@ import {
   Edit,
   FolderHeart,
   Play,
+  Video,
 } from "lucide-react";
 import { requireUser } from "@/lib/auth/get-user";
 import { getRecipeDetails } from "@/lib/services/recipes";
@@ -113,17 +114,64 @@ async function RecipeDetailContent({ params }: { params: Promise<{ id: string }>
           </p>
         )}
 
-        {/* Cook Along CTA */}
-        <div className="mt-6 pt-6 border-t border-warm-100 flex flex-wrap items-center justify-between gap-4">
-          <div className="text-xs text-warm-500">
-            Interactive Cook Along timestamps will link with original cooking footage in Phase 4.
+        {/* Attached Cooking Videos & Media */}
+        {recipe.videos && recipe.videos.length > 0 ? (
+          <div className="mt-6 pt-6 border-t border-warm-100 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-warm-600 flex items-center gap-1.5">
+                <Video className="w-4 h-4 text-terracotta-500" />
+                Original Cooking Footage ({recipe.videos.length})
+              </h3>
+              {recipe.canEdit && (
+                <Link
+                  href={`/upload?kitchenId=${recipe.kitchenId}&recipeId=${recipe.id}`}
+                  className="text-xs text-terracotta-600 hover:text-terracotta-700 font-medium"
+                >
+                  + Add Footage
+                </Link>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {recipe.videos.map((vid) => (
+                <div
+                  key={vid.id}
+                  className="p-3.5 bg-warm-50 rounded-xl border border-warm-200/60 flex items-center justify-between text-xs"
+                >
+                  <div className="truncate mr-3">
+                    <p className="font-medium text-warm-900 truncate">
+                      {vid.originalFilename}
+                    </p>
+                    <p className="text-[11px] text-warm-500">
+                      {((vid.actualSize ?? vid.expectedSize) / (1024 * 1024)).toFixed(1)} MB &bull;{" "}
+                      {vid.uploadStatus === "UPLOADED" ? "Ready" : vid.uploadStatus}
+                    </p>
+                  </div>
+                  <Link
+                    href={`/videos/${vid.id}`}
+                    className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-terracotta-500 text-white font-medium hover:bg-terracotta-600 transition-colors"
+                  >
+                    <Play className="w-3 h-3 fill-current" />
+                    Play
+                  </Link>
+                </div>
+              ))}
+            </div>
           </div>
-          <Link href={`/cook/${recipe.id}`}>
-            <Button variant="primary" size="md" leftIcon={<Play className="w-4 h-4" />}>
-              Open Cook Along Mode
-            </Button>
-          </Link>
-        </div>
+        ) : (
+          <div className="mt-6 pt-6 border-t border-warm-100 flex flex-wrap items-center justify-between gap-4">
+            <div className="text-xs text-warm-500">
+              No cooking video attached to this recipe yet.
+            </div>
+            {recipe.canEdit && (
+              <Link href={`/upload?kitchenId=${recipe.kitchenId}&recipeId=${recipe.id}`}>
+                <Button variant="outline" size="sm" leftIcon={<Video className="w-3.5 h-3.5" />}>
+                  Upload Cooking Footage
+                </Button>
+              </Link>
+            )}
+          </div>
+        )}
       </header>
 
       {/* Family Story & Culinary Memory (Editorial Quote Block) */}

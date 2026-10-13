@@ -9,6 +9,8 @@ import {
   ArrowLeft,
   ChefHat,
   Calendar,
+  Video,
+  Play,
 } from "lucide-react";
 import { requireUser } from "@/lib/auth/get-user";
 import { getKitchenDetails } from "@/lib/services/kitchens";
@@ -67,7 +69,7 @@ async function KitchenDetailContent({ params }: { params: Promise<{ id: string }
           `Created by ${kitchen.owner.name} to preserve family culinary instincts and memories.`
         }
         actions={
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {isOwner && (
               <KitchenSettingsDialog
                 kitchen={{
@@ -78,11 +80,18 @@ async function KitchenDetailContent({ params }: { params: Promise<{ id: string }
               />
             )}
             {canAddRecipes && (
-              <Link href={`/recipes/new?kitchenId=${kitchen.id}`}>
-                <Button variant="primary" size="md" leftIcon={<Plus className="w-4 h-4" />}>
-                  Add Recipe to Kitchen
-                </Button>
-              </Link>
+              <>
+                <Link href={`/upload?kitchenId=${kitchen.id}`}>
+                  <Button variant="outline" size="md">
+                    Upload Video
+                  </Button>
+                </Link>
+                <Link href={`/recipes/new?kitchenId=${kitchen.id}`}>
+                  <Button variant="primary" size="md" leftIcon={<Plus className="w-4 h-4" />}>
+                    Add Recipe to Kitchen
+                  </Button>
+                </Link>
+              </>
             )}
           </div>
         }
@@ -174,6 +183,85 @@ async function KitchenDetailContent({ params }: { params: Promise<{ id: string }
               }
             />
           )}
+
+          {/* Cooking Videos Section */}
+          <div className="pt-8 border-t border-warm-200">
+            <div className="flex items-center justify-between border-b border-warm-200 pb-3 mb-6">
+              <h2 className="font-serif text-xl font-medium text-warm-900 flex items-center gap-2">
+                <Video className="w-5 h-5 text-terracotta-600" />
+                Original Cooking Videos ({kitchen.videos.length})
+              </h2>
+              {canAddRecipes && (
+                <Link
+                  href={`/upload?kitchenId=${kitchen.id}`}
+                  className="text-xs font-medium text-terracotta-600 hover:text-terracotta-700"
+                >
+                  + Upload Video
+                </Link>
+              )}
+            </div>
+
+            {kitchen.videos.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {kitchen.videos.map((video) => (
+                  <Card key={video.id} hoverEffect className="p-4 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge
+                          variant={video.uploadStatus === "UPLOADED" ? "sage" : "warm"}
+                          size="sm"
+                        >
+                          {video.uploadStatus === "UPLOADED" ? "Ready" : video.uploadStatus}
+                        </Badge>
+                        <span className="text-[11px] text-warm-500">
+                          {((video.actualSize ?? video.expectedSize) / (1024 * 1024)).toFixed(1)} MB
+                        </span>
+                      </div>
+
+                      <h3 className="font-serif text-base font-medium text-warm-900 line-clamp-1">
+                        <Link
+                          href={`/videos/${video.id}`}
+                          className="hover:text-terracotta-700 transition-colors"
+                        >
+                          {video.originalFilename}
+                        </Link>
+                      </h3>
+
+                      {video.recipe && (
+                        <p className="text-xs text-warm-500 mt-1 truncate">
+                          Linked to: <strong>{video.recipe.title}</strong>
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="pt-3 mt-3 border-t border-warm-100 flex items-center justify-between text-xs text-warm-500">
+                      <span>By {video.uploadedBy.name}</span>
+                      <Link
+                        href={`/videos/${video.id}`}
+                        className="text-terracotta-600 hover:text-terracotta-700 font-medium flex items-center gap-1"
+                      >
+                        <Play className="w-3 h-3 fill-current" />
+                        Play &rarr;
+                      </Link>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="p-6 bg-warm-50/70 rounded-2xl border border-warm-200/60 text-center space-y-2">
+                <p className="text-xs text-warm-600">
+                  No cooking footage preserved in this kitchen yet.
+                </p>
+                {canAddRecipes && (
+                  <Link href={`/upload?kitchenId=${kitchen.id}`}>
+                    <Button variant="outline" size="sm">
+                      Upload Cooking Video
+                    </Button>
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Sidebar Column: Kitchen Metadata & Members */}

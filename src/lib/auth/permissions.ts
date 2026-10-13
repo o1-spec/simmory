@@ -84,6 +84,18 @@ export async function getRecipeWithAccess(recipeId: string, userId: string) {
       steps: {
         orderBy: { position: "asc" },
       },
+      videos: {
+        select: {
+          id: true,
+          originalFilename: true,
+          uploadStatus: true,
+          processingStatus: true,
+          createdAt: true,
+          actualSize: true,
+          expectedSize: true,
+        },
+        orderBy: { createdAt: "desc" },
+      },
       createdBy: {
         select: {
           id: true,
@@ -122,3 +134,65 @@ export async function canEditRecipe(recipeId: string, userId: string) {
 
   return result;
 }
+
+/**
+ * Retrieves a cooking video if and only if the requesting user belongs to the video's kitchen.
+ * Prevents Insecure Direct Object References (IDOR).
+ */
+export async function getVideoWithAccess(videoId: string, userId: string) {
+  const video = await db.cookingVideo.findUnique({
+    where: { id: videoId },
+    include: {
+      kitchen: {
+        select: {
+          id: true,
+          name: true,
+          ownerId: true,
+        },
+      },
+      recipe: {
+        select: {
+          id: true,
+          title: true,
+          cookName: true,
+        },
+      },
+      uploadedBy: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  if (!video) {
+    return null;
+  }
+
+  // Check if user is a member of this kitchen
+  const membership = await getKitchenMembership(userId, video.kitchenId);
+  if (!membership) {
+    return null;
+  }
+
+  return { video, membership };
+}
+
+/**
+ * Checks whether the user can edit or delete a video (must be owner or editor of the video's kitchen).
+ */
+export async function canEditVideo(videoId: string, userId: string) {
+  const result = await getVideoWithAccess(videoId, userId);
+  if (!result) {
+    return null;
+  }
+
+  if (!isEditor(result.membership.role)) {
+    return null;
+  }
+
+  return result;
+}
+

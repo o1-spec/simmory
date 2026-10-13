@@ -27,6 +27,21 @@ enum RecipeStatus {
   VERIFIED
 }
 
+enum VideoUploadStatus {
+  PENDING_UPLOAD
+  UPLOADED
+  FAILED
+  DELETED
+}
+
+enum VideoProcessingStatus {
+  NOT_STARTED
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
 model User {
   id           String    @id @default(uuid()) @db.Uuid
   name         String
@@ -41,6 +56,7 @@ model User {
   ownedKitchens      Kitchen[]        @relation("KitchenOwner")
   kitchenMemberships KitchenMember[]
   createdRecipes     Recipe[]         @relation("RecipeAuthor")
+  uploadedVideos     CookingVideo[]   @relation("UserVideos")
 
   @@map("users")
 }
@@ -72,6 +88,7 @@ model Kitchen {
 
   members KitchenMember[]
   recipes Recipe[]
+  videos  CookingVideo[]
 
   @@index([ownerId])
   @@map("kitchens")
@@ -110,6 +127,7 @@ model Recipe {
 
   ingredients RecipeIngredient[]
   steps       RecipeStep[]
+  videos      CookingVideo[]
 
   @@index([kitchenId])
   @@index([createdById])
@@ -148,4 +166,32 @@ model RecipeStep {
 
   @@index([recipeId])
   @@map("recipe_steps")
+}
+
+model CookingVideo {
+  id               String                @id @default(uuid()) @db.Uuid
+  kitchenId        String                @db.Uuid
+  kitchen          Kitchen               @relation(fields: [kitchenId], references: [id], onDelete: Cascade)
+  recipeId         String?               @db.Uuid
+  recipe           Recipe?               @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+  uploadedById     String                @db.Uuid
+  uploadedBy       User                  @relation("UserVideos", fields: [uploadedById], references: [id], onDelete: Cascade)
+  originalFilename String
+  storageKey       String                @unique
+  contentType      String
+  expectedSize     Int
+  actualSize       Int?
+  duration         Float?
+  uploadStatus     VideoUploadStatus     @default(PENDING_UPLOAD)
+  processingStatus VideoProcessingStatus @default(NOT_STARTED)
+  uploadExpiresAt  DateTime
+  completedAt      DateTime?
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+
+  @@index([kitchenId])
+  @@index([recipeId])
+  @@index([uploadedById])
+  @@index([uploadStatus])
+  @@map("cooking_videos")
 }

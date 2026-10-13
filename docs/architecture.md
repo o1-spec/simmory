@@ -12,10 +12,11 @@ The frontend and initial web layer is architected as a Next.js App Router applic
 ```
 simmory-web/
 ├── docs/
-│   └── architecture.md               # System architecture and technical specifications
+│   ├── architecture.md               # System architecture and technical specifications
+│   └── cloudflare-r2.md              # Cloudflare R2 setup, CORS, security, and troubleshooting
 ├── prisma/
-│   ├── migrations/                   # PostgreSQL schema migrations (Phase 2 & Phase 3)
-│   └── schema.prisma                 # Prisma schema (User, RefreshSession, Kitchen, KitchenMember, Recipe, RecipeIngredient, RecipeStep)
+│   ├── migrations/                   # PostgreSQL schema migrations (Phase 2, 3 & 4)
+│   └── schema.prisma                 # Prisma schema (User, RefreshSession, Kitchen, Recipe, CookingVideo)
 ├── prisma.config.ts                  # Prisma 7 configuration (migrations & environment)
 ├── public/                           # Static assets, branding, and icons
 ├── src/
@@ -24,14 +25,14 @@ simmory-web/
 │   │   │   ├── account/              # Profile and password update Route Handlers
 │   │   │   ├── auth/                 # register, login, refresh, logout, me Route Handlers
 │   │   │   ├── kitchens/             # list, create, detail, update, delete, members
-│   │   │   │   ├── [id]/
-│   │   │   │   │   ├── members/
-│   │   │   │   │   │   └── route.ts
-│   │   │   │   │   └── route.ts
-│   │   │   │   └── route.ts
-│   │   │   └── recipes/              # list, create, detail, update, delete
+│   │   │   ├── recipes/              # list, create, detail, update, delete
+│   │   │   ├── storage/status/       # storage configuration and limit inspection
+│   │   │   └── videos/               # initiate, complete, playback, list, detail, delete
 │   │   │       ├── [id]/
+│   │   │       │   ├── complete/route.ts
+│   │   │       │   ├── playback/route.ts
 │   │   │       │   └── route.ts
+│   │   │       ├── initiate/route.ts
 │   │   │       └── route.ts
 │   │   ├── cook/
 │   │   │   └── [id]/page.tsx         # Interactive Cook Along experience (video-linked)
@@ -55,7 +56,10 @@ simmory-web/
 │   │   ├── settings/
 │   │   │   └── page.tsx              # Protected account settings page
 │   │   ├── upload/
-│   │   │   └── page.tsx              # Protected video upload entry point
+│   │   │   └── page.tsx              # Protected direct R2 video upload entry point
+│   │   ├── videos/
+│   │   │   ├── [id]/page.tsx         # Video playback & metadata view (15m signed stream)
+│   │   │   └── page.tsx              # Video library archive with filters & pagination
 │   │   ├── globals.css               # Design system tokens & Tailwind v4 theme
 │   │   ├── layout.tsx                # Root layout, Google fonts (Lora + Plus Jakarta), SEO
 │   │   └── page.tsx                  # Public landing page
@@ -66,21 +70,24 @@ simmory-web/
 │   │   ├── layout/                   # Application shells & layouts
 │   │   ├── navigation/               # App header, authenticated sidebar, mobile drawer
 │   │   ├── recipes/                  # RecipeForm, RecipeFilters, DeleteRecipeDialog
-│   │   └── ui/                       # Design system tokens, buttons, inputs, cards, badges
+│   │   ├── ui/                       # Design system tokens, buttons, inputs, cards, badges
+│   │   ├── upload/                   # UploadForm with real XMLHttpRequest progress
+│   │   └── videos/                   # VideoCard, VideoFilters, VideoPlayer, DeleteVideoDialog
 │   ├── generated/
 │   │   └── prisma/                   # Generated Prisma Client
 │   ├── lib/
 │   │   ├── auth/                     # JWT, password, session, cookies, permissions (RBAC)
-│   │   ├── services/                 # Kitchens and Recipes domain service layer
-│   │   ├── validations/              # Zod validation schemas (kitchen, recipe, auth)
+│   │   ├── services/                 # Kitchens, recipes, and videos domain service layer
+│   │   ├── storage/                  # Cloudflare R2 / S3-compatible storage abstraction
+│   │   ├── validations/              # Zod validation schemas (kitchen, recipe, video, auth)
 │   │   ├── db.ts                     # Prisma Client singleton with pg.Pool adapter
 │   │   ├── env.ts                    # Strict runtime environment validation
 │   │   └── utils.ts                  # Pure utility functions
 │   └── types/
 │       └── index.ts                  # Core domain types
 ├── tests/
-│   ├── integration/                  # Vitest live PostgreSQL auth, kitchens & recipes tests
-│   └── unit/                         # Vitest unit tests (password, JWT, validation)
+│   ├── integration/                  # Vitest PostgreSQL auth, kitchens, recipes & videos tests
+│   └── unit/                         # Vitest unit tests (password, JWT, validation, storage)
 ├── package.json
 ├── tsconfig.json
 └── vitest.config.ts
@@ -547,18 +554,126 @@ Multi-tenancy is enforced strictly at the database layer through the service abs
 
 ---
 
-### 7.5 Automated Verification Suite
-
-All Phase 1, Phase 2, and Phase 3 capabilities are verified with automated tests:
+### 7.5 Phase 3 Testing Matrix
 
 | Test Suite | File | Tests | Coverage |
 | :--- | :--- | :--- | :--- |
-| **Password Hashing** | `tests/unit/password.test.ts` | 5 | Argon2id hashing, verification, invalid passwords |
-| **JWT & Tokens** | `tests/unit/jwt.test.ts` | 6 | Sign, verify, expiration, opaque token hashing, tamper rejection |
-| **Validation Schemas** | `tests/unit/validation.test.ts` | 8 | Email normalization, password strength, profile updates |
-| **Auth Integration** | `tests/integration/auth-flow.test.ts` | 5 | DB registration, default kitchen provisioning, token rotation, replay revocation |
-| **Auth API Endpoints** | `tests/integration/api-routes.test.ts` | 6 | HTTP register, duplicate email handling, login, logout cookie clearance, /api/auth/me |
-| **Kitchens & Recipes Services** | `tests/integration/kitchens-and-recipes.test.ts` | 8 | Multi-kitchen creation, membership enforcement, recipe CRUD, sensory cues, cascade delete |
-| **Kitchens & Recipes API** | `tests/integration/api-kitchens-recipes.test.ts` | 7 | HTTP /api/kitchens and /api/recipes CRUD, search/filter, role permissions, IDOR cross-tenant isolation |
-| **Total** | | **45 passing** | **Complete end-to-end verification across unit, service, and API layers** |
+| **Kitchens & Recipes Services** | `tests/integration/kitchens-and-recipes.test.ts` | 12 | Multi-kitchen creation, membership enforcement, recipe CRUD, sensory cues, cascade delete |
+| **Kitchens & Recipes API** | `tests/integration/api-kitchens-recipes.test.ts` | 3 | HTTP /api/kitchens and /api/recipes CRUD, search/filter, role permissions, IDOR cross-tenant isolation |
+
+---
+
+## 8. Phase 4: Cloudflare R2 Media Ingestion & Object Storage Architecture
+
+Phase 4 establishes real, secure, production-grade video ingestion and private media management using Cloudflare R2 with an S3-compatible storage abstraction (`@aws-sdk/client-s3`).
+
+### 8.1 Video Storage Domain Model
+
+Cooking videos are modeled in PostgreSQL with strict kitchen multi-tenancy, deterministic upload lifecycles, and future AI preparation states:
+
+```mermaid
+erDiagram
+    Kitchen ||--o{ CookingVideo : "vaults"
+    Recipe ||--o{ CookingVideo : "associates (optional)"
+    User ||--o{ CookingVideo : "uploaded"
+
+    CookingVideo {
+        string id PK "uuid"
+        string kitchenId FK
+        string recipeId FK "nullable"
+        string uploadedById FK
+        string originalFilename
+        string storageKey "unique S3 path"
+        string contentType "video/mp4, video/quicktime, video/webm"
+        int expectedSize "bytes"
+        int actualSize "verified via S3 HEAD"
+        float duration "nullable"
+        VideoUploadStatus uploadStatus "PENDING_UPLOAD, UPLOADED, FAILED, DELETED"
+        VideoProcessingStatus processingStatus "NOT_STARTED, QUEUED, PROCESSING, COMPLETED, FAILED"
+        datetime uploadExpiresAt "5m presigned PUT expiry"
+        datetime completedAt "nullable"
+        datetime createdAt
+        datetime updatedAt
+    }
+```
+
+### 8.2 Presigned Upload & Verification Lifecycle
+
+```
+[Browser Client]                         [Next.js Server]                     [Cloudflare R2 Bucket]
+       │                                         │                                      │
+       │ 1. POST /api/videos/initiate            │                                      │
+       │    (kitchenId, filename, size, MIME)    │                                      │
+       ├────────────────────────────────────────▶│                                      │
+       │                                         │ 2. Check OWNER/EDITOR role           │
+       │                                         │ 3. Create PENDING_UPLOAD in DB       │
+       │                                         │ 4. Generate 5-min presigned PUT URL  │
+       │ 5. Return { uploadUrl, videoId }        │                                      │
+       │◀────────────────────────────────────────┤                                      │
+       │                                                                                │
+       │ 6. PUT video bytes (XMLHttpRequest with real-time onprogress)                  │
+       ├───────────────────────────────────────────────────────────────────────────────▶│
+       │◀──────────────────────────────────────────────────────────────────────────────┤ (200 OK)
+       │                                         │                                      │
+       │ 7. POST /api/videos/[id]/complete       │                                      │
+       ├────────────────────────────────────────▶│                                      │
+       │                                         │ 8. S3 HEAD Object Verification       │
+       │                                         ├─────────────────────────────────────▶│
+       │                                         │◀─────────────────────────────────────┤ (ContentLength & ETag)
+       │                                         │ 9. Update DB: uploadStatus = UPLOADED│
+       │ 10. Return completed video metadata     │                                      │
+       │◀────────────────────────────────────────┤                                      │
+       │                                         │                                      │
+       │ 11. GET /api/videos/[id]/playback       │                                      │
+       ├────────────────────────────────────────▶│                                      │
+       │                                         │ 12. Check member access (anti-IDOR)  │
+       │                                         │ 13. Generate 15-min signed GET URL   │
+       │ 14. Return { playbackUrl }              │                                      │
+       │◀────────────────────────────────────────┤                                      │
+       │                                                                                │
+       │ 15. Stream video chunks (HTML5 <video> tag via signed URL)                     │
+       ├───────────────────────────────────────────────────────────────────────────────▶│
+```
+
+### 8.3 Security & Multi-Tenant Authorization Boundaries
+
+1. **Strictly Private Bucket:** No public read bucket policies or public `r2.dev` subdomains.
+2. **Short-Lived Temporary Bearer URLs:** Presigned PUT URLs expire in 5 minutes; playback URLs expire in 15 minutes.
+3. **Role-Based Upload & Deletion Controls:** Only users with `OWNER` or `EDITOR` permissions in the selected kitchen may upload, edit, or delete videos. `VIEWER` members have read/stream access only.
+4. **Independent S3 HEAD Verification:** Upload success is confirmed by a server-side S3 `HeadObjectCommand` checking exact bytes before updating the database.
+5. **No Secret Leaks:** R2 credentials remain strictly server-side.
+6. **Graceful Degraded State (503):** When R2 storage credentials are not yet configured in `.env`, `/api/videos/initiate` returns `503 Storage not configured` and the UI renders helpful advisory notices without breaking other application flows.
+
+### 8.4 Phase 4 API Specifications
+
+| Route | Method | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `/api/videos/initiate` | `POST` | Editor/Owner | Validates file metadata, creates PENDING_UPLOAD record, and generates 5-min presigned PUT URL |
+| `/api/videos/[id]/complete` | `POST` | Editor/Owner | Executes S3 HEAD request, verifies stored size, and marks record UPLOADED idempotently |
+| `/api/videos/[id]/playback` | `GET` | Kitchen Member | Generates temporary 15-min signed GET URL for authorized browser streaming |
+| `/api/videos` | `GET` | Kitchen Member | Returns paginated list of videos from user's accessible kitchens with filters |
+| `/api/videos/[id]` | `GET` | Kitchen Member | Returns video metadata, uploader, kitchen, and associated recipe |
+| `/api/videos/[id]` | `PATCH` | Editor/Owner | Updates video display title or associates/detaches recipes in the same kitchen |
+| `/api/videos/[id]` | `DELETE` | Editor/Owner | Deletes object from Cloudflare R2 and removes record from PostgreSQL |
+| `/api/storage/status` | `GET` | Public | Returns whether object storage is configured and maximum upload size limits |
+
+---
+
+### 8.5 Full System Automated Verification Suite (66 Tests Passing)
+
+All capabilities across Phases 1, 2, 3, and 4 are continuously verified against PostgreSQL:
+
+| Test Suite | File | Tests | Coverage |
+| :--- | :--- | :--- | :--- |
+| **Password Hashing** | `tests/unit/password.test.ts` | 3 | Argon2id hashing, verification, invalid passwords |
+| **JWT & Tokens** | `tests/unit/jwt.test.ts` | 5 | Sign, verify, expiration, opaque token hashing, tamper rejection |
+| **Validation Schemas** | `tests/unit/validation.test.ts` | 10 | Email normalization, password strength, profile updates |
+| **Storage Abstraction & Rules** | `tests/unit/storage.test.ts` | 13 | Storage configuration detection, placeholder rejection, S3 presigning, video schema rules |
+| **Auth Integration** | `tests/integration/auth-flow.test.ts` | 7 | DB registration, default kitchen provisioning, token rotation, replay revocation |
+| **Auth API Endpoints** | `tests/integration/api-routes.test.ts` | 5 | HTTP register, duplicate email handling, login, logout cookie clearance, /api/auth/me |
+| **Kitchens & Recipes Services** | `tests/integration/kitchens-and-recipes.test.ts` | 12 | Multi-kitchen creation, membership enforcement, recipe CRUD, sensory cues, cascade delete |
+| **Kitchens & Recipes API** | `tests/integration/api-kitchens-recipes.test.ts` | 3 | HTTP /api/kitchens and /api/recipes CRUD, search/filter, role permissions, IDOR cross-tenant isolation |
+| **Cooking Videos & Media Ingestion** | `tests/integration/cooking-videos.test.ts` | 8 | 503 unconfigured handling, presigned upload generation, viewer mutation rejection, cross-kitchen recipe mismatch, S3 HEAD completion, private playback authorization, cross-family library isolation, video deletion |
+| **Total** | | **66 passing** | **Complete end-to-end verification across unit, storage, service, and API layers** |
+
 

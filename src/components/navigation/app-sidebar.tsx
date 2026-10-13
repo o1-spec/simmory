@@ -44,6 +44,11 @@ const mainNavItems: NavItem[] = [
     icon: BookOpen,
   },
   {
+    label: "Cooking Videos",
+    href: "/videos",
+    icon: PlayCircle,
+  },
+  {
     label: "Preserve Recipe",
     href: "/upload",
     icon: UploadCloud,

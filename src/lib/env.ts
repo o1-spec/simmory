@@ -9,6 +9,12 @@ const envSchema = z.object({
   JWT_AUDIENCE: z.string().default("simmory-users"),
   APP_URL: z.string().url("APP_URL must be a valid URL").default("http://localhost:3000"),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+  R2_ACCOUNT_ID: z.string().optional(),
+  R2_ACCESS_KEY_ID: z.string().optional(),
+  R2_SECRET_ACCESS_KEY: z.string().optional(),
+  R2_BUCKET_NAME: z.string().optional(),
+  R2_ENDPOINT: z.string().optional(),
+  MAX_VIDEO_SIZE_MB: z.string().default("250"),
 });
 
 function validateEnv() {
