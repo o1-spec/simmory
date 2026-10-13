@@ -53,7 +53,7 @@ export function VideoCard({
     <Card className="overflow-hidden hover:shadow-md transition-all flex flex-col group border-warm-200/80 bg-white">
       {/* Visual Header / Thumbnail Placeholder */}
       <div className="relative h-40 bg-warm-900/90 flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent z-10" />
 
         <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-xs border border-white/30 flex items-center justify-center text-white group-hover:scale-110 group-hover:bg-terracotta-500 transition-all z-20">
           <Play className="w-6 h-6 fill-current ml-0.5" />
@@ -66,15 +66,15 @@ export function VideoCard({
               uploadStatus === "UPLOADED"
                 ? "sage"
                 : uploadStatus === "FAILED"
-                ? "terracotta"
-                : "warm"
+                  ? "terracotta"
+                  : "warm"
             }
           >
             {uploadStatus === "UPLOADED"
               ? "Ready"
               : uploadStatus === "PENDING_UPLOAD"
-              ? "Pending"
-              : uploadStatus}
+                ? "Pending"
+                : uploadStatus}
           </Badge>
 
           <span className="text-[11px] font-mono text-white/90 bg-black/40 px-2 py-0.5 rounded-md backdrop-blur-xs">

@@ -32,7 +32,7 @@ export default function LandingPage() {
 
       <main className="flex-1 flex flex-col">
         {/* HERO SECTION */}
-        <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-32 px-4 sm:px-6 lg:px-8 border-b border-warm-200/60 bg-gradient-to-b from-warm-100/50 via-warm-50 to-warm-50">
+        <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-32 px-4 sm:px-6 lg:px-8 border-b border-warm-200/60 bg-linear-to-b from-warm-100/50 via-warm-50 to-warm-50">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
               {/* Left Column: Headlines & Call to Action */}
@@ -100,14 +100,14 @@ export default function LandingPage() {
               <div className="lg:col-span-5 relative">
                 <div className="relative mx-auto max-w-md lg:max-w-none">
                   {/* Decorative warm glow backdrop */}
-                  <div className="absolute -inset-2 bg-gradient-to-tr from-terracotta-200/30 to-amber-200/30 rounded-3xl blur-xl -z-10" />
+                  <div className="absolute -inset-2 bg-linear-to-tr from-terracotta-200/30 to-amber-200/30 rounded-3xl blur-xl -z-10" />
 
                   {/* Recipe Showcase Card */}
                   <div className="bg-white rounded-3xl border border-warm-200/90 shadow-xl overflow-hidden">
                     {/* Video Demonstration Header */}
                     <div className="relative aspect-video bg-warm-900 overflow-hidden flex items-center justify-center">
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/30" />
-                      
+                      <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-black/30" />
+
                       {/* Video simulated capture frame */}
                       <div className="z-10 text-center px-4">
                         <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center mx-auto mb-2 text-white shadow-lg transition-transform hover:scale-110">
