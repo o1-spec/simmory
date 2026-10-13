@@ -1,0 +1,103 @@
+// Simmory Prisma Schema
+// Phase 2: PostgreSQL Models, Authentication & Relational Foundations
+
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+enum KitchenRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum RecipeStatus {
+  DRAFT
+  IN_REVIEW
+  VERIFIED
+}
+
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  name         String
+  email        String    @unique
+  passwordHash String
+  avatarUrl    String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  refreshSessions    RefreshSession[]
+  ownedKitchens      Kitchen[]        @relation("KitchenOwner")
+  kitchenMemberships KitchenMember[]
+  createdRecipes     Recipe[]         @relation("RecipeAuthor")
+
+  @@map("users")
+}
+
+model RefreshSession {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @db.Uuid
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@map("refresh_sessions")
+}
+
+model Kitchen {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  ownerId     String   @db.Uuid
+  owner       User     @relation("KitchenOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members KitchenMember[]
+  recipes Recipe[]
+
+  @@index([ownerId])
+  @@map("kitchens")
+}
+
+model KitchenMember {
+  id        String      @id @default(uuid()) @db.Uuid
+  kitchenId String      @db.Uuid
+  kitchen   Kitchen     @relation(fields: [kitchenId], references: [id], onDelete: Cascade)
+  userId    String      @db.Uuid
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      KitchenRole @default(MEMBER)
+  joinedAt  DateTime    @default(now())
+
+  @@unique([kitchenId, userId])
+  @@index([userId])
+  @@index([kitchenId])
+  @@map("kitchen_members")
+}
+
+model Recipe {
+  id          String       @id @default(uuid()) @db.Uuid
+  kitchenId   String       @db.Uuid
+  kitchen     Kitchen      @relation(fields: [kitchenId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  createdById String       @db.Uuid
+  createdBy   User         @relation("RecipeAuthor", fields: [createdById], references: [id], onDelete: Restrict)
+  status      RecipeStatus @default(DRAFT)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([kitchenId])
+  @@index([createdById])
+  @@map("recipes")
+}

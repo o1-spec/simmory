@@ -1,26 +1,69 @@
 @import "tailwindcss";
 
+@theme {
+  --font-serif: var(--font-serif), Georgia, Cambria, "Times New Roman", serif;
+  --font-sans: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  --color-warm-50: #FAF8F5;
+  --color-warm-100: #F4EFEA;
+  --color-warm-200: #EBE3D7;
+  --color-warm-300: #DFD3C3;
+  --color-warm-400: #C2B29F;
+  --color-warm-500: #9E8C7A;
+  --color-warm-600: #746353;
+  --color-warm-700: #514438;
+  --color-warm-800: #332A23;
+  --color-warm-900: #1C1614;
+
+  --color-cream-50: #FCFAF7;
+  --color-cream-100: #F7F3EC;
+  --color-cream-200: #EFE8DC;
+  --color-cream-300: #E5DAC9;
+
+  --color-terracotta-50: #FDF6F2;
+  --color-terracotta-100: #FAECE5;
+  --color-terracotta-200: #F4D5C5;
+  --color-terracotta-300: #EBB59D;
+  --color-terracotta-400: #DD8663;
+  --color-terracotta-500: #C85A32;
+  --color-terracotta-600: #B44C26;
+  --color-terracotta-700: #943C1C;
+  --color-terracotta-800: #773117;
+  --color-terracotta-900: #5C2713;
+
+  --color-sage-50: #F4F7F4;
+  --color-sage-100: #E5EDE6;
+  --color-sage-200: #CBDBCF;
+  --color-sage-500: #587F66;
+  --color-sage-600: #446851;
+  --color-sage-700: #34513E;
+
+  --color-saffron-50: #FFF9ED;
+  --color-saffron-100: #FEF3D6;
+  --color-saffron-500: #D9822B;
+  --color-saffron-600: #BC6B1C;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FAF8F5;
+  --foreground: #1C1614;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Custom subtle scrollbar & transitions */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+::-webkit-scrollbar-track {
+  background: #FAF8F5;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+::-webkit-scrollbar-thumb {
+  background: #DFD3C3;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #C2B29F;
 }
