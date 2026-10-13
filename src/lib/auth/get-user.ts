@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import type { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { verifyAccessToken } from "./jwt";
 import {
@@ -28,9 +29,34 @@ export interface UserSession {
  * Returns the currently authenticated user session, or null if unauthenticated.
  * Transparently rotates valid refresh tokens when the access token has expired.
  */
-export async function getCurrentUser(): Promise<UserSession | null> {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get(ACCESS_COOKIE_NAME)?.value;
+export async function getCurrentUser(
+  request?: NextRequest | Request
+): Promise<UserSession | null> {
+  let accessToken: string | undefined;
+  let refreshToken: string | undefined;
+
+  if (request && "cookies" in request && typeof (request as NextRequest).cookies.get === "function") {
+    accessToken = (request as NextRequest).cookies.get(ACCESS_COOKIE_NAME)?.value;
+    refreshToken = (request as NextRequest).cookies.get(REFRESH_COOKIE_NAME)?.value;
+  } else if (request && request.headers.has("cookie")) {
+    const cookieHeader = request.headers.get("cookie") || "";
+    const parsed = Object.fromEntries(
+      cookieHeader.split("; ").map((c) => {
+        const [k, ...v] = c.split("=");
+        return [k, v.join("=")];
+      })
+    );
+    accessToken = parsed[ACCESS_COOKIE_NAME];
+    refreshToken = parsed[REFRESH_COOKIE_NAME];
+  } else {
+    try {
+      const cookieStore = await cookies();
+      accessToken = cookieStore.get(ACCESS_COOKIE_NAME)?.value;
+      refreshToken = cookieStore.get(REFRESH_COOKIE_NAME)?.value;
+    } catch {
+      // Context outside request store
+    }
+  }
 
   // 1. Check access token
   if (accessToken) {
@@ -65,7 +91,6 @@ export async function getCurrentUser(): Promise<UserSession | null> {
   }
 
   // 2. Check refresh token if access token missing or expired
-  const refreshToken = cookieStore.get(REFRESH_COOKIE_NAME)?.value;
   if (refreshToken) {
     const rotated = await rotateRefreshToken(refreshToken);
     if (rotated) {

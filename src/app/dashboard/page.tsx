@@ -1,61 +1,57 @@
 import React, { Suspense } from "react";
 import Link from "next/link";
 import {
-  UploadCloud,
   FolderHeart,
   BookOpen,
   Sparkles,
-  Flame,
-  Users,
-  Video,
+  Plus,
+  ChefHat,
   ArrowRight,
 } from "lucide-react";
 import { requireUser } from "@/lib/auth/get-user";
-import { db } from "@/lib/db";
+import { listUserKitchens } from "@/lib/services/kitchens";
+import { listUserRecipes } from "@/lib/services/recipes";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { EmptyState } from "@/components/ui/empty-state";
 import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/empty-state";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { CreateKitchenDialog } from "@/components/kitchens/create-kitchen-dialog";
 
 export const metadata = {
   title: "Kitchen Overview — Simmory",
-  description: "Your family's private space for preserving unwritten recipes and cooking videos.",
+  description: "Your family's private space for preserving unwritten recipes and cooking memories.",
 };
 
 async function DashboardContent() {
   const session = await requireUser("/dashboard");
 
-  // Query authentic metrics from database
-  const [recipeCount, kitchenCount] = await Promise.all([
-    db.recipe.count({
-      where: { createdById: session.user.id },
-    }),
-    db.kitchenMember.count({
-      where: { userId: session.user.id },
-    }),
+  // Query authentic metrics in parallel without N+1
+  const [kitchens, recentRecipesResult] = await Promise.all([
+    listUserKitchens(session.user.id),
+    listUserRecipes(session.user.id, { page: 1, limit: 6 }),
   ]);
+
+  const { recipes: recentRecipes, pagination } = recentRecipesResult;
+  const totalRecipes = pagination.total;
+  const totalKitchens = kitchens.length;
 
   return (
     <>
       <PageHeader
         eyebrow={`Welcome back, ${session.user.name}`}
         title="Kitchen Overview"
-        description="Your family's private space for preserving unwritten recipes, authentic cooking footage, and personal culinary heritage."
+        description="Your family's private archive for preserving unwritten recipes, sensory cues, and personal culinary heritage."
         actions={
-          <div className="flex items-center gap-2">
-            <Link href="/kitchens">
-              <Button variant="secondary" size="md" leftIcon={<FolderHeart className="w-4 h-4" />}>
-                Collections
-              </Button>
-            </Link>
-            <Link href="/upload">
+          <div className="flex items-center gap-2.5">
+            <CreateKitchenDialog triggerText="New Kitchen" />
+            <Link href="/recipes/new">
               <Button
                 variant="primary"
                 size="md"
-                leftIcon={<UploadCloud className="w-4 h-4" />}
+                leftIcon={<Plus className="w-4 h-4" />}
               >
                 Preserve Recipe
               </Button>
@@ -64,8 +60,8 @@ async function DashboardContent() {
         }
       />
 
-      {/* Overview Stat Cards (Derived from Real Database Records) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      {/* Metrics Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <Card className="p-5">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-warm-500">
@@ -77,12 +73,14 @@ async function DashboardContent() {
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="font-serif text-3xl font-medium text-warm-900">
-              {recipeCount}
+              {totalRecipes}
             </span>
-            <span className="text-xs text-warm-500">recorded</span>
+            <span className="text-xs text-warm-500">
+              {totalRecipes === 1 ? "recipe saved" : "recipes saved"}
+            </span>
           </div>
           <p className="text-[11px] text-warm-400 mt-1">
-            {recipeCount === 0 ? "Ready for first video" : "Stored in database"}
+            {totalRecipes === 0 ? "Ready for your first family recipe" : "Preserved in family archive"}
           </p>
         </Card>
 
@@ -97,120 +95,191 @@ async function DashboardContent() {
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="font-serif text-3xl font-medium text-warm-900">
-              {kitchenCount}
+              {totalKitchens}
             </span>
             <span className="text-xs text-warm-500">
-              {kitchenCount === 1 ? "active space" : "active spaces"}
+              {totalKitchens === 1 ? "active space" : "active spaces"}
             </span>
           </div>
-          <p className="text-[11px] text-warm-400 mt-1">Private archive space</p>
+          <p className="text-[11px] text-warm-400 mt-1">
+            {totalKitchens === 1 ? "Default family space active" : "Multi-generational collections"}
+          </p>
         </Card>
 
-        <Card className="p-5">
+        <Card className="p-5 sm:col-span-2 lg:col-span-1">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-warm-500">
-              Sensory Cues
+              Cooking Knowledge
             </span>
-            <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center">
-              <Flame className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
+              <Sparkles className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="font-serif text-3xl font-medium text-warm-900">0</span>
-            <span className="text-xs text-warm-500">identified</span>
-          </div>
-          <p className="text-[11px] text-warm-400 mt-1">Identified during video review</p>
-        </Card>
-
-        <Card className="p-5">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-warm-500">
-              Cooks Documented
+            <span className="font-serif text-3xl font-medium text-warm-900">
+              100%
             </span>
-            <div className="w-8 h-8 rounded-lg bg-sage-100 text-sage-800 flex items-center justify-center">
-              <Users className="w-4 h-4" />
-            </div>
+            <span className="text-xs text-warm-500">human-verified</span>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="font-serif text-3xl font-medium text-warm-900">1</span>
-            <span className="text-xs text-warm-500">account curator</span>
-          </div>
-          <p className="text-[11px] text-warm-400 mt-1">{session.user.name}</p>
+          <p className="text-[11px] text-warm-400 mt-1">
+            Unwritten instincts captured in original cooks&apos; voices
+          </p>
         </Card>
       </div>
 
-      {/* Guide Banner for Preserving First Dish */}
-      <div className="mb-10 bg-warm-100/70 border border-warm-200/80 rounded-2xl p-6 sm:p-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-terracotta-700">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Getting Started with Simmory</span>
-            </div>
-            <h2 className="font-serif text-2xl text-warm-900 font-medium">
-              How to capture a dish the way they make it
+      {/* Recently Preserved Recipes */}
+      <div className="mb-10">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="font-serif text-xl font-medium text-warm-900">
+              Recently Preserved Recipes
             </h2>
-            <p className="text-sm text-warm-600 leading-relaxed font-sans">
-              Set up your phone camera to capture the stove and hands. Don&apos;t worry about editing or mistakes—our workflow uses speech transcription and video frame analysis to construct candidate steps for your review.
+            <p className="text-xs text-warm-500 mt-0.5">
+              Heirloom recipes saved across all your family kitchen collections.
             </p>
           </div>
-          <Link href="/upload" className="shrink-0">
-            <Button variant="primary" size="lg" rightIcon={<ArrowRight className="w-4 h-4" />}>
-              Preserve a Recipe
-            </Button>
-          </Link>
+          {totalRecipes > 0 && (
+            <Link
+              href="/recipes"
+              className="text-xs font-medium text-terracotta-600 hover:text-terracotta-700 flex items-center gap-1 group"
+            >
+              Browse All ({totalRecipes})
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          )}
         </div>
 
-        <div className="mt-6 pt-6 border-t border-warm-200/60 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-warm-600">
-          <div className="flex items-start gap-2.5">
-            <span className="w-5 h-5 rounded-full bg-white text-warm-800 font-bold flex items-center justify-center shrink-0 border border-warm-200">
-              1
-            </span>
-            <span>Record raw cooking video with spoken explanations</span>
-          </div>
-          <div className="flex items-start gap-2.5">
-            <span className="w-5 h-5 rounded-full bg-white text-warm-800 font-bold flex items-center justify-center shrink-0 border border-warm-200">
-              2
-            </span>
-            <span>AI proposes timestamped steps and sensory cues</span>
-          </div>
-          <div className="flex items-start gap-2.5">
-            <span className="w-5 h-5 rounded-full bg-white text-warm-800 font-bold flex items-center justify-center shrink-0 border border-warm-200">
-              3
-            </span>
-            <span>The cook verifies steps and clarifies secret details</span>
-          </div>
-        </div>
-      </div>
+        {recentRecipes.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {recentRecipes.map((recipe) => (
+              <Card
+                key={recipe.id}
+                hoverEffect
+                className="p-5 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <Badge
+                      variant={recipe.status === "VERIFIED" ? "sage" : "saffron"}
+                      size="sm"
+                    >
+                      {recipe.status === "VERIFIED" ? "Verified" : "Draft"}
+                    </Badge>
+                    <span className="text-[11px] text-warm-500 font-medium">
+                      {recipe.kitchenName}
+                    </span>
+                  </div>
 
-      {/* Recent Recipes Section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="font-serif text-xl text-warm-900 font-medium">
-            Recent Recipes
-          </h2>
-          <Badge variant={recipeCount > 0 ? "sage" : "warm"}>
-            {recipeCount > 0 ? `${recipeCount} Preserved` : "Archive Empty"}
-          </Badge>
-        </div>
+                  <h3 className="font-serif text-lg text-warm-900 font-medium">
+                    <Link
+                      href={`/recipes/${recipe.id}`}
+                      className="hover:text-terracotta-700 transition-colors"
+                    >
+                      {recipe.title}
+                    </Link>
+                  </h3>
 
-        {recipeCount === 0 ? (
+                  <p className="text-xs text-warm-500 mt-1 flex items-center gap-1">
+                    <ChefHat className="w-3.5 h-3.5 text-terracotta-500" />
+                    As made by{" "}
+                    <span className="font-medium text-warm-800">
+                      {recipe.cookName}
+                    </span>
+                  </p>
+
+                  {recipe.description && (
+                    <p className="text-xs text-warm-600 mt-2 line-clamp-2 leading-relaxed">
+                      {recipe.description}
+                    </p>
+                  )}
+                </div>
+
+                <div className="pt-4 mt-4 border-t border-warm-100 flex items-center justify-between text-xs text-warm-500">
+                  <span className="flex items-center gap-1.5">
+                    <Sparkles className="w-3 h-3 text-amber-500" />
+                    {recipe.stepCount} steps • {recipe.ingredientCount} ingredients
+                  </span>
+                  <Link
+                    href={`/recipes/${recipe.id}`}
+                    className="text-terracotta-600 hover:text-terracotta-700 font-medium"
+                  >
+                    View Recipe &rarr;
+                  </Link>
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : (
           <EmptyState
-            icon={<Video className="w-6 h-6" />}
-            badge="No recipes preserved yet"
-            title="Your family archive is waiting for its first dish"
-            description="When you preserve a recipe, the video and verified cooking timeline will be safely stored here for family members to explore and cook along."
+            icon={<ChefHat className="w-8 h-8" />}
+            title="No Recipes Preserved Yet"
+            description="Your family archive is waiting for its first dish. Document instructions, textual measurements, and sensory cues."
             action={
-              <Link href="/upload">
-                <Button variant="primary" size="md" leftIcon={<UploadCloud className="w-4 h-4" />}
-                >
-                  Upload First Video
+              <Link href="/recipes/new">
+                <Button variant="primary" size="md" leftIcon={<Plus className="w-4 h-4" />}>
+                  Preserve Your First Recipe
                 </Button>
               </Link>
             }
-            note="Phase 2 Database Connected: Records are persisted in PostgreSQL. Cloudflare R2 and AI background processing will be integrated in future phases."
           />
-        ) : null}
+        )}
+      </div>
+
+      {/* Accessible Kitchen Collections Section */}
+      <div className="mb-10">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="font-serif text-xl font-medium text-warm-900">
+              Your Family Kitchens
+            </h2>
+            <p className="text-xs text-warm-500 mt-0.5">
+              Spaces where you hold owner, editor, or viewer membership.
+            </p>
+          </div>
+          <Link
+            href="/kitchens"
+            className="text-xs font-medium text-terracotta-600 hover:text-terracotta-700 flex items-center gap-1 group"
+          >
+            Manage Kitchens
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {kitchens.map((k) => (
+            <Card key={k.id} hoverEffect className="p-5 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Badge variant={k.isOwner ? "sage" : "outline"} size="sm">
+                    {k.isOwner ? "Owner" : k.myRole}
+                  </Badge>
+                  <span className="text-[11px] text-warm-500">
+                    {k.recipeCount} {k.recipeCount === 1 ? "recipe" : "recipes"}
+                  </span>
+                </div>
+                <h3 className="font-serif text-base font-medium text-warm-900">
+                  <Link href={`/kitchens/${k.id}`} className="hover:text-terracotta-700">
+                    {k.name}
+                  </Link>
+                </h3>
+                {k.description && (
+                  <p className="text-xs text-warm-600 mt-1 line-clamp-2">
+                    {k.description}
+                  </p>
+                )}
+              </div>
+              <div className="pt-3 mt-3 border-t border-warm-100 flex items-center justify-between text-xs text-warm-500">
+                <span>By {k.ownerName}</span>
+                <Link
+                  href={`/kitchens/${k.id}`}
+                  className="text-terracotta-600 hover:text-terracotta-700 font-medium"
+                >
+                  Open &rarr;
+                </Link>
+              </div>
+            </Card>
+          ))}
+        </div>
       </div>
     </>
   );
@@ -219,7 +288,7 @@ async function DashboardContent() {
 export default function DashboardPage() {
   return (
     <DashboardLayout>
-      <Suspense fallback={<LoadingSpinner label="Loading family kitchen overview..." />}>
+      <Suspense fallback={<LoadingSpinner text="Loading kitchen overview..." />}>
         <DashboardContent />
       </Suspense>
     </DashboardLayout>

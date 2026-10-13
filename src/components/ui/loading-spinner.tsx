@@ -4,14 +4,17 @@ import { cn } from "@/lib/utils";
 export interface LoadingSpinnerProps {
   size?: "sm" | "md" | "lg";
   label?: string;
+  text?: string;
   className?: string;
 }
 
 export function LoadingSpinner({
   size = "md",
   label,
+  text,
   className,
 }: LoadingSpinnerProps) {
+  const displayLabel = label ?? text;
   const sizeMap = {
     sm: "w-4 h-4 border-2",
     md: "w-8 h-8 border-3",
@@ -33,8 +36,8 @@ export function LoadingSpinner({
           sizeMap[size]
         )}
       />
-      {label && <p className="text-xs font-medium text-warm-600">{label}</p>}
-      <span className="sr-only">{label || "Loading..."}</span>
+      {displayLabel && <p className="text-xs font-medium text-warm-600">{displayLabel}</p>}
+      <span className="sr-only">{displayLabel || "Loading..."}</span>
     </div>
   );
 }

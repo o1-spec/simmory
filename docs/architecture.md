@@ -14,25 +14,40 @@ simmory-web/
 ├── docs/
 │   └── architecture.md               # System architecture and technical specifications
 ├── prisma/
-│   ├── migrations/                   # PostgreSQL schema migrations
-│   └── schema.prisma                 # Prisma schema (User, RefreshSession, Kitchen, Recipe)
+│   ├── migrations/                   # PostgreSQL schema migrations (Phase 2 & Phase 3)
+│   └── schema.prisma                 # Prisma schema (User, RefreshSession, Kitchen, KitchenMember, Recipe, RecipeIngredient, RecipeStep)
 ├── prisma.config.ts                  # Prisma 7 configuration (migrations & environment)
 ├── public/                           # Static assets, branding, and icons
 ├── src/
 │   ├── app/                          # Next.js App Router (Server Components by default)
 │   │   ├── api/
 │   │   │   ├── account/              # Profile and password update Route Handlers
-│   │   │   └── auth/                 # register, login, refresh, logout, me Route Handlers
+│   │   │   ├── auth/                 # register, login, refresh, logout, me Route Handlers
+│   │   │   ├── kitchens/             # list, create, detail, update, delete, members
+│   │   │   │   ├── [id]/
+│   │   │   │   │   ├── members/
+│   │   │   │   │   │   └── route.ts
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── route.ts
+│   │   │   └── recipes/              # list, create, detail, update, delete
+│   │   │       ├── [id]/
+│   │   │       │   └── route.ts
+│   │   │       └── route.ts
 │   │   ├── cook/
 │   │   │   └── [id]/page.tsx         # Interactive Cook Along experience (video-linked)
 │   │   ├── dashboard/
 │   │   │   └── page.tsx              # Protected kitchen overview, activity, and stats
 │   │   ├── kitchens/
-│   │   │   └── page.tsx              # Protected Family Kitchen collections
+│   │   │   ├── [id]/page.tsx         # Family Kitchen archive detail & recipe collection
+│   │   │   └── page.tsx              # Protected Family Kitchen collections listing
 │   │   ├── login/
 │   │   │   └── page.tsx              # Editorial login page
 │   │   ├── recipes/
-│   │   │   └── page.tsx              # Protected recipe catalog
+│   │   │   ├── [id]/
+│   │   │   │   ├── edit/page.tsx     # Recipe editor (ingredients, steps, sensory cues)
+│   │   │   │   └── page.tsx          # Preserved recipe view (cues, story, ingredients)
+│   │   │   ├── new/page.tsx          # Recipe creation page
+│   │   │   └── page.tsx              # Protected recipe catalog with live search & filters
 │   │   ├── register/
 │   │   │   └── page.tsx              # Editorial registration page
 │   │   ├── review/
@@ -47,20 +62,24 @@ simmory-web/
 │   ├── components/
 │   │   ├── account/                  # Settings form (profile & password)
 │   │   ├── auth/                     # Login & Register editorial forms
+│   │   ├── kitchens/                 # CreateKitchenDialog, KitchenSettingsDialog
 │   │   ├── layout/                   # Application shells & layouts
 │   │   ├── navigation/               # App header, authenticated sidebar, mobile drawer
+│   │   ├── recipes/                  # RecipeForm, RecipeFilters, DeleteRecipeDialog
 │   │   └── ui/                       # Design system tokens, buttons, inputs, cards, badges
 │   ├── generated/
 │   │   └── prisma/                   # Generated Prisma Client
 │   ├── lib/
-│   │   ├── auth/                     # JWT, password, session, cookies, redirect, origin
+│   │   ├── auth/                     # JWT, password, session, cookies, permissions (RBAC)
+│   │   ├── services/                 # Kitchens and Recipes domain service layer
+│   │   ├── validations/              # Zod validation schemas (kitchen, recipe, auth)
 │   │   ├── db.ts                     # Prisma Client singleton with pg.Pool adapter
 │   │   ├── env.ts                    # Strict runtime environment validation
 │   │   └── utils.ts                  # Pure utility functions
 │   └── types/
 │       └── index.ts                  # Core domain types
 ├── tests/
-│   ├── integration/                  # Vitest live PostgreSQL auth flows & API route tests
+│   ├── integration/                  # Vitest live PostgreSQL auth, kitchens & recipes tests
 │   └── unit/                         # Vitest unit tests (password, JWT, validation)
 ├── package.json
 ├── tsconfig.json
@@ -387,3 +406,159 @@ For high-concurrency production deployments (e.g. Vercel + AWS RDS / Neon / Supa
    Prisma 7 with `@prisma/adapter-pg` uses a pooled `pg.Pool`. In serverless environments (AWS Lambda / Vercel Edge), configure an external connection pooler (such as PgBouncer or AWS RDS Proxy) and limit `max: 10` per serverless instance to prevent connection starvation.
 3. **Automated Session Pruning:**
    Implement a nightly scheduled cron job (`DELETE FROM "RefreshSession" WHERE "expiresAt" < NOW()`) to prune expired sessions and maintain minimal table bloat.
+
+---
+
+## 7. Phase 3: Family Kitchen & Recipe Domain Architecture
+
+Phase 3 transitions Simmory from an authenticated skeleton into a persistent, multi-tenant family cooking archive. It codifies the relational boundaries of family kitchens, role-based access control, and human cooking knowledge preservation.
+
+### 7.1 Relational Data Model
+
+The domain model is structured in PostgreSQL via Prisma 7 to enforce data integrity and cascade deletions deterministically.
+
+```mermaid
+erDiagram
+    User ||--o{ RefreshSession : "has sessions"
+    User ||--o{ KitchenMember : "belongs to"
+    User ||--o{ Kitchen : "created kitchens"
+    User ||--o{ Recipe : "authored recipes"
+
+    Kitchen ||--o{ KitchenMember : "has members"
+    Kitchen ||--o{ Recipe : "houses recipes"
+
+    Recipe ||--o{ RecipeIngredient : "requires (ordered)"
+    Recipe ||--o{ RecipeStep : "follows (ordered)"
+
+    Kitchen {
+        string id PK "cuid"
+        string name
+        string description
+        string coverImageUrl
+        string createdById FK
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    KitchenMember {
+        string id PK "cuid"
+        string kitchenId FK
+        string userId FK
+        KitchenRole role "OWNER, EDITOR, VIEWER"
+        datetime joinedAt
+    }
+
+    Recipe {
+        string id PK "cuid"
+        string kitchenId FK
+        string title
+        string description
+        string cookName "Preserved author"
+        string story "Family memory / context"
+        string origin "Cultural heritage"
+        string notes "Preparation secrets"
+        RecipeStatus status "DRAFT, REVIEW_PENDING, VERIFIED"
+        string creatorId FK
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    RecipeIngredient {
+        string id PK "cuid"
+        string recipeId FK
+        string name
+        string quantity "Textual (e.g. 'a generous pinch')"
+        string notes "Optional prep advice"
+        int position "Deterministic order"
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    RecipeStep {
+        string id PK "cuid"
+        string recipeId FK
+        string instruction
+        int position "Deterministic order"
+        string duration "e.g. 'until bubbling'"
+        string sensoryCue "e.g. 'oil separates at the edges'"
+        string notes "Cook's special technique"
+        float videoTimestampStart "Future video sync"
+        float videoTimestampEnd "Future video sync"
+        datetime createdAt
+        datetime updatedAt
+    }
+```
+
+### 7.2 Cooking Knowledge Preservation Philosophy
+
+Simmory exists because conventional recipe databases force traditional culinary heritage into rigid, metric molds (e.g. "250ml", "10 grams") that misrepresent how families actually cook.
+
+1. **Qualitative Textual Quantities:**
+   - Ingredients store quantities as free text (`quantity: "A handful"`, `"Enough water to cover the rice by a finger's joint"`, `"2 large onions"`).
+   - Users are never forced to fabricate artificial numeric values or standard units when the original cook worked by touch, sight, or habit.
+2. **Sensory Cues over Timers:**
+   - Instead of generic durations like "cook for 7 minutes," recipes prioritize human sensory checkpoints:
+     - *Visual:* "Until the onions turn translucent with amber edges."
+     - *Tactile:* "Until the dough pushes back gently when pressed."
+     - *Auditory:* "When the sizzle softens to a gentle murmur."
+     - *Olfactory:* "When the nutty toasted aroma fills the room."
+   - These cues are preserved as distinct first-class fields on `RecipeStep` and highlighted visually in the recipe reading and cook-along experiences.
+3. **Personal Memories & Provenance:**
+   - Every recipe captures the `cookName` (e.g. "Grandma Sofia", "Aunt Mei") and an optional `story` celebrating why and how the recipe came to be.
+
+### 7.3 Role-Based Access Control (RBAC) & IDOR Prevention
+
+Multi-tenancy is enforced strictly at the database layer through the service abstraction (`src/lib/auth/permissions.ts` and `src/lib/services/*`). Client-provided IDs are never trusted as proof of ownership.
+
+#### Role Hierarchy:
+| Role | View Kitchen & Recipes | Create/Edit Recipes | Delete Recipes | Update Kitchen Settings | Delete Kitchen |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **OWNER** | Yes | Yes | Yes | Yes | Yes |
+| **EDITOR** | Yes | Yes | Yes | No | No |
+| **VIEWER** | Yes | No | No | No | No |
+
+#### Core Permission Utilities:
+- `requireKitchenMember(userId, kitchenId)`: Verifies user is an active member (`OWNER`, `EDITOR`, or `VIEWER`). Throws `403 Forbidden` or `404 Not Found` if access is denied.
+- `requireKitchenEditor(userId, kitchenId)`: Requires role of `OWNER` or `EDITOR`. Rejects `VIEWER` mutations.
+- `requireKitchenOwner(userId, kitchenId)`: Requires role of `OWNER`. Used for kitchen renaming, description updates, and deletion.
+- `getRecipeWithAccess(userId, recipeId)`: Fetches a recipe while joining through the associated `Kitchen` and checking membership for `userId` in a single query. Prevents Insecure Direct Object References (IDOR).
+- `canEditRecipe(userId, recipeId)`: Confirms user has edit permissions (`OWNER` or `EDITOR` of the containing kitchen) before mutating ingredients, steps, or metadata.
+
+### 7.4 Phase 3 API Specifications
+
+#### Kitchen Management:
+| Route | Method | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `/api/kitchens` | `GET` | Authenticated | Lists all kitchens where the user is an active member with recipe and member counts |
+| `/api/kitchens` | `POST` | Authenticated | Creates a new kitchen and assigns the creator as `OWNER` atomically in a transaction |
+| `/api/kitchens/[id]` | `GET` | Member | Returns kitchen details, recipe list, and member roles |
+| `/api/kitchens/[id]` | `PATCH` | Owner | Updates kitchen name and description |
+| `/api/kitchens/[id]` | `DELETE` | Owner | Deletes kitchen and cascades all recipes, ingredients, steps, and memberships |
+| `/api/kitchens/[id]/members` | `GET` | Member | Returns the list of members and their roles for the kitchen |
+
+#### Recipe Management:
+| Route | Method | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `/api/recipes` | `GET` | Authenticated | Returns paginated recipes across user's kitchens with search and filter parameters |
+| `/api/recipes` | `POST` | Editor/Owner | Creates a recipe with nested ingredients and steps in an atomic transaction |
+| `/api/recipes/[id]` | `GET` | Member | Returns full recipe details, ingredients, steps, sensory cues, and kitchen context |
+| `/api/recipes/[id]` | `PATCH` | Editor/Owner | Updates recipe metadata, ingredients, and steps with atomic replacement |
+| `/api/recipes/[id]` | `DELETE` | Editor/Owner | Deletes recipe and cascades ingredients and steps |
+
+---
+
+### 7.5 Automated Verification Suite
+
+All Phase 1, Phase 2, and Phase 3 capabilities are verified with automated tests:
+
+| Test Suite | File | Tests | Coverage |
+| :--- | :--- | :--- | :--- |
+| **Password Hashing** | `tests/unit/password.test.ts` | 5 | Argon2id hashing, verification, invalid passwords |
+| **JWT & Tokens** | `tests/unit/jwt.test.ts` | 6 | Sign, verify, expiration, opaque token hashing, tamper rejection |
+| **Validation Schemas** | `tests/unit/validation.test.ts` | 8 | Email normalization, password strength, profile updates |
+| **Auth Integration** | `tests/integration/auth-flow.test.ts` | 5 | DB registration, default kitchen provisioning, token rotation, replay revocation |
+| **Auth API Endpoints** | `tests/integration/api-routes.test.ts` | 6 | HTTP register, duplicate email handling, login, logout cookie clearance, /api/auth/me |
+| **Kitchens & Recipes Services** | `tests/integration/kitchens-and-recipes.test.ts` | 8 | Multi-kitchen creation, membership enforcement, recipe CRUD, sensory cues, cascade delete |
+| **Kitchens & Recipes API** | `tests/integration/api-kitchens-recipes.test.ts` | 7 | HTTP /api/kitchens and /api/recipes CRUD, search/filter, role permissions, IDOR cross-tenant isolation |
+| **Total** | | **45 passing** | **Complete end-to-end verification across unit, service, and API layers** |
+

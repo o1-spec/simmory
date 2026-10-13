@@ -1,50 +1,74 @@
 import React, { Suspense } from "react";
 import Link from "next/link";
-import { BookOpen, Search, UploadCloud, ChefHat } from "lucide-react";
+import { Plus, ChefHat, Sparkles, ArrowRight, ArrowLeft } from "lucide-react";
 import { requireUser } from "@/lib/auth/get-user";
-import { db } from "@/lib/db";
+import { listUserRecipes } from "@/lib/services/recipes";
+import { listUserKitchens } from "@/lib/services/kitchens";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { EmptyState } from "@/components/ui/empty-state";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/empty-state";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { RecipeFilters } from "@/components/recipes/recipe-filters";
+import { RecipeStatus } from "@/generated/prisma/client";
 
 export const metadata = {
-  title: "Saved Recipes — Simmory",
-  description: "Browse all preserved family recipes and verified cooking timelines.",
+  title: "Preserved Recipes — Simmory",
+  description: "Browse preserved family recipes, authentic cooking timelines, and sensory cues.",
 };
 
-async function RecipesContent() {
+interface PageProps {
+  searchParams: Promise<{
+    q?: string;
+    kitchenId?: string;
+    status?: string;
+    page?: string;
+  }>;
+}
+
+async function RecipesContent({ searchParams }: PageProps) {
   const session = await requireUser("/recipes");
+  const params = await searchParams;
 
-  const recipes = await db.recipe.findMany({
-    where: {
-      createdById: session.user.id,
-    },
-    include: {
-      kitchen: true,
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  const page = parseInt(params.page || "1", 10) || 1;
+  const query = params.q || undefined;
+  const kitchenId = params.kitchenId || undefined;
 
-  const verifiedCount = recipes.filter((r) => r.status === "VERIFIED").length;
-  const inReviewCount = recipes.filter((r) => r.status === "IN_REVIEW").length;
+  let status: RecipeStatus | undefined;
+  if (
+    params.status &&
+    Object.values(RecipeStatus).includes(params.status as RecipeStatus)
+  ) {
+    status = params.status as RecipeStatus;
+  }
+
+  const [recipesResult, kitchens] = await Promise.all([
+    listUserRecipes(session.user.id, {
+      query,
+      kitchenId,
+      status,
+      page,
+      limit: 12,
+    }),
+    listUserKitchens(session.user.id),
+  ]);
+
+  const { recipes, pagination } = recipesResult;
 
   return (
     <>
       <PageHeader
-        eyebrow="Recipe Catalog"
+        eyebrow="Family Recipe Collection"
         title="Saved Recipes"
-        description="All preserved family recipes, interactive timelines, and sensory cooking cues verified by original cooks."
+        description="Every preserved dish, original cook's instinct, and sensory tell across all your accessible family spaces."
         actions={
-          <Link href="/upload">
+          <Link href="/recipes/new">
             <Button
               variant="primary"
               size="md"
-              leftIcon={<UploadCloud className="w-4 h-4" />}
+              leftIcon={<Plus className="w-4 h-4" />}
             >
               Preserve New Recipe
             </Button>
@@ -52,90 +76,130 @@ async function RecipesContent() {
         }
       />
 
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-8">
-        <div className="relative flex-1 max-w-md">
-          <Input
-            placeholder="Search by dish name, cook, or sensory cue..."
-            leftIcon={<Search className="w-4 h-4" />}
-          />
-        </div>
+      <RecipeFilters
+        kitchens={kitchens.map((k) => ({ id: k.id, name: k.name }))}
+        currentQuery={query}
+        currentKitchenId={kitchenId}
+        currentStatus={params.status}
+        totalCount={pagination.total}
+      />
 
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-          <Badge variant="terracotta" className="cursor-pointer">
-            All ({recipes.length})
-          </Badge>
-          <Badge variant="outline" className="cursor-pointer">
-            Verified by Cook ({verifiedCount})
-          </Badge>
-          <Badge variant="outline" className="cursor-pointer">
-            In Review ({inReviewCount})
-          </Badge>
-        </div>
-      </div>
-
-      {/* Render Real Recipes or Honest Empty State */}
       {recipes.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {recipes.map((recipe) => (
-            <Card key={recipe.id} hoverEffect className="p-5 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Badge variant={recipe.status === "VERIFIED" ? "sage" : "saffron"} size="sm">
-                    {recipe.status === "VERIFIED" ? "Verified" : "In Review"}
-                  </Badge>
-                  <span className="text-[11px] text-warm-500">{recipe.kitchen.name}</span>
-                </div>
-                <h3 className="font-serif text-lg text-warm-900 font-medium">
-                  {recipe.title}
-                </h3>
-                {recipe.description && (
-                  <p className="text-xs text-warm-600 mt-1 line-clamp-2 leading-relaxed">
-                    {recipe.description}
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+            {recipes.map((recipe) => (
+              <Card
+                key={recipe.id}
+                hoverEffect
+                className="p-5 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <Badge
+                      variant={recipe.status === "VERIFIED" ? "sage" : "saffron"}
+                      size="sm"
+                    >
+                      {recipe.status === "VERIFIED" ? "Verified" : "Draft"}
+                    </Badge>
+                    <span className="text-[11px] text-warm-500 font-medium">
+                      {recipe.kitchenName}
+                    </span>
+                  </div>
+
+                  <h3 className="font-serif text-lg text-warm-900 font-medium">
+                    <Link
+                      href={`/recipes/${recipe.id}`}
+                      className="hover:text-terracotta-700 transition-colors"
+                    >
+                      {recipe.title}
+                    </Link>
+                  </h3>
+
+                  <p className="text-xs text-warm-500 mt-1 flex items-center gap-1">
+                    <ChefHat className="w-3.5 h-3.5 text-terracotta-500" />
+                    As made by{" "}
+                    <span className="font-medium text-warm-800">
+                      {recipe.cookName}
+                    </span>
                   </p>
-                )}
-              </div>
-              <div className="pt-4 mt-4 border-t border-warm-100 flex items-center justify-between text-xs text-warm-500">
-                <span>Created {recipe.createdAt.toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+
+                  {recipe.description && (
+                    <p className="text-xs text-warm-600 mt-2 line-clamp-2 leading-relaxed">
+                      {recipe.description}
+                    </p>
+                  )}
+                </div>
+
+                <div className="pt-4 mt-4 border-t border-warm-100 flex items-center justify-between text-xs text-warm-500">
+                  <span className="flex items-center gap-1.5">
+                    <Sparkles className="w-3 h-3 text-amber-500" />
+                    {recipe.stepCount} steps • {recipe.ingredientCount} ingredients
+                  </span>
+                  <Link
+                    href={`/recipes/${recipe.id}`}
+                    className="text-terracotta-600 hover:text-terracotta-700 font-medium flex items-center gap-1"
+                  >
+                    View Recipe &rarr;
+                  </Link>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {pagination.totalPages > 1 && (
+            <div className="flex items-center justify-center gap-3 pt-4 pb-12 border-t border-warm-200">
+              {page > 1 && (
                 <Link
-                  href={`/cook/${recipe.id}`}
-                  className="text-terracotta-600 hover:text-terracotta-700 font-medium hover:underline"
+                  href={`/recipes?page=${page - 1}${query ? `&q=${encodeURIComponent(query)}` : ""}${kitchenId ? `&kitchenId=${kitchenId}` : ""}${params.status ? `&status=${params.status}` : ""}`}
                 >
-                  Cook Along &rarr;
+                  <Button variant="outline" size="sm" leftIcon={<ArrowLeft className="w-3.5 h-3.5" />}>
+                    Previous
+                  </Button>
                 </Link>
-              </div>
-            </Card>
-          ))}
-        </div>
+              )}
+              <span className="text-xs text-warm-600 font-medium">
+                Page {page} of {pagination.totalPages}
+              </span>
+              {page < pagination.totalPages && (
+                <Link
+                  href={`/recipes?page=${page + 1}${query ? `&q=${encodeURIComponent(query)}` : ""}${kitchenId ? `&kitchenId=${kitchenId}` : ""}${params.status ? `&status=${params.status}` : ""}`}
+                >
+                  <Button variant="outline" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
+                    Next
+                  </Button>
+                </Link>
+              )}
+            </div>
+          )}
+        </>
       ) : (
         <EmptyState
-          icon={<BookOpen className="w-6 h-6" />}
-          badge="Zero Recipes"
-          title="No recipes saved in your kitchen yet"
-          description="When you record and upload a cooking video, Simmory's AI pipeline will transcribe the audio and detect video cues. After your review and confirmation, the verified recipe will appear here."
+          icon={<ChefHat className="w-8 h-8" />}
+          title={query ? "No Matching Recipes" : "No Preserved Recipes Yet"}
+          description={
+            query
+              ? `We couldn't find any recipes matching "${query}". Try adjusting your search or filters.`
+              : "Start building your family recipe archive by preserving your first dish with unwritten instincts and sensory tells."
+          }
           action={
-            <Link href="/upload">
-              <Button
-                variant="primary"
-                size="md"
-                leftIcon={<ChefHat className="w-4 h-4" />}
-              >
-                Preserve a Recipe Now
+            <Link href="/recipes/new">
+              <Button variant="primary" size="md" leftIcon={<Plus className="w-4 h-4" />}>
+                Preserve a Recipe
               </Button>
             </Link>
           }
-          note="Simmory does not generate mock recipes. Every recipe in your kitchen will come from authentic cooking video footage and human verification."
         />
       )}
     </>
   );
 }
 
-export default function RecipesPage() {
+export default function RecipesPage({ searchParams }: PageProps) {
   return (
     <DashboardLayout>
-      <Suspense fallback={<LoadingSpinner label="Loading saved recipes..." />}>
-        <RecipesContent />
+      <Suspense fallback={<LoadingSpinner text="Loading saved recipes..." />}>
+        <RecipesContent searchParams={searchParams} />
       </Suspense>
     </DashboardLayout>
   );
