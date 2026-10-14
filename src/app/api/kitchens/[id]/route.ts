@@ -7,6 +7,7 @@ import {
   updateKitchen,
   deleteKitchen,
 } from "@/lib/services/kitchens";
+import { logger } from "@/lib/logger";
 
 export async function GET(
   request: NextRequest,
@@ -30,7 +31,7 @@ export async function GET(
 
     return NextResponse.json({ kitchen }, { status: 200 });
   } catch (error) {
-    console.error("Get kitchen error:", error);
+    logger.error("Get kitchen error", { error });
     return NextResponse.json(
       { error: "Failed to retrieve kitchen details" },
       { status: 500 }
@@ -81,7 +82,7 @@ export async function PATCH(
       { status: 200 }
     );
   } catch (error) {
-    console.error("Update kitchen error:", error);
+    logger.error("Update kitchen error", { error });
     return NextResponse.json(
       { error: "Failed to update kitchen" },
       { status: 500 }
@@ -121,7 +122,7 @@ export async function DELETE(
       { status: 200 }
     );
   } catch (error) {
-    console.error("Delete kitchen error:", error);
+    logger.error("Delete kitchen error", { error });
     return NextResponse.json(
       { error: "Failed to delete kitchen" },
       { status: 500 }

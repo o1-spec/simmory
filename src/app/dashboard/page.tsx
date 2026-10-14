@@ -21,7 +21,6 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { CreateKitchenDialog } from "@/components/kitchens/create-kitchen-dialog";
 import { Video, Play, CheckCircle2 } from "lucide-react";
 
 export const metadata = {
@@ -102,7 +101,11 @@ async function DashboardContent() {
         description="Your family's private archive for preserving unwritten recipes, sensory cues, and original cooking recordings."
         actions={
           <div className="flex flex-wrap items-center gap-2.5">
-            <CreateKitchenDialog triggerText="New Kitchen" />
+            <Link href="/kitchens/new">
+              <Button variant="outline" size="md" leftIcon={<Plus className="w-4 h-4" />}>
+                New Kitchen
+              </Button>
+            </Link>
             <Link href="/upload">
               <Button variant="outline" size="md">
                 Upload Video

@@ -18,6 +18,7 @@ import {
   createOrGetPendingValidationJob,
   dispatchPendingValidationJobs,
 } from "@/lib/services/jobs";
+import { logger } from "@/lib/logger";
 
 function sanitizeFilename(name: string): string {
   return name
@@ -183,7 +184,7 @@ export async function completeVideoUpload(userId: string, videoId: string) {
 
   // Attempt immediate background dispatch (non-blocking, survives Redis downtime)
   dispatchPendingValidationJobs(5).catch((err) => {
-    console.warn("[completeVideoUpload] Immediate dispatch non-critical error:", err.message);
+    logger.warn("[completeVideoUpload] Immediate dispatch non-critical error", { error: err.message });
   });
 
   return updatedVideo;
@@ -346,8 +347,7 @@ export async function deleteVideo(userId: string, videoId: string) {
     try {
       await deleteStorageObject(video.storageKey);
     } catch (storageErr) {
-      // Log storage cleanup failure but proceed with database cleanup
-      console.warn("Storage deletion warning for key:", video.storageKey, storageErr);
+      logger.warn("Storage deletion warning for key", { storageKey: video.storageKey, error: storageErr });
     }
   }
 

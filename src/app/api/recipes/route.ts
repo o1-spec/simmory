@@ -4,6 +4,7 @@ import { validateSameOrigin } from "@/lib/auth/origin";
 import { createRecipeSchema } from "@/lib/validations/recipe";
 import { listUserRecipes, createRecipe } from "@/lib/services/recipes";
 import { RecipeStatus } from "@/generated/prisma/client";
+import { logger } from "@/lib/logger";
 
 export async function GET(request: NextRequest) {
   const session = await getCurrentUser(request);
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(result, { status: 200 });
   } catch (error) {
-    console.error("List recipes error:", error);
+    logger.error("List recipes error", { error });
     return NextResponse.json(
       { error: "Failed to list recipes" },
       { status: 500 }
@@ -80,7 +81,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Create recipe error:", error);
+    logger.error("Create recipe error", { error });
     return NextResponse.json(
       { error: "Failed to create recipe" },
       { status: 500 }

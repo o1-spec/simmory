@@ -5,6 +5,7 @@ import { createSession } from "@/lib/auth/session";
 import { registerSchema } from "@/lib/auth/schemas";
 import { attachAuthCookiesToResponse } from "@/lib/auth/cookies";
 import { validateSameOrigin } from "@/lib/auth/origin";
+import { logger } from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
   if (!validateSameOrigin(request)) {
@@ -91,7 +92,7 @@ export async function POST(request: NextRequest) {
       authResult.rawRefreshToken
     );
   } catch (error) {
-    console.error("Registration error:", error);
+    logger.error("Registration error", { error });
     return NextResponse.json(
       { error: "An unexpected error occurred during registration" },
       { status: 500 }

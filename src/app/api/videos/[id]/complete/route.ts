@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth/get-user";
 import { validateSameOrigin } from "@/lib/auth/origin";
 import { completeVideoUpload } from "@/lib/services/videos";
 import { StorageNotConfiguredError } from "@/lib/storage/r2";
+import { logger } from "@/lib/logger";
 
 export async function POST(
   request: NextRequest,
@@ -67,7 +68,7 @@ export async function POST(
       }
     }
 
-    console.error("Complete video upload error:", error);
+    logger.error("Complete video upload error", { error });
     return NextResponse.json(
       { error: "Failed to complete video upload" },
       { status: 500 }

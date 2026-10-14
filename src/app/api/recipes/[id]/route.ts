@@ -7,6 +7,7 @@ import {
   updateRecipe,
   deleteRecipe,
 } from "@/lib/services/recipes";
+import { logger } from "@/lib/logger";
 
 export async function GET(
   request: NextRequest,
@@ -30,7 +31,7 @@ export async function GET(
 
     return NextResponse.json({ recipe }, { status: 200 });
   } catch (error) {
-    console.error("Get recipe error:", error);
+    logger.error("Get recipe error", { error });
     return NextResponse.json(
       { error: "Failed to retrieve recipe details" },
       { status: 500 }
@@ -81,7 +82,7 @@ export async function PATCH(
       { status: 200 }
     );
   } catch (error) {
-    console.error("Update recipe error:", error);
+    logger.error("Update recipe error", { error });
     return NextResponse.json(
       { error: "Failed to update recipe" },
       { status: 500 }
@@ -121,7 +122,7 @@ export async function DELETE(
       { status: 200 }
     );
   } catch (error) {
-    console.error("Delete recipe error:", error);
+    logger.error("Delete recipe error", { error });
     return NextResponse.json(
       { error: "Failed to delete recipe" },
       { status: 500 }

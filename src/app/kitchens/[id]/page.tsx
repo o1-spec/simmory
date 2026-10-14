@@ -11,6 +11,7 @@ import {
   Calendar,
   Video,
   Play,
+  Settings,
 } from "lucide-react";
 import { requireUser } from "@/lib/auth/get-user";
 import { getKitchenDetails } from "@/lib/services/kitchens";
@@ -21,7 +22,6 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { KitchenSettingsDialog } from "@/components/kitchens/kitchen-settings-dialog";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -71,13 +71,15 @@ async function KitchenDetailContent({ params }: { params: Promise<{ id: string }
         actions={
           <div className="flex flex-wrap items-center gap-3">
             {isOwner && (
-              <KitchenSettingsDialog
-                kitchen={{
-                  id: kitchen.id,
-                  name: kitchen.name,
-                  description: kitchen.description,
-                }}
-              />
+              <Link href={`/kitchens/${kitchen.id}/settings`}>
+                <Button
+                  variant="secondary"
+                  size="md"
+                  leftIcon={<Settings className="w-4 h-4" />}
+                >
+                  Kitchen Settings
+                </Button>
+              </Link>
             )}
             {canAddRecipes && (
               <>

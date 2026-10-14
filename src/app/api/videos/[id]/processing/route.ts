@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/get-user";
 import { getVideoProcessingStatus } from "@/lib/services/jobs";
+import { logger } from "@/lib/logger";
 
 export async function GET(
   request: NextRequest,
@@ -32,7 +33,7 @@ export async function GET(
       },
     });
   } catch (error: unknown) {
-    console.error("GET video processing status error:", error);
+    logger.error("GET video processing status error", { error });
     return NextResponse.json(
       { error: "Failed to retrieve video processing status" },
       { status: 500 }

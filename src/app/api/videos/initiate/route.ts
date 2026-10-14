@@ -4,6 +4,7 @@ import { validateSameOrigin } from "@/lib/auth/origin";
 import { initiateVideoUploadSchema } from "@/lib/validations/video";
 import { initiateVideoUpload } from "@/lib/services/videos";
 import { StorageNotConfiguredError } from "@/lib/storage/r2";
+import { logger } from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
   if (!validateSameOrigin(request)) {
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.error("Initiate video upload error:", error);
+    logger.error("Initiate video upload error", { error });
     return NextResponse.json(
       { error: "Failed to initiate video upload" },
       { status: 500 }

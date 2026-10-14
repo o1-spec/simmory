@@ -20,7 +20,7 @@ import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { DeleteRecipeDialog } from "@/components/recipes/delete-recipe-dialog";
+import { DeleteRecipeSection } from "@/components/recipes/delete-recipe-section";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -81,7 +81,7 @@ async function RecipeDetailContent({ params }: { params: Promise<{ id: string }>
                   Edit Recipe
                 </Button>
               </Link>
-              <DeleteRecipeDialog
+              <DeleteRecipeSection
                 recipeId={recipe.id}
                 recipeTitle={recipe.title}
                 redirectUrl={`/kitchens/${recipe.kitchenId}`}

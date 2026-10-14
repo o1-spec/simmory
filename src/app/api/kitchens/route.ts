@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth/get-user";
 import { validateSameOrigin } from "@/lib/auth/origin";
 import { createKitchenSchema } from "@/lib/validations/kitchen";
 import { listUserKitchens, createKitchen } from "@/lib/services/kitchens";
+import { logger } from "@/lib/logger";
 
 export async function GET(request: NextRequest) {
   const session = await getCurrentUser(request);
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
     const kitchens = await listUserKitchens(session.user.id);
     return NextResponse.json({ kitchens }, { status: 200 });
   } catch (error) {
-    console.error("List kitchens error:", error);
+    logger.error("List kitchens error", { error });
     return NextResponse.json(
       { error: "Failed to retrieve family kitchens" },
       { status: 500 }
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Create kitchen error:", error);
+    logger.error("Create kitchen error", { error });
     return NextResponse.json(
       { error: "Failed to create family kitchen" },
       { status: 500 }

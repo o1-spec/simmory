@@ -1,4 +1,5 @@
 import Redis, { RedisOptions } from "ioredis";
+import { logger } from "../logger";
 
 let sharedRedisClient: Redis | null = null;
 
@@ -10,10 +11,6 @@ export function isRedisConfigured(): boolean {
   return Boolean(process.env.REDIS_URL || process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test");
 }
 
-/**
- * Creates or returns a configured Redis client suitable for BullMQ.
- * BullMQ requires `maxRetriesPerRequest: null`.
- */
 export function createRedisConnection(overrides: Partial<RedisOptions> = {}): Redis {
   const url = getRedisUrl();
   const options: RedisOptions = {
@@ -23,7 +20,6 @@ export function createRedisConnection(overrides: Partial<RedisOptions> = {}): Re
     connectTimeout: 5000,
     retryStrategy(times) {
       if (times > 5) {
-        // Return null to stop retrying indefinitely if Redis is down
         return null;
       }
       return Math.min(times * 500, 2000);
@@ -34,26 +30,24 @@ export function createRedisConnection(overrides: Partial<RedisOptions> = {}): Re
   return new Redis(url, options);
 }
 
-/**
- * Returns a shared Redis connection for producer/dispatch operations.
- */
 export function getSharedRedis(): Redis {
   if (!sharedRedisClient) {
     sharedRedisClient = createRedisConnection();
     sharedRedisClient.on("error", (err) => {
-      // Catch and log without crashing unhandled
-      console.warn("[Redis Connection Warning]:", err.message);
+      logger.warn("[Redis Connection Warning]", { error: err.message });
     });
   }
   return sharedRedisClient;
 }
 
-/**
- * Closes the shared Redis connection gracefully.
- */
 export async function closeSharedRedis(): Promise<void> {
   if (sharedRedisClient) {
-    await sharedRedisClient.quit().catch(() => sharedRedisClient?.disconnect());
-    sharedRedisClient = null;
+    try {
+      await sharedRedisClient.quit();
+    } catch {
+      sharedRedisClient.disconnect();
+    } finally {
+      sharedRedisClient = null;
+    }
   }
 }

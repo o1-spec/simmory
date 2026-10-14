@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/get-user";
 import { validateSameOrigin } from "@/lib/auth/origin";
 import { triggerAiAnalysis } from "@/lib/services/jobs";
+import { logger } from "@/lib/logger";
 
 export async function POST(
   request: NextRequest,
@@ -56,7 +57,7 @@ export async function POST(
       }
     }
 
-    console.error("Trigger AI analysis error:", error);
+    logger.error("Trigger AI analysis error", { error });
     return NextResponse.json(
       { error: "Failed to queue AI analysis" },
       { status: 500 }

@@ -3,6 +3,7 @@ import {
   dispatchPendingAiAnalysisJobs,
   DispatchResult,
 } from "../../lib/services/jobs";
+import { logger } from "../../lib/logger";
 
 export class OutboxDispatcher {
   private intervalTimer: NodeJS.Timeout | null = null;
@@ -14,26 +15,19 @@ export class OutboxDispatcher {
     this.pollIntervalMs = pollIntervalMs;
   }
 
-  /**
-   * Starts the background outbox dispatcher loop.
-   */
   start(): void {
     if (this.isRunning) return;
     this.isRunning = true;
 
-    // Trigger immediate pass
     this.tick();
 
     this.intervalTimer = setInterval(() => {
       this.tick();
     }, this.pollIntervalMs);
 
-    console.log(`[OutboxDispatcher] Started polling every ${this.pollIntervalMs}ms.`);
+    logger.info(`[OutboxDispatcher] Started polling every ${this.pollIntervalMs}ms.`);
   }
 
-  /**
-   * Executes a single dispatch iteration for both validation and AI jobs.
-   */
   async tick(): Promise<DispatchResult | null> {
     if (this.isProcessing) return null;
     this.isProcessing = true;
@@ -46,7 +40,7 @@ export class OutboxDispatcher {
 
       const totalDispatched = validationResult.dispatched + aiResult.dispatched;
       if (totalDispatched > 0) {
-        console.log(
+        logger.info(
           `[OutboxDispatcher] Dispatched ${totalDispatched} job(s) (Validation: ${validationResult.dispatched}, AI: ${aiResult.dispatched}) to BullMQ.`
         );
       }
@@ -57,23 +51,19 @@ export class OutboxDispatcher {
         errors: [...validationResult.errors, ...aiResult.errors],
       };
     } catch (err: unknown) {
-      console.warn("[OutboxDispatcher] Dispatch tick encountered an error:", err);
+      logger.warn("[OutboxDispatcher] Dispatch tick encountered an error", { error: err });
       return null;
     } finally {
       this.isProcessing = false;
     }
   }
 
-
-  /**
-   * Stops the dispatcher loop.
-   */
   stop(): void {
     if (this.intervalTimer) {
       clearInterval(this.intervalTimer);
       this.intervalTimer = null;
     }
     this.isRunning = false;
-    console.log("[OutboxDispatcher] Stopped.");
+    logger.info("[OutboxDispatcher] Stopped.");
   }
 }

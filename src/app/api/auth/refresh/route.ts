@@ -6,6 +6,7 @@ import {
   clearAuthCookiesOnResponse,
 } from "@/lib/auth/cookies";
 import { validateSameOrigin } from "@/lib/auth/origin";
+import { logger } from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
   if (!validateSameOrigin(request)) {
@@ -47,7 +48,7 @@ export async function POST(request: NextRequest) {
       authResult.rawRefreshToken
     );
   } catch (error) {
-    console.error("Token refresh error:", error);
+    logger.error("Token refresh error", { error });
     const response = NextResponse.json(
       { error: "An unexpected error occurred during session refresh" },
       { status: 500 }

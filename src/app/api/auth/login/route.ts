@@ -5,6 +5,7 @@ import { createSession } from "@/lib/auth/session";
 import { loginSchema } from "@/lib/auth/schemas";
 import { attachAuthCookiesToResponse } from "@/lib/auth/cookies";
 import { validateSameOrigin } from "@/lib/auth/origin";
+import { logger } from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
   if (!validateSameOrigin(request)) {
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
       authResult.rawRefreshToken
     );
   } catch (error) {
-    console.error("Login error:", error);
+    logger.error("Login error", { error });
     return NextResponse.json(
       { error: "An unexpected error occurred during login" },
       { status: 500 }

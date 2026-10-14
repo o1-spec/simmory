@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/get-user";
 import { getLatestAIAnalysis } from "@/lib/services/ai-analysis";
+import { logger } from "@/lib/logger";
 
 export async function GET(
   request: NextRequest,
@@ -32,7 +33,7 @@ export async function GET(
       },
     });
   } catch (error: unknown) {
-    console.error("GET AI analysis error:", error);
+    logger.error("GET AI analysis error", { error });
     return NextResponse.json(
       { error: "Failed to retrieve AI analysis" },
       { status: 500 }

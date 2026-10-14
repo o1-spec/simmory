@@ -7,6 +7,7 @@ import { promisify } from "util";
 import { db } from "../../lib/db";
 import { downloadStorageObject, getMaxVideoSizeBytes } from "../../lib/storage/r2";
 import { VideoValidationJobPayload } from "../../lib/queue";
+import { logger } from "../../lib/logger";
 
 const execFileAsync = promisify(execFile);
 
@@ -250,7 +251,7 @@ export async function processVideoValidationJob(
         await fs.promises.unlink(tempFilePath);
       }
     } catch (cleanupErr) {
-      console.warn("[VideoValidation] Temp file cleanup warning:", cleanupErr);
+      logger.warn("[VideoValidation] Temp file cleanup warning", { error: cleanupErr });
     }
   }
 }

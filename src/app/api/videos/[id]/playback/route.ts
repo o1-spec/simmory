@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/get-user";
 import { getVideoPlaybackUrl } from "@/lib/services/videos";
 import { StorageNotConfiguredError } from "@/lib/storage/r2";
+import { logger } from "@/lib/logger";
 
 export async function GET(
   request: NextRequest,
@@ -62,7 +63,7 @@ export async function GET(
       }
     }
 
-    console.error("Video playback URL error:", error);
+    logger.error("Video playback URL error", { error });
     return NextResponse.json(
       { error: "Failed to generate video playback URL" },
       { status: 500 }

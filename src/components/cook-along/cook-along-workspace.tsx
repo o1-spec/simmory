@@ -103,7 +103,7 @@ export function CookAlongWorkspace({
   // Video seeking state
   const [seekTime, setSeekTime] = useState<number | null>(null);
 
-  // Modals & Panels
+  // Panels and widgets
   const [isIngredientsOpen, setIsIngredientsOpen] = useState(false);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
   const [timerMinutes, setTimerMinutes] = useState(5);
@@ -118,6 +118,7 @@ export function CookAlongWorkspace({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRestarting, setIsRestarting] = useState(false);
+  const [sessionError, setSessionError] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<"SAVED" | "SAVING" | "ERROR">("SAVED");
 
   // Ensure an active session exists; if not, create one automatically
@@ -318,9 +319,8 @@ export function CookAlongWorkspace({
       });
       setIsFocusModeOpen(false);
       setIsCompletedScreen(true);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to complete cooking session. Please try again.");
+    } catch {
+      setSessionError("Failed to complete cooking session. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -343,8 +343,8 @@ export function CookAlongWorkspace({
         setCheckedIngredientIds(new Set());
         setIsCompletedScreen(false);
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
+      setSessionError("Failed to restart cooking session. Please try again.");
     } finally {
       setIsRestarting(false);
     }
@@ -529,6 +529,18 @@ export function CookAlongWorkspace({
           </span>
         )}
       </div>
+
+      {sessionError && (
+        <div className="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-sm text-rose-800 flex items-center justify-between">
+          <span>{sessionError}</span>
+          <button
+            onClick={() => setSessionError(null)}
+            className="text-xs text-rose-600 hover:text-rose-900 underline ml-4"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Main Two-Panel Responsive Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

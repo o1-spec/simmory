@@ -132,8 +132,8 @@ export function AiAnalysisCard({
         const obsData = await obsRes.json();
         setObservations(obsData.observations || []);
       }
-    } catch (err) {
-      console.warn("Failed to load analysis details:", err);
+    } catch {
+      // Ignored network blip on background reload
     }
   }, [videoId]);
 
@@ -174,8 +174,8 @@ export function AiAnalysisCard({
           const obsData = await obsRes.json();
           if (!isCancelled) setObservations(obsData.observations || []);
         }
-      } catch (err) {
-        console.warn("Failed to load analysis details:", err);
+      } catch {
+        // Ignored on initial fetch failure
       }
     }
 
@@ -207,8 +207,8 @@ export function AiAnalysisCard({
       if (data.video?.processingStatus === "COMPLETED") {
         await loadAnalysisData();
       }
-    } catch (err) {
-      console.warn("AI status polling error:", err);
+    } catch {
+      // Polling network blip - retry on next cycle
     }
   }, [videoId, loadAnalysisData]);
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/get-user";
 import { listUserVideos } from "@/lib/services/videos";
 import { VideoUploadStatus } from "@/generated/prisma/client";
+import { logger } from "@/lib/logger";
 
 export async function GET(request: NextRequest) {
   const session = await getCurrentUser(request);
@@ -33,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(result, { status: 200 });
   } catch (error) {
-    console.error("List videos error:", error);
+    logger.error("List videos error", { error });
     return NextResponse.json(
       { error: "Failed to list cooking videos" },
       { status: 500 }

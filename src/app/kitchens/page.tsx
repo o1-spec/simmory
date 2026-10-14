@@ -1,15 +1,15 @@
 import React, { Suspense } from "react";
 import Link from "next/link";
-import { FolderHeart, Users, BookOpen, ShieldCheck, ArrowRight } from "lucide-react";
+import { FolderHeart, Users, BookOpen, ShieldCheck, ArrowRight, Plus } from "lucide-react";
 import { requireUser } from "@/lib/auth/get-user";
 import { listUserKitchens } from "@/lib/services/kitchens";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { CreateKitchenDialog } from "@/components/kitchens/create-kitchen-dialog";
 
 export const metadata = {
   title: "Family Kitchens — Simmory",
@@ -26,7 +26,13 @@ async function KitchensContent() {
         eyebrow="Family Organization"
         title="Family Kitchens"
         description="Organize your recipes into distinct family spaces—preserving regional traditions, different generations, or branches of your family tree."
-        actions={<CreateKitchenDialog />}
+        actions={
+          <Link href="/kitchens/new">
+            <Button variant="primary" size="md" leftIcon={<Plus className="w-4 h-4" />}>
+              Create New Kitchen
+            </Button>
+          </Link>
+        }
       />
 
       {kitchens.length > 0 ? (
@@ -110,7 +116,13 @@ async function KitchensContent() {
           icon={<FolderHeart className="w-8 h-8" />}
           title="No Family Kitchens Yet"
           description="Create your first family space to start preserving generational recipes, cooking instincts, and memories."
-          action={<CreateKitchenDialog triggerText="Create Your First Kitchen" />}
+          action={
+            <Link href="/kitchens/new">
+              <Button variant="primary" size="md" leftIcon={<Plus className="w-4 h-4" />}>
+                Create Your First Kitchen
+              </Button>
+            </Link>
+          }
         />
       )}
     </>

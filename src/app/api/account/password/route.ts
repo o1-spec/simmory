@@ -5,6 +5,7 @@ import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import { revokeAllUserSessions } from "@/lib/auth/session";
 import { validateSameOrigin } from "@/lib/auth/origin";
 import { db } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
   if (!validateSameOrigin(request)) {
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Password update error:", error);
+    logger.error("Password update error", { error });
     return NextResponse.json(
       { error: "An unexpected error occurred while changing password" },
       { status: 500 }

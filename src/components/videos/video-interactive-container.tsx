@@ -14,7 +14,7 @@ import { VideoUploadStatus } from "@/generated/prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { VideoPlayer } from "./video-player";
-import { DeleteVideoDialog } from "./delete-video-dialog";
+import { DeleteVideoSection } from "./delete-video-section";
 import { VideoProcessingCard } from "./video-processing-card";
 import { AiAnalysisCard } from "./ai-analysis-card";
 
@@ -80,7 +80,7 @@ export function VideoInteractiveView({
 
         {canModify && (
           <div className="flex items-center gap-3">
-            <DeleteVideoDialog
+            <DeleteVideoSection
               videoId={video.id}
               videoTitle={video.originalFilename}
               redirectTo={`/kitchens/${video.kitchen.id}`}

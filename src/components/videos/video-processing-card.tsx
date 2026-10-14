@@ -82,8 +82,8 @@ export function VideoProcessingCard({
           setErrorMsg(data.latestJob.errorMessage);
         }
       }
-    } catch (err) {
-      console.warn("Polling error:", err);
+    } catch {
+      // Polling network blip - retry on next cycle
     }
   }, [videoId]);
 
@@ -111,9 +111,11 @@ export function VideoProcessingCard({
         setStage("WAITING_FOR_DISPATCH");
         setErrorMsg(null);
         await fetchStatus();
+      } else {
+        setErrorMsg("Failed to retry validation. Please try again.");
       }
-    } catch (err) {
-      console.error("Retry validation failed:", err);
+    } catch {
+      setErrorMsg("Failed to retry validation due to network error.");
     } finally {
       setIsRetrying(false);
     }

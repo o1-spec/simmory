@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/get-user";
 import { listKitchenMembers } from "@/lib/services/kitchens";
+import { logger } from "@/lib/logger";
 
 export async function GET(
   _request: NextRequest,
@@ -24,7 +25,7 @@ export async function GET(
 
     return NextResponse.json({ members }, { status: 200 });
   } catch (error) {
-    console.error("List kitchen members error:", error);
+    logger.error("List kitchen members error", { error });
     return NextResponse.json(
       { error: "Failed to list kitchen members" },
       { status: 500 }

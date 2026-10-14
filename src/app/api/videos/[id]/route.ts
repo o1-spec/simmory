@@ -7,6 +7,7 @@ import {
   deleteVideo,
   updateVideoMetadata,
 } from "@/lib/services/videos";
+import { logger } from "@/lib/logger";
 
 export async function GET(
   request: NextRequest,
@@ -33,7 +34,7 @@ export async function GET(
 
     return NextResponse.json(details, { status: 200 });
   } catch (error) {
-    console.error("Get video details error:", error);
+    logger.error("Get video details error", { error });
     return NextResponse.json(
       { error: "Failed to fetch video details" },
       { status: 500 }
@@ -96,7 +97,7 @@ export async function PATCH(
       }
     }
 
-    console.error("Update video error:", error);
+    logger.error("Update video error", { error });
     return NextResponse.json(
       { error: "Failed to update video" },
       { status: 500 }
@@ -140,7 +141,7 @@ export async function DELETE(
       );
     }
 
-    console.error("Delete video error:", error);
+    logger.error("Delete video error", { error });
     return NextResponse.json(
       { error: "Failed to delete video" },
       { status: 500 }

@@ -18,8 +18,8 @@ import { VideoPlayer } from "@/components/videos/video-player";
 import { EventCard, ReviewedEventData } from "./event-card";
 import { ClarificationSection, ClarificationData } from "./clarification-section";
 import { IngredientSection, ReviewedIngredientData } from "./ingredient-section";
-import { RecipeConvertModal } from "./recipe-convert-modal";
-import { RecipePreviewDrawer } from "./recipe-preview-drawer";
+import { RecipeConvertSection } from "./recipe-convert-section";
+import { RecipePreviewSection } from "./recipe-preview-section";
 
 interface ReviewWorkspaceProps {
   initialReview: {
@@ -88,8 +88,8 @@ export function RecipeReviewWorkspace({
   const [saveStatus, setSaveStatus] = useState<"SAVED" | "SAVING" | "ERROR">("SAVED");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const [showConvertModal, setShowConvertModal] = useState(false);
-  const [showPreviewDrawer, setShowPreviewDrawer] = useState(false);
+  const [showConvertSection, setShowConvertSection] = useState(false);
+  const [showPreviewSection, setShowPreviewSection] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
 
   // New event form state
@@ -377,7 +377,7 @@ export function RecipeReviewWorkspace({
           <Button
             variant="secondary"
             size="md"
-            onClick={() => setShowPreviewDrawer(true)}
+            onClick={() => setShowPreviewSection(true)}
             leftIcon={<Eye className="w-4 h-4" />}
           >
             Preview Recipe
@@ -387,7 +387,7 @@ export function RecipeReviewWorkspace({
             <Button
               variant="primary"
               size="md"
-              onClick={() => setShowConvertModal(true)}
+              onClick={() => setShowConvertSection(true)}
               disabled={events.filter((e) => e.status === "ACCEPTED" || e.status === "EDITED").length === 0}
               leftIcon={<BookOpen className="w-4 h-4" />}
             >
@@ -752,19 +752,19 @@ export function RecipeReviewWorkspace({
         </div>
       </div>
 
-      {/* Convert to Recipe Modal */}
-      <RecipeConvertModal
-        isOpen={showConvertModal}
-        onClose={() => setShowConvertModal(false)}
+      {/* Inline Convert to Recipe Section */}
+      <RecipeConvertSection
+        isOpen={showConvertSection}
+        onClose={() => setShowConvertSection(false)}
         defaultTitle={review.video.originalFilename.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ")}
         defaultCookName="Family Cook"
         onConvert={handleConvertRecipe}
       />
 
-      {/* Recipe Heirloom Preview Drawer */}
-      <RecipePreviewDrawer
-        isOpen={showPreviewDrawer}
-        onClose={() => setShowPreviewDrawer(false)}
+      {/* Inline Recipe Heirloom Preview Section */}
+      <RecipePreviewSection
+        isOpen={showPreviewSection}
+        onClose={() => setShowPreviewSection(false)}
         title={review.video.originalFilename.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ")}
         cookName="Family Cook"
         kitchenName={kitchenName}

@@ -7,6 +7,7 @@ import {
   AiAnalysisJobPayload,
 } from "../queue";
 import { canEditVideo, getVideoWithAccess } from "../auth/permissions";
+import { logger } from "../logger";
 
 /**
  * Creates or retrieves a pending validation job transactionally.
@@ -202,13 +203,13 @@ export async function dispatchPendingValidationJobs(
         result.failed += 1;
         const msg = jobError instanceof Error ? jobError.message : String(jobError);
         result.errors.push(`Job ${job.id}: ${msg}`);
-        console.warn(`[Dispatcher] Failed to dispatch job ${job.id}:`, msg);
+        logger.warn(`[Dispatcher] Failed to dispatch job ${job.id}`, { error: msg });
       }
     }
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : String(error);
     result.errors.push(`Dispatcher error: ${msg}`);
-    console.warn("[Dispatcher] Dispatch batch failed:", msg);
+    logger.warn("[Dispatcher] Dispatch batch failed", { error: msg });
   }
 
   return result;
@@ -293,13 +294,13 @@ export async function dispatchPendingAiAnalysisJobs(
         result.failed += 1;
         const msg = jobError instanceof Error ? jobError.message : String(jobError);
         result.errors.push(`AI Job ${job.id}: ${msg}`);
-        console.warn(`[Dispatcher] Failed to dispatch AI job ${job.id}:`, msg);
+        logger.warn(`[Dispatcher] Failed to dispatch AI job ${job.id}`, { error: msg });
       }
     }
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : String(error);
     result.errors.push(`Dispatcher error: ${msg}`);
-    console.warn("[Dispatcher] AI dispatch batch failed:", msg);
+    logger.warn("[Dispatcher] AI dispatch batch failed", { error: msg });
   }
 
   return result;
@@ -428,7 +429,7 @@ export async function triggerVideoValidation(userId: string, videoId: string) {
 
   // Attempt immediate outbox dispatch (non-blocking)
   dispatchPendingValidationJobs(5).catch((err) => {
-    console.warn("[triggerVideoValidation] Background dispatch trigger:", err.message);
+    logger.warn("[triggerVideoValidation] Background dispatch trigger", { error: err.message });
   });
 
   return newJob;
@@ -475,7 +476,7 @@ export async function triggerAiAnalysis(userId: string, videoId: string) {
 
   // Attempt immediate outbox dispatch (non-blocking)
   dispatchPendingAiAnalysisJobs(5).catch((err) => {
-    console.warn("[triggerAiAnalysis] Background dispatch trigger:", err.message);
+    logger.warn("[triggerAiAnalysis] Background dispatch trigger", { error: err.message });
   });
 
   return newJob;

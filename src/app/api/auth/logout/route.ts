@@ -8,6 +8,7 @@ import {
 } from "@/lib/auth/cookies";
 import { validateSameOrigin } from "@/lib/auth/origin";
 import { db } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
   if (!validateSameOrigin(request)) {
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
 
     return clearAuthCookiesOnResponse(response);
   } catch (error) {
-    console.error("Logout error:", error);
+    logger.error("Logout error", { error });
     // Still clear cookies even if DB revocation throws
     const response = NextResponse.json(
       { message: "Logged out" },

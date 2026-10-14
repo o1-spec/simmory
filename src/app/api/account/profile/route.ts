@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth/get-user";
 import { updateProfileSchema } from "@/lib/auth/schemas";
 import { validateSameOrigin } from "@/lib/auth/origin";
 import { db } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 export async function PATCH(request: NextRequest) {
   if (!validateSameOrigin(request)) {
@@ -49,7 +50,7 @@ export async function PATCH(request: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Profile update error:", error);
+    logger.error("Profile update error", { error });
     return NextResponse.json(
       { error: "An unexpected error occurred while updating profile" },
       { status: 500 }

@@ -8,7 +8,8 @@ import { PageHeader } from "@/components/ui/page-header";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { RecipeForm } from "@/components/recipes/recipe-form";
 import { EmptyState } from "@/components/ui/empty-state";
-import { CreateKitchenDialog } from "@/components/kitchens/create-kitchen-dialog";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 export const metadata = {
   title: "Preserve New Recipe — Simmory",
@@ -34,7 +35,13 @@ async function NewRecipeContent({ searchParams }: PageProps) {
         icon={<BookOpen className="w-8 h-8" />}
         title="No Writable Kitchen Found"
         description="You need to be an owner or editor in a family kitchen to preserve recipes. Create your kitchen first."
-        action={<CreateKitchenDialog triggerText="Create Family Kitchen" />}
+        action={
+          <Link href="/kitchens/new">
+            <Button variant="primary" size="md" leftIcon={<Plus className="w-4 h-4" />}>
+              Create Family Kitchen
+            </Button>
+          </Link>
+        }
       />
     );
   }

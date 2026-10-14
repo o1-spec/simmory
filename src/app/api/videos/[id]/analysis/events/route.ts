@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/get-user";
 import { getProposedCookingEvents } from "@/lib/services/ai-analysis";
+import { logger } from "@/lib/logger";
 
 export async function GET(
   request: NextRequest,
@@ -33,7 +34,7 @@ export async function GET(
       }
     );
   } catch (error: unknown) {
-    console.error("GET proposed events error:", error);
+    logger.error("GET proposed events error", { error });
     return NextResponse.json(
       { error: "Failed to retrieve proposed cooking events" },
       { status: 500 }

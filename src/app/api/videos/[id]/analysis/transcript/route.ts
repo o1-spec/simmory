@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/get-user";
 import { getTranscriptSegments } from "@/lib/services/ai-analysis";
+import { logger } from "@/lib/logger";
 
 export async function GET(
   request: NextRequest,
@@ -30,7 +31,7 @@ export async function GET(
       headers: { "Cache-Control": "no-store, max-age=0" },
     });
   } catch (error: unknown) {
-    console.error("GET transcript segments error:", error);
+    logger.error("GET transcript segments error", { error });
     return NextResponse.json(
       { error: "Failed to retrieve transcript segments" },
       { status: 500 }
