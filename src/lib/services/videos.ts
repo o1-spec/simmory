@@ -14,6 +14,10 @@ import {
 } from "@/lib/storage/r2";
 import { InitiateVideoUploadInput, UpdateVideoInput } from "@/lib/validations/video";
 import { VideoUploadStatus } from "@/generated/prisma/client";
+import {
+  createOrGetPendingValidationJob,
+  dispatchPendingValidationJobs,
+} from "@/lib/services/jobs";
 
 function sanitizeFilename(name: string): string {
   return name
@@ -143,28 +147,43 @@ export async function completeVideoUpload(userId: string, videoId: string) {
   // Compare file size if returned
   const actualSize = headResult.contentLength ?? video.expectedSize;
 
-  // Transition status to UPLOADED
-  const updatedVideo = await db.cookingVideo.update({
-    where: { id: videoId },
-    data: {
-      uploadStatus: "UPLOADED",
-      actualSize,
-      completedAt: new Date(),
-    },
-    include: {
-      kitchen: {
-        select: {
-          id: true,
-          name: true,
+  // Transactionally transition status to UPLOADED and create pending validation job
+  const updatedVideo = await db.$transaction(async (tx) => {
+    const v = await tx.cookingVideo.update({
+      where: { id: videoId },
+      data: {
+        uploadStatus: "UPLOADED",
+        actualSize,
+        completedAt: new Date(),
+      },
+      include: {
+        kitchen: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        recipe: {
+          select: {
+            id: true,
+            title: true,
+          },
         },
       },
-      recipe: {
-        select: {
-          id: true,
-          title: true,
-        },
-      },
-    },
+    });
+
+    await createOrGetPendingValidationJob(tx, {
+      videoId: v.id,
+      kitchenId: v.kitchenId,
+      expectedSize: v.expectedSize,
+    });
+
+    return v;
+  });
+
+  // Attempt immediate background dispatch (non-blocking, survives Redis downtime)
+  dispatchPendingValidationJobs(5).catch((err) => {
+    console.warn("[completeVideoUpload] Immediate dispatch non-critical error:", err.message);
   });
 
   return updatedVideo;

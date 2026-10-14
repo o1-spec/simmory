@@ -1,5 +1,5 @@
-import { db } from "@/lib/db";
-import { KitchenRole } from "@/generated/prisma/client";
+import { db } from "../db";
+import { KitchenRole } from "../../generated/prisma/client";
 
 export function isOwner(role: KitchenRole): boolean {
   return role === "OWNER";

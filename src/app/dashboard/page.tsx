@@ -12,6 +12,7 @@ import { requireUser } from "@/lib/auth/get-user";
 import { listUserKitchens } from "@/lib/services/kitchens";
 import { listUserRecipes } from "@/lib/services/recipes";
 import { listUserVideos } from "@/lib/services/videos";
+import { getVideoValidationStats } from "@/lib/services/jobs";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { CreateKitchenDialog } from "@/components/kitchens/create-kitchen-dialog";
-import { Video, Play } from "lucide-react";
+import { Video, Play, CheckCircle2 } from "lucide-react";
 
 export const metadata = {
   title: "Kitchen Overview — Simmory",
@@ -31,10 +32,11 @@ async function DashboardContent() {
   const session = await requireUser("/dashboard");
 
   // Query authentic metrics in parallel without N+1
-  const [kitchens, recentRecipesResult, recentVideosResult] = await Promise.all([
+  const [kitchens, recentRecipesResult, recentVideosResult, validationStats] = await Promise.all([
     listUserKitchens(session.user.id),
     listUserRecipes(session.user.id, { page: 1, limit: 6 }),
     listUserVideos(session.user.id, { page: 1, limit: 3 }),
+    getVideoValidationStats(session.user.id),
   ]);
 
   const { recipes: recentRecipes, pagination: recipePagination } = recentRecipesResult;
@@ -120,7 +122,7 @@ async function DashboardContent() {
         <Card className="p-5">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-warm-500">
-              Cooking Footage
+              Cooking Videos
             </span>
             <div className="w-8 h-8 rounded-lg bg-sage-100 text-sage-700 flex items-center justify-center">
               <Video className="w-4 h-4" />
@@ -128,34 +130,42 @@ async function DashboardContent() {
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="font-serif text-3xl font-medium text-warm-900">
-              {totalVideos}
+              {validationStats.uploaded}
             </span>
             <span className="text-xs text-warm-500">
-              {totalVideos === 1 ? "recording" : "recordings"}
+              {validationStats.uploaded === 1 ? "video" : "videos"}
             </span>
           </div>
           <p className="text-[11px] text-warm-400 mt-1">
-            {totalVideos === 0 ? "Stored in Cloudflare R2" : "Preserved in private vault"}
+            {validationStats.uploaded === 0
+              ? "Stored in Cloudflare R2"
+              : `${validationStats.validated} validated by worker`}
           </p>
         </Card>
 
         <Card className="p-5">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-warm-500">
-              Cooking Knowledge
+              Media Stream Validation
             </span>
             <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
-              <Sparkles className="w-4 h-4" />
+              <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="font-serif text-3xl font-medium text-warm-900">
-              100%
+              {validationStats.validated}
             </span>
-            <span className="text-xs text-warm-500">human-verified</span>
+            <span className="text-xs text-warm-500">
+              / {validationStats.uploaded}
+            </span>
           </div>
           <p className="text-[11px] text-warm-400 mt-1">
-            Unwritten instincts captured in original cooks&apos; voices
+            {validationStats.awaitingValidation > 0
+              ? `${validationStats.awaitingValidation} awaiting validation`
+              : validationStats.failedValidation > 0
+              ? `${validationStats.failedValidation} failed validation`
+              : "All media streams verified"}
           </p>
         </Card>
       </div>

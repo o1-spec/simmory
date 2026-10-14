@@ -257,3 +257,55 @@ export async function deleteStorageObject(
   await client.send(command);
   return { success: true };
 }
+
+type DownloadHandler = (
+  storageKey: string,
+  destinationFilePath: string
+) => Promise<{ bytesWritten: number }>;
+
+let downloadHandlerOverride: DownloadHandler | null = null;
+
+/**
+ * Sets a custom download handler for unit and integration testing without cloud credentials.
+ */
+export function setDownloadHandlerForTesting(handler: DownloadHandler | null) {
+  downloadHandlerOverride = handler;
+}
+
+/**
+ * Downloads a private media object from Cloudflare R2 / S3 storage to a local file.
+ * Used by the background worker for media validation.
+ */
+export async function downloadStorageObject(
+  storageKey: string,
+  destinationFilePath: string
+): Promise<{ bytesWritten: number }> {
+  if (downloadHandlerOverride) {
+    return downloadHandlerOverride(storageKey, destinationFilePath);
+  }
+
+  const client = getS3Client();
+  const config = getStorageConfig();
+
+  const command = new GetObjectCommand({
+    Bucket: config.bucket,
+    Key: storageKey,
+  });
+
+  const response = await client.send(command);
+  if (!response.Body) {
+    throw new Error(`Empty response body for storageKey: ${storageKey}`);
+  }
+
+  const fs = await import("fs");
+  const { pipeline } = await import("stream/promises");
+  const writeStream = fs.createWriteStream(destinationFilePath);
+
+  // AWS SDK v3 Body in Node environment is a stream.Readable
+  const readableStream = response.Body as NodeJS.ReadableStream;
+  await pipeline(readableStream, writeStream);
+
+  const stats = await fs.promises.stat(destinationFilePath);
+  return { bytesWritten: stats.size };
+}
+

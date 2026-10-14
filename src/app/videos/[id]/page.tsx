@@ -7,8 +7,6 @@ import {
   HardDrive,
   Calendar,
   User,
-  Sparkles,
-  Info,
   Layers,
 } from "lucide-react";
 import { requireUser } from "@/lib/auth/get-user";
@@ -21,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { VideoPlayer } from "@/components/videos/video-player";
 import { DeleteVideoDialog } from "@/components/videos/delete-video-dialog";
+import { VideoProcessingCard } from "@/components/videos/video-processing-card";
 
 export const metadata = {
   title: "Cooking Video Recording — Simmory",
@@ -198,28 +197,20 @@ async function VideoDetailContent({
         </Card>
       </div>
 
-      {/* AI Processing Status Card */}
-      <Card className="p-6 bg-warm-50/70 border-warm-200/80 space-y-3">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-terracotta-500" />
-          <h3 className="font-serif text-base text-warm-900 font-medium">
-            AI Speech & Vision Extraction Pipeline
-          </h3>
-        </div>
-
-        <p className="text-xs text-warm-600 leading-relaxed">
-          The video has been uploaded and registered in your private family vault.
-          In future phases, the asynchronous worker pipeline (FFmpeg frame
-          sampling, Faster-Whisper audio transcription, and Gemma 4 vision
-          reasoning) will analyze this video to extract timestamps and visual
-          cooking cues.
-        </p>
-
-        <div className="flex items-center gap-2 pt-1 text-[11px] text-warm-500">
-          <Info className="w-3.5 h-3.5 text-warm-400" />
-          <span>Status: <strong>NOT_STARTED</strong> (Awaiting Phase 5 AI pipeline integration)</span>
-        </div>
-      </Card>
+      {/* Real-time Video Stream Validation & Processing Pipeline */}
+      <VideoProcessingCard
+        videoId={video.id}
+        initialValidationStatus={video.validationStatus}
+        initialProcessingStatus={video.processingStatus}
+        initialDuration={video.duration}
+        initialVideoCodec={video.videoCodec}
+        initialAudioCodec={video.audioCodec}
+        initialWidth={video.width}
+        initialHeight={video.height}
+        initialFps={video.fps}
+        initialError={video.validationError}
+        canModify={canModify}
+      />
     </div>
   );
 }

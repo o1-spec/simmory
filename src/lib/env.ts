@@ -15,6 +15,10 @@ const envSchema = z.object({
   R2_BUCKET_NAME: z.string().optional(),
   R2_ENDPOINT: z.string().optional(),
   MAX_VIDEO_SIZE_MB: z.string().default("250"),
+  REDIS_URL: z.string().optional(),
+  WORKER_CONCURRENCY: z.string().default("2"),
+  FFPROBE_PATH: z.string().default("ffprobe"),
+  MAX_MEDIA_DURATION_SECONDS: z.string().default("3600"),
 });
 
 function validateEnv() {

@@ -659,21 +659,52 @@ erDiagram
 
 ---
 
-### 8.5 Full System Automated Verification Suite (66 Tests Passing)
+### 8.5 Full System Automated Verification Suite (83 Tests Passing)
 
-All capabilities across Phases 1, 2, 3, and 4 are continuously verified against PostgreSQL:
+All capabilities across Phases 1–5 are continuously verified against PostgreSQL and Redis:
 
 | Test Suite | File | Tests | Coverage |
 | :--- | :--- | :--- | :--- |
 | **Password Hashing** | `tests/unit/password.test.ts` | 3 | Argon2id hashing, verification, invalid passwords |
 | **JWT & Tokens** | `tests/unit/jwt.test.ts` | 5 | Sign, verify, expiration, opaque token hashing, tamper rejection |
 | **Validation Schemas** | `tests/unit/validation.test.ts` | 10 | Email normalization, password strength, profile updates |
-| **Storage Abstraction & Rules** | `tests/unit/storage.test.ts` | 13 | Storage configuration detection, placeholder rejection, S3 presigning, video schema rules |
+| **Storage Abstraction & Rules** | `tests/unit/storage.test.ts` | 13 | Storage config detection, placeholder rejection, S3 presigning, video schema rules |
+| **Queue & Redis Options** | `tests/unit/queue.test.ts` | 4 | BullMQ queue naming, maxRetriesPerRequest: null, retry backoff |
+| **FFprobe Processor Unit** | `tests/unit/ffprobe-processor.test.ts` | 3 | Real FFprobe inspection of valid/corrupted fixtures, duration, codecs, timeouts |
 | **Auth Integration** | `tests/integration/auth-flow.test.ts` | 7 | DB registration, default kitchen provisioning, token rotation, replay revocation |
 | **Auth API Endpoints** | `tests/integration/api-routes.test.ts` | 5 | HTTP register, duplicate email handling, login, logout cookie clearance, /api/auth/me |
 | **Kitchens & Recipes Services** | `tests/integration/kitchens-and-recipes.test.ts` | 12 | Multi-kitchen creation, membership enforcement, recipe CRUD, sensory cues, cascade delete |
 | **Kitchens & Recipes API** | `tests/integration/api-kitchens-recipes.test.ts` | 3 | HTTP /api/kitchens and /api/recipes CRUD, search/filter, role permissions, IDOR cross-tenant isolation |
-| **Cooking Videos & Media Ingestion** | `tests/integration/cooking-videos.test.ts` | 8 | 503 unconfigured handling, presigned upload generation, viewer mutation rejection, cross-kitchen recipe mismatch, S3 HEAD completion, private playback authorization, cross-family library isolation, video deletion |
-| **Total** | | **66 passing** | **Complete end-to-end verification across unit, storage, service, and API layers** |
+| **Cooking Videos & Media Ingestion** | `tests/integration/cooking-videos.test.ts` | 9 | 503 unconfigured handling, presigned upload generation, viewer mutation rejection, cross-kitchen recipe mismatch, S3 HEAD completion, private playback authorization, cross-family library isolation, video deletion |
+| **Processing Jobs & Outbox** | `tests/integration/processing-jobs.test.ts` | 9 | Transactional outbox creation, repeated completion idempotency, Redis downtime resilience, FFprobe stream validation, corrupt media failure, processing status & retry APIs |
+| **Total** | | **83 passing** | **Complete end-to-end verification across unit, storage, queue, worker, service, and API layers** |
+
+---
+
+## 9. Phase 5: Redis, BullMQ & Background Worker Infrastructure
+
+Phase 5 establishes a resilient, decoupled asynchronous processing architecture that prepares Simmory for heavy AI recipe reconstruction without degrading user-facing latency.
+
+### 9.1 Transactional Outbox Pattern
+To prevent dual-write loss when Redis is temporarily unreachable:
+1. Video upload completion transactionally writes both the `UPLOADED` video status and a `ProcessingJob` with `status: PENDING_DISPATCH` in PostgreSQL.
+2. A separate `OutboxDispatcher` reads pending records and dispatches them to BullMQ with deterministic IDs (`video-val-${job.id}`).
+3. Jobs are marked `QUEUED` only after BullMQ confirms receipt. If Redis is down, jobs remain safe in PostgreSQL for future retries.
+
+### 9.2 Status Separation: Upload vs Media Validation vs AI Analysis
+Simmory enforces clear lifecycle separation:
+- **`VideoUploadStatus`**: `PENDING_UPLOAD` -> `UPLOADED` -> `FAILED` / `DELETED`
+- **`MediaValidationStatus`**: `NOT_STARTED` -> `QUEUED` -> `VALIDATING` -> `VALIDATED` / `FAILED`
+- **`VideoProcessingStatus` (AI)**: `NOT_STARTED` (Phase 6 will transition to `QUEUED` -> `PROCESSING` -> `COMPLETED`)
+
+### 9.3 Standalone Background Worker
+The worker is packaged as an independent Node.js process:
+- Build: `npm run worker:build` (bundles with esbuild to `dist/worker.mjs` in <100ms)
+- Start: `npm run worker:start`
+- Concurrency: Configurable via `WORKER_CONCURRENCY` (default: 2)
+- Inspects media decodability via `ffprobe` safe subprocess calls with bounded buffers and timeouts.
+- All temporary files are unlinked in `finally` blocks.
+- Cleanly handles `SIGTERM` and `SIGINT` signals by finishing active jobs, closing BullMQ workers, and gracefully disconnecting Redis and PostgreSQL.
+
 
 

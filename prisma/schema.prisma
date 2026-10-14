@@ -42,6 +42,28 @@ enum VideoProcessingStatus {
   FAILED
 }
 
+enum MediaValidationStatus {
+  NOT_STARTED
+  QUEUED
+  VALIDATING
+  VALIDATED
+  FAILED
+}
+
+enum JobType {
+  VIDEO_VALIDATION
+  AI_ANALYSIS
+}
+
+enum JobStatus {
+  PENDING_DISPATCH
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
 model User {
   id           String    @id @default(uuid()) @db.Uuid
   name         String
@@ -89,6 +111,7 @@ model Kitchen {
   members KitchenMember[]
   recipes Recipe[]
   videos  CookingVideo[]
+  processingJobs ProcessingJob[]
 
   @@index([ownerId])
   @@map("kitchens")
@@ -184,14 +207,54 @@ model CookingVideo {
   duration         Float?
   uploadStatus     VideoUploadStatus     @default(PENDING_UPLOAD)
   processingStatus VideoProcessingStatus @default(NOT_STARTED)
+  validationStatus MediaValidationStatus @default(NOT_STARTED)
+  videoCodec       String?
+  audioCodec       String?
+  width            Int?
+  height           Int?
+  fps              Float?
+  validationError  String?
   uploadExpiresAt  DateTime
   completedAt      DateTime?
   createdAt        DateTime              @default(now())
   updatedAt        DateTime              @updatedAt
 
+  processingJobs   ProcessingJob[]
+
   @@index([kitchenId])
   @@index([recipeId])
   @@index([uploadedById])
   @@index([uploadStatus])
+  @@index([validationStatus])
   @@map("cooking_videos")
+}
+
+model ProcessingJob {
+  id             String    @id @default(uuid()) @db.Uuid
+  videoId        String    @db.Uuid
+  video          CookingVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  kitchenId      String    @db.Uuid
+  kitchen        Kitchen   @relation(fields: [kitchenId], references: [id], onDelete: Cascade)
+  jobType        JobType   @default(VIDEO_VALIDATION)
+  status         JobStatus @default(PENDING_DISPATCH)
+  stage          String?
+  attempts       Int       @default(0)
+  maxAttempts    Int       @default(3)
+  errorCode      String?
+  errorMessage   String?
+  progressInfo   String?
+  queuedAt       DateTime?
+  startedAt      DateTime?
+  completedAt    DateTime?
+  lastHeartbeat  DateTime?
+  bullMqJobId    String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([videoId])
+  @@index([kitchenId])
+  @@index([status])
+  @@index([jobType])
+  @@index([createdAt])
+  @@map("processing_jobs")
 }

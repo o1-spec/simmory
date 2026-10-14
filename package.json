@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "worker:build": "esbuild src/worker/index.ts --bundle --platform=node --target=node20 --format=esm --packages=external --outfile=dist/worker.mjs",
+    "worker:start": "node dist/worker.mjs",
+    "worker:dev": "npm run worker:build && node dist/worker.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1151.0",
@@ -16,6 +19,8 @@
     "@prisma/client": "^7.10.0",
     "@types/pg": "^8.23.1",
     "argon2": "^0.45.1",
+    "bullmq": "^6.3.14",
+    "ioredis": "^6.0.0",
     "jose": "^6.2.12",
     "lucide-react": "^1.56.0",
     "next": "16.4.0",
@@ -26,11 +31,13 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@esbuild/darwin-arm64": "^0.28.2",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
+    "esbuild": "^0.28.2",
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
     "tailwindcss": "^4",

@@ -13,6 +13,7 @@ interface VideoCardProps {
   actualSize: number | null;
   uploadStatus: VideoUploadStatus;
   processingStatus: VideoProcessingStatus;
+  validationStatus?: string;
   createdAt: Date;
   kitchen: {
     id: string;
@@ -36,6 +37,7 @@ export function VideoCard({
   actualSize,
   uploadStatus,
   processingStatus,
+  validationStatus,
   createdAt,
   kitchen,
   recipe,
@@ -64,17 +66,27 @@ export function VideoCard({
           <Badge
             variant={
               uploadStatus === "UPLOADED"
-                ? "sage"
-                : uploadStatus === "FAILED"
+                ? validationStatus === "VALIDATED"
+                  ? "sage"
+                  : validationStatus === "FAILED"
                   ? "terracotta"
                   : "warm"
+                : uploadStatus === "FAILED"
+                ? "terracotta"
+                : "warm"
             }
           >
             {uploadStatus === "UPLOADED"
-              ? "Ready"
+              ? validationStatus === "VALIDATED"
+                ? "Validated"
+                : validationStatus === "VALIDATING"
+                ? "Validating"
+                : validationStatus === "FAILED"
+                ? "Invalid Media"
+                : "Uploaded"
               : uploadStatus === "PENDING_UPLOAD"
-                ? "Pending"
-                : uploadStatus}
+              ? "Pending"
+              : uploadStatus}
           </Badge>
 
           <span className="text-[11px] font-mono text-white/90 bg-black/40 px-2 py-0.5 rounded-md backdrop-blur-xs">

@@ -131,6 +131,7 @@ async function VideosContent({
                 actualSize={v.actualSize}
                 uploadStatus={v.uploadStatus}
                 processingStatus={v.processingStatus}
+                validationStatus={v.validationStatus}
                 createdAt={v.createdAt}
                 kitchen={v.kitchen}
                 recipe={v.recipe}

@@ -1,0 +1,88 @@
+services:
+  # Simmory Next.js Web Application
+  - type: web
+    name: simmory-web
+    runtime: node
+    plan: starter
+    region: oregon
+    buildCommand: npm ci && npx prisma generate && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: simmory-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: simmory-redis
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_ISSUER
+        value: simmory-web
+      - key: JWT_AUDIENCE
+        value: simmory-users
+      - key: APP_URL
+        sync: false
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET_NAME
+        sync: false
+
+  # Simmory Background Worker (Outbox Dispatcher & Video Validation)
+  - type: worker
+    name: simmory-worker
+    runtime: node
+    plan: starter
+    region: oregon
+    buildCommand: npm ci && npx prisma generate && npm run worker:build
+    startCommand: npm run worker:start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: simmory-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: simmory-redis
+          property: connectionString
+      - key: WORKER_CONCURRENCY
+        value: "2"
+      - key: FFPROBE_PATH
+        value: "ffprobe"
+      - key: MAX_VIDEO_SIZE_MB
+        value: "250"
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET_NAME
+        sync: false
+
+# Render Key Value / Redis
+redis:
+  - name: simmory-redis
+    plan: starter
+    region: oregon
+    maxmemoryPolicy: noeviction
+    ipAllowList: [] # internal private network only
+
+# Render PostgreSQL
+databases:
+  - name: simmory-postgres
+    plan: starter
+    region: oregon
+    databaseName: simmory_prod
+    user: simmory
