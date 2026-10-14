@@ -757,6 +757,40 @@ To prevent Whisper from fabricating spoken recipe instructions on silent or un-n
 - **Python AI Test Suite**: 16 passing unit tests (`services/ai/tests/`).
 - **Real Local Smoke Test**: `services/ai/smoke_test.py` validates Faster-Whisper, Ollama Gemma 4, and real cooking video fixtures.
 
+---
+
+## 11. Phase 7: Human Recipe Review, Reconstruction & Verification Architecture
+
+Phase 7 introduces the human-in-the-loop recipe reconstruction workspace, enabling family cooks and authorized kitchen members to refine AI-extracted candidate actions, record traditional measurements, resolve sensory cues, answer clarifying questions, and convert verified events into heirloom family recipes.
+
+### 11.1 The Guiding Principle: "AI Proposes. Humans Clarify. Evidence Supports. Families Preserve."
+AI outputs are treated as working hypotheses. Cooking knowledge that exists in gestures, smells, sound cues, and unwritten traditional measurements requires human attestation. AI proposals are never pre-verified.
+
+### 11.2 Relational Data Models (Prisma 7 & PostgreSQL)
+- **`CookingReview`**: Root review session for a video analysis (`status`: `IN_PROGRESS`, `COMPLETED`, `CONVERTED_TO_RECIPE`). Contains optimistic concurrency lock (`version`).
+- **`ReviewedCookingEvent`**: Chronological cooking steps with non-destructive AI provenance (`originalAiTitle`, `originalAiDescription`), sensory cues, video timestamps, and status (`UNREVIEWED`, `ACCEPTED`, `EDITED`, `REJECTED`, `ADDED`).
+- **`CookingClarification`**: Questions raised by AI or reviewers, answered in natural family language (`UNANSWERED`, `ANSWERED`, `UNKNOWN`, `NOT_APPLICABLE`).
+- **`ReviewedIngredient`**: Traditional qualitative ingredients (e.g. "a pinch", "finger's depth") with provenance badges (`SPOKEN_INSTRUCTION`, `VISUALLY_SUGGESTED`, `HUMAN_SUPPLIED`, `HUMAN_CONFIRMED`).
+- **`RecipeEvidence`**: Permanent relational links connecting recipe steps to original video timestamps, keyframe images, and spoken transcripts.
+
+### 11.3 Review Workspace UI (`/review/[id]`)
+- **Sticky Private Video Player**: WebKit-hardened seeking directly linked to step timestamps and observation cards.
+- **Progress Tracking**: Real-time counter of unreviewed vs reviewed events, answered questions, and qualitative ingredients.
+- **Autosave with Concurrency Locks**: Debounced updates protect against data loss; 409 conflict detection guards against multi-member edit overwrites.
+- **Heirloom Drawer**: Live preview of the family recipe formatting as human edits are applied.
+
+### 11.4 Verification & Conversion Semantics
+- **Completion Gate**: A review cannot be completed or converted if any candidate event remains `UNREVIEWED`.
+- **Exclusion of Rejected Steps**: Rejected events remain in the review audit trail but are strictly excluded from generated `RecipeStep` records.
+- **Distinction between Review and Cook Verification**:
+  - `REVIEW_PENDING`: Indicates human review completed by an authorized family member.
+  - `VERIFIED_BY_COOK`: Reserved for explicit attestation by the original cook (or their appointed proxy). Never automatically set by the system.
+
+### 11.5 Full System Verification Suite (121 Passing Tests)
+- **TypeScript Integration & Unit Tests**: 104 passing tests across 14 test suites (`npm test`).
+- **Python AI Test Suite**: 17 passing tests (`services/ai/tests/`).
+
+
 
 
 

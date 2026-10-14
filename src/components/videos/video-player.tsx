@@ -26,12 +26,18 @@ export function VideoPlayer({
   const [error, setError] = useState<string | null>(null);
 
   // Jump video to requested timestamp when clicked in proposed events or observations
+  // Wait for seeked event before playing to prevent restarting from 00:00 on mobile/WebKit
   useEffect(() => {
     if (seekTime != null && videoRef.current) {
-      videoRef.current.currentTime = seekTime;
-      videoRef.current.play().catch(() => {});
+      const vid = videoRef.current;
+      vid.currentTime = Math.max(0, seekTime);
+      const onSeeked = () => {
+        vid.play().catch(() => {});
+      };
+      vid.addEventListener("seeked", onSeeked, { once: true });
     }
   }, [seekTime]);
+
 
 
   const refreshPlaybackUrl = async () => {

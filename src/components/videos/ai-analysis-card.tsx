@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import {
   Sparkles,
   RefreshCw,
@@ -16,6 +17,7 @@ import {
   Volume2,
   Film,
   Layers,
+  BookOpen,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -401,11 +403,30 @@ export function AiAnalysisCard({
 
             <div className="p-3 bg-warm-50/70 rounded-xl border border-warm-100 text-xs">
               <span className="text-[11px] text-warm-400 block mb-0.5">Human Verification</span>
-              <span className="font-medium text-amber-700 flex items-center gap-1.5">
-                <HelpCircle className="w-3.5 h-3.5 text-amber-500" />
-                Pending Phase 7
+              <span className="font-medium text-terracotta-700 flex items-center gap-1.5">
+                <BookOpen className="w-3.5 h-3.5 text-terracotta-500" />
+                Ready for Review
               </span>
             </div>
+          </div>
+
+          {/* Review & Reconstruct Call to Action */}
+          <div className="p-4 bg-terracotta-50/90 rounded-2xl border border-terracotta-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="space-y-0.5">
+              <p className="text-xs font-semibold text-terracotta-900 flex items-center gap-1.5">
+                <BookOpen className="w-4 h-4 text-terracotta-600" />
+                Human Review & Recipe Reconstruction Available
+              </p>
+              <p className="text-[11px] text-warm-700 font-sans leading-relaxed">
+                Review candidate steps, confirm ingredients, add sensory cues, and preserve tacit cooking knowledge.
+              </p>
+            </div>
+            <Link href={`/review/${videoId}`}>
+              <Button size="sm" variant="primary" className="gap-1.5 shrink-0">
+                <BookOpen className="w-3.5 h-3.5" />
+                Review & Reconstruct Recipe
+              </Button>
+            </Link>
           </div>
 
           {/* Speech Status Banner (Crucial hallucination guardrail notice) */}

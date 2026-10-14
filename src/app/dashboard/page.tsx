@@ -9,6 +9,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { requireUser } from "@/lib/auth/get-user";
+import { prisma } from "@/lib/db";
 import { listUserKitchens } from "@/lib/services/kitchens";
 import { listUserRecipes } from "@/lib/services/recipes";
 import { listUserVideos } from "@/lib/services/videos";
@@ -32,11 +33,30 @@ async function DashboardContent() {
   const session = await requireUser("/dashboard");
 
   // Query authentic metrics in parallel without N+1
-  const [kitchens, recentRecipesResult, recentVideosResult, validationStats] = await Promise.all([
+  const [kitchens, recentRecipesResult, recentVideosResult, validationStats, pendingReviews] = await Promise.all([
     listUserKitchens(session.user.id),
     listUserRecipes(session.user.id, { page: 1, limit: 6 }),
     listUserVideos(session.user.id, { page: 1, limit: 3 }),
     getVideoValidationStats(session.user.id),
+    prisma.cookingVideo.findMany({
+      where: {
+        kitchen: {
+          members: { some: { userId: session.user.id } },
+        },
+        analyses: {
+          some: { status: "COMPLETED" },
+        },
+        reviews: {
+          none: { status: "COMPLETED" },
+        },
+      },
+      select: {
+        id: true,
+        originalFilename: true,
+        kitchen: { select: { name: true } },
+      },
+      take: 3,
+    }),
   ]);
 
   const { recipes: recentRecipes, pagination: recipePagination } = recentRecipesResult;
@@ -169,6 +189,31 @@ async function DashboardContent() {
           </p>
         </Card>
       </div>
+
+      {/* Pending AI Reviews Banner */}
+      {pendingReviews.length > 0 && (
+        <div className="mb-8 p-5 bg-terracotta-50/80 border border-terracotta-200/80 rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-terracotta-600" />
+              <h3 className="text-sm font-semibold text-terracotta-900">
+                AI Video Analysis Complete — Human Review Pending
+              </h3>
+            </div>
+            <p className="text-xs text-warm-700 font-sans leading-relaxed">
+              You have {pendingReviews.length} cooking video(s) ready for review. Confirm candidate actions, answer questions for the cook, and reconstruct family recipes.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <Link href={`/review/${pendingReviews[0].id}`}>
+              <Button size="sm" variant="primary" className="gap-1.5">
+                <BookOpen className="w-3.5 h-3.5" />
+                Review &ldquo;{pendingReviews[0].originalFilename.replace(/\.[^/.]+$/, "")}&rdquo;
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Recently Preserved Recipes */}
       <div className="mb-10">

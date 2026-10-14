@@ -35,8 +35,12 @@ export interface VisualAnalysisData {
   total_frames_extracted: number;
   total_frames_analyzed: number;
   sampling_interval_seconds: number;
+  sampling_strategy?: string;
+  sampled_time_range?: number[];
+  coverage_ratio?: number;
   observations: FrameObservationData[];
 }
+
 
 export interface ProposedEventData {
   position: number;

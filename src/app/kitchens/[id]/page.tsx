@@ -126,10 +126,20 @@ async function KitchenDetailContent({ params }: { params: Promise<{ id: string }
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <Badge
-                        variant={recipe.status === "VERIFIED" ? "sage" : "saffron"}
+                        variant={
+                          recipe.status === "VERIFIED_BY_COOK" || recipe.status === "VERIFIED"
+                            ? "sage"
+                            : recipe.status === "REVIEW_PENDING"
+                              ? "terracotta"
+                              : "saffron"
+                        }
                         size="sm"
                       >
-                        {recipe.status === "VERIFIED" ? "Verified" : "Draft"}
+                        {recipe.status === "VERIFIED_BY_COOK" || recipe.status === "VERIFIED"
+                          ? "Verified by Cook"
+                          : recipe.status === "REVIEW_PENDING"
+                            ? "Reviewed"
+                            : "Draft"}
                       </Badge>
                       <span className="text-[11px] text-warm-500 flex items-center gap-1">
                         <ChefHat className="w-3 h-3 text-warm-400" />
@@ -236,13 +246,21 @@ async function KitchenDetailContent({ params }: { params: Promise<{ id: string }
 
                     <div className="pt-3 mt-3 border-t border-warm-100 flex items-center justify-between text-xs text-warm-500">
                       <span>By {video.uploadedBy.name}</span>
-                      <Link
-                        href={`/videos/${video.id}`}
-                        className="text-terracotta-600 hover:text-terracotta-700 font-medium flex items-center gap-1"
-                      >
-                        <Play className="w-3 h-3 fill-current" />
-                        Play &rarr;
-                      </Link>
+                      <div className="flex items-center gap-2.5">
+                        <Link
+                          href={`/review/${video.id}`}
+                          className="text-warm-600 hover:text-warm-900 font-medium text-xs transition-colors"
+                        >
+                          Review
+                        </Link>
+                        <Link
+                          href={`/videos/${video.id}`}
+                          className="text-terracotta-600 hover:text-terracotta-700 font-medium flex items-center gap-1 transition-colors"
+                        >
+                          <Play className="w-3 h-3 fill-current" />
+                          Play &rarr;
+                        </Link>
+                      </div>
                     </div>
                   </Card>
                 ))}

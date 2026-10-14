@@ -83,6 +83,9 @@ export async function getRecipeWithAccess(recipeId: string, userId: string) {
       },
       steps: {
         orderBy: { position: "asc" },
+        include: {
+          evidence: true,
+        },
       },
       videos: {
         select: {

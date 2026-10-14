@@ -62,6 +62,9 @@ class VisualAnalysisResult(BaseModel):
     total_frames_extracted: int
     total_frames_analyzed: int
     sampling_interval_seconds: float
+    sampling_strategy: str = "fixed_interval"
+    sampled_time_range: List[float] = Field(default_factory=list)
+    coverage_ratio: float = 1.0
     observations: List[FrameObservation] = []
 
 

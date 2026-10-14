@@ -34,7 +34,8 @@ async function RecipeDetailContent({ params }: { params: Promise<{ id: string }>
     notFound();
   }
 
-  const isVerified = recipe.status === "VERIFIED" || recipe.status === "VERIFIED_BY_COOK";
+  const isVerified = recipe.status === "VERIFIED_BY_COOK" || recipe.cookVerified;
+  const isReviewed = recipe.status === "REVIEW_PENDING" || recipe.reviewedAt != null;
 
   return (
     <article className="max-w-4xl mx-auto pb-16">
@@ -71,9 +72,22 @@ async function RecipeDetailContent({ params }: { params: Promise<{ id: string }>
       {/* Editorial Header */}
       <header className="bg-white rounded-3xl border border-warm-200 p-6 sm:p-10 shadow-xs mb-8">
         <div className="flex flex-wrap items-center gap-2.5 mb-3">
-          <Badge variant={isVerified ? "sage" : "saffron"} size="sm">
-            {isVerified ? "Verified by Cook" : "Draft Preservation"}
+          <Badge
+            variant={isVerified ? "sage" : isReviewed ? "terracotta" : "saffron"}
+            size="sm"
+          >
+            {isVerified
+              ? "Verified by Cook"
+              : isReviewed
+                ? "Human Reviewed"
+                : "Draft Preservation"}
           </Badge>
+          {recipe.cookVerifiedBy && (
+            <span className="inline-flex items-center gap-1 text-xs text-emerald-700 font-semibold bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+              <Sparkles className="w-3 h-3 text-emerald-600" />
+              Attested by {recipe.cookVerifiedBy}
+            </span>
+          )}
           <Link
             href={`/kitchens/${recipe.kitchenId}`}
             className="text-xs text-warm-500 hover:text-terracotta-700 flex items-center gap-1 transition-colors"
@@ -282,6 +296,19 @@ async function RecipeDetailContent({ params }: { params: Promise<{ id: string }>
                   )}
 
                   <div className="flex flex-wrap items-center gap-3 text-[11px] text-warm-500 pt-0.5">
+                    {st.videoTimestampStart != null && (
+                      <Link
+                        href={recipe.videos[0] ? `/videos/${recipe.videos[0].id}` : "#"}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-terracotta-50 text-terracotta-700 hover:bg-terracotta-100 border border-terracotta-200/80 transition-colors font-mono"
+                        title="View video moment"
+                      >
+                        <Play className="w-3 h-3 fill-current" />
+                        <span>
+                          {Math.floor(st.videoTimestampStart / 60).toString().padStart(2, "0")}:
+                          {(st.videoTimestampStart % 60).toString().padStart(2, "0")}
+                        </span>
+                      </Link>
+                    )}
                     {st.duration && (
                       <span className="flex items-center gap-1 text-warm-600">
                         <Clock className="w-3 h-3 text-warm-400" />

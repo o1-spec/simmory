@@ -64,6 +64,38 @@ enum JobStatus {
   CANCELLED
 }
 
+enum ReviewStatus {
+  DRAFT
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum EventReviewStatus {
+  UNREVIEWED
+  ACCEPTED
+  EDITED
+  REJECTED
+}
+
+enum ClarificationStatus {
+  UNANSWERED
+  ANSWERED
+  UNKNOWN
+  NOT_APPLICABLE
+}
+
+enum ClarificationSource {
+  AI_GENERATED
+  HUMAN_ADDED
+}
+
+enum IngredientProvenance {
+  SPOKEN_INSTRUCTION
+  VISUALLY_SUGGESTED
+  HUMAN_SUPPLIED
+  HUMAN_CONFIRMED
+}
+
 model User {
   id           String    @id @default(uuid()) @db.Uuid
   name         String
@@ -78,7 +110,9 @@ model User {
   ownedKitchens      Kitchen[]        @relation("KitchenOwner")
   kitchenMemberships KitchenMember[]
   createdRecipes     Recipe[]         @relation("RecipeAuthor")
+  reviewedRecipes    Recipe[]         @relation("RecipeReviewer")
   uploadedVideos     CookingVideo[]   @relation("UserVideos")
+  reviews            CookingReview[]
 
   @@map("users")
 }
@@ -112,6 +146,7 @@ model Kitchen {
   recipes Recipe[]
   videos  CookingVideo[]
   processingJobs ProcessingJob[]
+  reviews CookingReview[]
 
   @@index([ownerId])
   @@map("kitchens")
@@ -133,24 +168,32 @@ model KitchenMember {
 }
 
 model Recipe {
-  id          String       @id @default(uuid()) @db.Uuid
-  kitchenId   String       @db.Uuid
-  kitchen     Kitchen      @relation(fields: [kitchenId], references: [id], onDelete: Cascade)
-  title       String
-  description String?
-  cookName    String       @default("Family Cook")
-  story       String?
-  origin      String?
-  notes       String?
-  createdById String       @db.Uuid
-  createdBy   User         @relation("RecipeAuthor", fields: [createdById], references: [id], onDelete: Restrict)
-  status      RecipeStatus @default(DRAFT)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id             String       @id @default(uuid()) @db.Uuid
+  kitchenId      String       @db.Uuid
+  kitchen        Kitchen      @relation(fields: [kitchenId], references: [id], onDelete: Cascade)
+  title          String
+  description    String?
+  cookName       String       @default("Family Cook")
+  story          String?
+  origin         String?
+  notes          String?
+  createdById    String       @db.Uuid
+  createdBy      User         @relation("RecipeAuthor", fields: [createdById], references: [id], onDelete: Restrict)
+  status         RecipeStatus @default(DRAFT)
+  sourceReviewId String?      @db.Uuid
+  reviewedAt     DateTime?
+  reviewedById   String?      @db.Uuid
+  reviewedBy     User?        @relation("RecipeReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  cookVerified   Boolean      @default(false)
+  cookVerifiedAt DateTime?
+  cookVerifiedBy String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   ingredients RecipeIngredient[]
   steps       RecipeStep[]
   videos      CookingVideo[]
+  reviews     CookingReview[]
 
   @@index([kitchenId])
   @@index([createdById])
@@ -187,6 +230,8 @@ model RecipeStep {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
+  evidence            RecipeEvidence[]
+
   @@index([recipeId])
   @@map("recipe_steps")
 }
@@ -221,6 +266,8 @@ model CookingVideo {
 
   processingJobs   ProcessingJob[]
   analyses         AIAnalysis[]
+  reviews          CookingReview[]
+  recipeEvidences  RecipeEvidence[]
 
   @@index([kitchenId])
   @@index([recipeId])
@@ -291,6 +338,9 @@ model AIAnalysis {
   status           AIAnalysisStatus @default(PROCESSING)
   summary          String?
   totalFrames      Int              @default(0)
+  samplingStrategy String?
+  coverageRatio    Float?
+  sampledTimeRange Json?
   startedAt        DateTime?
   completedAt      DateTime?
   createdAt        DateTime         @default(now())
@@ -299,6 +349,7 @@ model AIAnalysis {
   transcriptSegments TranscriptSegment[]
   visualObservations VisualObservation[]
   proposedEvents     ProposedCookingEvent[]
+  reviews            CookingReview[]
 
   @@index([videoId])
   @@index([jobId])
@@ -364,4 +415,124 @@ model ProposedCookingEvent {
   @@index([position])
   @@map("proposed_cooking_events")
 }
+
+model CookingReview {
+  id             String       @id @default(uuid()) @db.Uuid
+  videoId        String       @db.Uuid
+  video          CookingVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  analysisId     String       @db.Uuid
+  analysis       AIAnalysis   @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  kitchenId      String       @db.Uuid
+  kitchen        Kitchen      @relation(fields: [kitchenId], references: [id], onDelete: Cascade)
+  reviewerId     String       @db.Uuid
+  reviewer       User         @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+  recipeId       String?      @db.Uuid
+  recipe         Recipe?      @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+  status         ReviewStatus @default(DRAFT)
+  notes          String?
+  cookVerified   Boolean      @default(false)
+  cookVerifiedBy String?
+  cookVerifiedAt DateTime?
+  version        Int          @default(1)
+  completedAt    DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  events         ReviewedCookingEvent[]
+  clarifications CookingClarification[]
+  ingredients    ReviewedIngredient[]
+
+  @@index([videoId])
+  @@index([kitchenId])
+  @@index([reviewerId])
+  @@index([analysisId])
+  @@index([status])
+  @@map("cooking_reviews")
+}
+
+model ReviewedCookingEvent {
+  id                    String            @id @default(uuid()) @db.Uuid
+  reviewId              String            @db.Uuid
+  review                CookingReview     @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  sourceProposedEventId String?           @db.Uuid
+  position              Int               @default(0)
+  title                 String
+  description           String
+  originalAiTitle       String?
+  originalAiDescription String?
+  startTimestamp        Float
+  endTimestamp          Float?
+  status                EventReviewStatus @default(UNREVIEWED)
+  humanClarification    String?
+  sensoryCue            String?
+  evidenceFrames        Json              @default("[]")
+  transcriptSegments    Json?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  clarifications        CookingClarification[]
+
+  @@index([reviewId])
+  @@index([position])
+  @@index([status])
+  @@map("reviewed_cooking_events")
+}
+
+model CookingClarification {
+  id        String              @id @default(uuid()) @db.Uuid
+  reviewId  String              @db.Uuid
+  review    CookingReview       @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  eventId   String?             @db.Uuid
+  event     ReviewedCookingEvent? @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  question  String
+  answer    String?
+  status    ClarificationStatus @default(UNANSWERED)
+  source    ClarificationSource @default(AI_GENERATED)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+
+  @@index([reviewId])
+  @@index([eventId])
+  @@index([status])
+  @@map("cooking_clarifications")
+}
+
+model ReviewedIngredient {
+  id                String               @id @default(uuid()) @db.Uuid
+  reviewId          String               @db.Uuid
+  review            CookingReview        @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  name              String
+  quantity          String?
+  notes             String?
+  position          Int                  @default(0)
+  provenance        IngredientProvenance @default(HUMAN_SUPPLIED)
+  isUnknownQuantity Boolean              @default(false)
+  evidenceFrames    Json?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  @@index([reviewId])
+  @@index([position])
+  @@map("reviewed_ingredients")
+}
+
+model RecipeEvidence {
+  id                 String       @id @default(uuid()) @db.Uuid
+  recipeStepId       String       @db.Uuid
+  recipeStep         RecipeStep   @relation(fields: [recipeStepId], references: [id], onDelete: Cascade)
+  videoId            String       @db.Uuid
+  video              CookingVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  analysisId         String?      @db.Uuid
+  sourceEventId      String?      @db.Uuid
+  evidenceFrames     Json         @default("[]")
+  transcriptSegments Json?
+  startTimestamp     Float
+  endTimestamp       Float?
+  createdAt          DateTime     @default(now())
+
+  @@index([recipeStepId])
+  @@index([videoId])
+  @@map("recipe_evidences")
+}
+
 

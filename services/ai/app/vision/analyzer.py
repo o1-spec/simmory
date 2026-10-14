@@ -110,6 +110,7 @@ def analyze_extracted_frames(
 ) -> VisualAnalysisResult:
     """
     Analyzes extracted frames sequentially to avoid overloading local Apple Silicon RAM.
+    Preserves sampling strategy and coverage metadata.
     """
     observations: List[FrameObservation] = []
 
@@ -119,9 +120,18 @@ def analyze_extracted_frames(
             if obs:
                 observations.append(obs)
 
+    metadata = getattr(frames, "metadata", {})
+    sampling_strategy = metadata.get("sampling_strategy", "fixed_interval")
+    sampled_time_range = metadata.get("sampled_time_range", [frames[0].timestamp_seconds, frames[-1].timestamp_seconds] if frames else [])
+    coverage_ratio = metadata.get("coverage_ratio", 1.0)
+
     return VisualAnalysisResult(
         total_frames_extracted=len(frames),
         total_frames_analyzed=len(observations),
         sampling_interval_seconds=sampling_interval,
+        sampling_strategy=sampling_strategy,
+        sampled_time_range=sampled_time_range,
+        coverage_ratio=coverage_ratio,
         observations=observations
     )
+

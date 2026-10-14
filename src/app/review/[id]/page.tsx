@@ -1,143 +1,194 @@
 import React, { Suspense } from "react";
 import Link from "next/link";
-import {
-  CheckSquare,
-  ShieldCheck,
-  Video,
-  Flame,
-  ArrowLeft,
-} from "lucide-react";
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
-import { PageHeader } from "@/components/ui/page-header";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { EmptyState } from "@/components/ui/empty-state";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-
+import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/get-user";
+import { isStorageConfigured } from "@/lib/storage/r2";
+import { prisma } from "@/lib/db";
+import {
+  getOrCreateReviewForVideo,
+  getReviewById,
+  ReviewError,
+} from "@/lib/services/reviews";
+import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { RecipeReviewWorkspace } from "@/components/review/recipe-review-workspace";
+import { Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-async function ReviewContent({
-  params,
-}: {
+export const metadata = {
+  title: "Human Recipe Review & Reconstruction — Simmory",
+  description: "Review AI-proposed candidate stages, confirm sensory cues, and preserve genuine family recipes.",
+};
+
+interface ReviewPageProps {
   params: Promise<{ id: string }>;
-}) {
+}
+
+async function ReviewContent({ params }: ReviewPageProps) {
+  const session = await requireUser("/videos");
   const { id } = await params;
-  await requireUser(`/review/${id}`);
 
-  return (
-    <>
-      <PageHeader
-        eyebrow="Human-in-the-Loop Review"
-        title="AI Recipe Review Editor"
-        description="The editorial space where original cooks and family curators review candidate steps proposed by Faster-Whisper and Gemma 4, confirm sensory cues, and fill in unwritten secrets."
-        actions={
-          <div className="flex items-center gap-2">
-            <Link href="/dashboard">
-              <Button variant="secondary" size="md" leftIcon={<ArrowLeft className="w-4 h-4" />}>
-                Dashboard
-              </Button>
-            </Link>
-            <Badge variant="saffron" size="md">
-              Target ID: {id}
-            </Badge>
-          </div>
-        }
-      />
+  let review: Awaited<ReturnType<typeof getOrCreateReviewForVideo>> | null = null;
+  let userRole = "VIEWER";
+  let errorMessage: string | null = null;
 
-      {/* Core Principle Banner */}
-      <div className="mb-8 p-5 bg-terracotta-50/90 border border-terracotta-200/80 rounded-2xl flex items-start gap-3.5">
-        <ShieldCheck className="w-5 h-5 text-terracotta-600 shrink-0 mt-0.5" />
-        <div className="space-y-1">
-          <h2 className="text-sm font-semibold text-warm-900">
-            Core Simmory Principle: Human Verification is Mandatory
-          </h2>
-          <p className="text-xs text-warm-700 leading-relaxed font-sans">
-            AI is never treated as the authoritative source of family knowledge. Faster-Whisper and Gemma 4 extract candidate actions from footage, but recipes only receive the &ldquo;Verified by Cook&rdquo; seal when a human reviews and confirms the instructions.
-          </p>
+  try {
+    review = await getOrCreateReviewForVideo(id, session.user.id);
+    const membership = await prisma.kitchenMember.findUnique({
+      where: {
+        kitchenId_userId: {
+          kitchenId: review.kitchenId,
+          userId: session.user.id,
+        },
+      },
+    });
+    if (membership) {
+      userRole = membership.role;
+    }
+  } catch (err: unknown) {
+    if (err instanceof ReviewError && err.statusCode === 404) {
+      // Check if `id` is a direct review ID
+      try {
+        const direct = await getReviewById(id, session.user.id);
+        review = direct.review as unknown as typeof review;
+        userRole = direct.role;
+      } catch {
+        notFound();
+      }
+    } else {
+      errorMessage = err instanceof Error ? err.message : "Unable to load recipe review";
+    }
+  }
+
+  if (errorMessage || !review) {
+    return (
+      <div className="max-w-2xl mx-auto py-12 px-4 text-center space-y-4">
+        <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto shadow-xs">
+          <Clock className="w-6 h-6" />
         </div>
-      </div>
-
-      {/* Honest Empty State for Recipe Review */}
-      <EmptyState
-        icon={<CheckSquare className="w-6 h-6 text-terracotta-500" />}
-        badge="Editor Phase 2 Preview"
-        title={`No active AI processing job for recipe "${id}"`}
-        description="In Phase 2, when you upload a video, BullMQ and the Python AI service will synthesize candidate timestamps and redirect here so the cook can adjust start/end markers, confirm ingredient amounts, and add personal notes."
-        action={
-          <Link href="/upload">
+        <h2 className="font-serif text-2xl text-warm-900 font-medium">
+          AI Analysis Required Before Review
+        </h2>
+        <p className="text-sm text-warm-600 leading-relaxed font-sans max-w-md mx-auto">
+          {errorMessage ||
+            "This video does not have a completed AI analysis yet. Once audio extraction, visual observation, and timeline generation finish, human review will become available here."}
+        </p>
+        <div className="pt-2 flex items-center justify-center gap-3">
+          <Link href={`/videos/${id}`}>
             <Button variant="primary" size="md">
-              Go to Upload Entry Point
+              Go to Video Analysis
             </Button>
           </Link>
-        }
-        note="The review editor component interfaces will be integrated once the Python AI service and Prisma database models are deployed in subsequent phases."
-      />
-
-      {/* Review Editor Blueprint Preview */}
-      <div className="mt-12 pt-8 border-t border-warm-200/80">
-        <div className="max-w-2xl mb-6">
-          <h2 className="font-serif text-xl text-warm-900 font-medium">
-            Review Editor Interface Architecture
-          </h2>
-          <p className="text-xs text-warm-500 mt-1">
-            Planned layout for Phase 2 implementation:
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="p-5 bg-white">
-            <div className="flex items-center gap-2 text-xs font-semibold text-terracotta-600 uppercase tracking-wider mb-2">
-              <Video className="w-4 h-4" />
-              <span>Left Column</span>
-            </div>
-            <h3 className="font-serif text-base text-warm-900 font-medium mb-1">
-              Dual-Pane Video Player
-            </h3>
-            <p className="text-xs text-warm-600 leading-relaxed">
-              Synchronized video playback with draggable timestamp markers to fine-tune exact step boundaries.
-            </p>
-          </Card>
-
-          <Card className="p-5 bg-white">
-            <div className="flex items-center gap-2 text-xs font-semibold text-amber-700 uppercase tracking-wider mb-2">
-              <Flame className="w-4 h-4" />
-              <span>Center Column</span>
-            </div>
-            <h3 className="font-serif text-base text-warm-900 font-medium mb-1">
-              Cue Clarifier
-            </h3>
-            <p className="text-xs text-warm-600 leading-relaxed">
-              Converts vague transcript moments like &ldquo;until it bubbles right&rdquo; into clarified sensory advice.
-            </p>
-          </Card>
-
-          <Card className="p-5 bg-sage-50/50 border-sage-200">
-            <div className="flex items-center gap-2 text-xs font-semibold text-sage-700 uppercase tracking-wider mb-2">
-              <ShieldCheck className="w-4 h-4" />
-              <span>Right Column</span>
-            </div>
-            <h3 className="font-serif text-base text-warm-900 font-medium mb-1">
-              Cook Verification Seal
-            </h3>
-            <p className="text-xs text-warm-600 leading-relaxed">
-              Attribution signature certifying that the original creator or family steward confirmed the recipe.
-            </p>
-          </Card>
+          <Link href="/dashboard">
+            <Button variant="secondary" size="md">
+              Back to Dashboard
+            </Button>
+          </Link>
         </div>
       </div>
-    </>
+    );
+  }
+
+  const kitchen = await prisma.kitchen.findUnique({
+    where: { id: review.kitchenId },
+    select: { name: true },
+  });
+
+  const storageConfigured = isStorageConfigured();
+
+  // Convert review object to match workspace props
+  const workspaceReview = {
+    id: review.id,
+    videoId: review.videoId,
+    kitchenId: review.kitchenId,
+    status: review.status as "DRAFT" | "IN_PROGRESS" | "COMPLETED",
+    notes: review.notes,
+    cookVerified: review.cookVerified,
+    cookVerifiedBy: review.cookVerifiedBy,
+    cookVerifiedAt: review.cookVerifiedAt,
+    version: review.version,
+    video: {
+      id: review.video.id,
+      originalFilename: review.video.originalFilename,
+      duration: review.video.duration,
+      storageKey: review.video.storageKey,
+      kitchenId: review.video.kitchenId,
+    },
+    analysis: {
+      id: review.analysis.id,
+      status: review.analysis.status,
+      speechStatus: review.analysis.speechStatus,
+      summary: review.analysis.summary,
+      samplingStrategy: review.analysis.samplingStrategy,
+      coverageRatio: review.analysis.coverageRatio,
+      sampledTimeRange: review.analysis.sampledTimeRange,
+      whisperModel: review.analysis.whisperModel,
+      visionModel: review.analysis.visionModel,
+      createdAt: review.analysis.createdAt,
+    },
+    recipe: review.recipe,
+    events: review.events.map((e) => ({
+      id: e.id,
+      reviewId: e.reviewId,
+      sourceProposedEventId: e.sourceProposedEventId,
+      position: e.position,
+      title: e.title,
+      description: e.description,
+      originalAiTitle: e.originalAiTitle,
+      originalAiDescription: e.originalAiDescription,
+      startTimestamp: e.startTimestamp,
+      endTimestamp: e.endTimestamp,
+      status: e.status as "UNREVIEWED" | "ACCEPTED" | "EDITED" | "REJECTED",
+      humanClarification: e.humanClarification,
+      sensoryCue: e.sensoryCue,
+      evidenceFrames: e.evidenceFrames,
+      transcriptSegments: e.transcriptSegments,
+    })),
+    clarifications: review.clarifications.map((c) => ({
+      id: c.id,
+      reviewId: c.reviewId,
+      eventId: c.eventId,
+      question: c.question,
+      answer: c.answer,
+      status: c.status as "UNANSWERED" | "ANSWERED" | "UNKNOWN" | "NOT_APPLICABLE",
+      source: c.source as "AI_GENERATED" | "HUMAN_ADDED",
+      createdAt: c.createdAt,
+    })),
+    ingredients: review.ingredients.map((i) => ({
+      id: i.id,
+      reviewId: i.reviewId,
+      name: i.name,
+      quantity: i.quantity,
+      notes: i.notes,
+      position: i.position,
+      provenance: i.provenance as "SPOKEN_INSTRUCTION" | "VISUALLY_SUGGESTED" | "HUMAN_SUPPLIED" | "HUMAN_CONFIRMED",
+      isUnknownQuantity: i.isUnknownQuantity,
+    })),
+  };
+
+  return (
+    <RecipeReviewWorkspace
+      initialReview={workspaceReview}
+      kitchenName={kitchen?.name || "Family Kitchen"}
+      userRole={userRole}
+      storageConfigured={storageConfigured}
+    />
   );
 }
 
-export default function ReviewPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function ReviewPage({ params }: ReviewPageProps) {
   return (
     <DashboardLayout>
-      <Suspense fallback={<LoadingSpinner label="Loading review workspace..." />}>
+      <Suspense
+        fallback={
+          <div className="min-h-[50vh] flex flex-col items-center justify-center gap-3">
+            <LoadingSpinner size="lg" />
+            <span className="text-xs text-warm-500 font-sans">
+              Loading recipe review workspace...
+            </span>
+          </div>
+        }
+      >
         <ReviewContent params={params} />
       </Suspense>
     </DashboardLayout>
