@@ -9,18 +9,30 @@ interface VideoPlayerProps {
   videoId: string;
   uploadStatus: VideoUploadStatus;
   storageConfigured: boolean;
+  seekTime?: number | null;
 }
 
 export function VideoPlayer({
   videoId,
   uploadStatus,
   storageConfigured,
+  seekTime,
 }: VideoPlayerProps) {
+  const videoRef = React.useRef<HTMLVideoElement | null>(null);
   const [playbackUrl, setPlaybackUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(
     storageConfigured && uploadStatus === "UPLOADED"
   );
   const [error, setError] = useState<string | null>(null);
+
+  // Jump video to requested timestamp when clicked in proposed events or observations
+  useEffect(() => {
+    if (seekTime != null && videoRef.current) {
+      videoRef.current.currentTime = seekTime;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [seekTime]);
+
 
   const refreshPlaybackUrl = async () => {
     if (!storageConfigured || uploadStatus !== "UPLOADED") return;
@@ -141,12 +153,14 @@ export function VideoPlayer({
   return (
     <div className="w-full rounded-2xl overflow-hidden bg-black shadow-lg border border-warm-800">
       <video
+        ref={videoRef}
         key={playbackUrl}
         controls
         playsInline
         preload="metadata"
         className="w-full aspect-video rounded-2xl"
         src={playbackUrl}
+
         onError={() =>
           setError(
             "Playback token expired or stream unreachable. Click below to refresh your session token."

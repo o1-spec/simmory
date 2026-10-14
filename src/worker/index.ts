@@ -4,6 +4,7 @@ import { isRedisConfigured, closeSharedRedis } from "../lib/queue/redis";
 import { closeQueues } from "../lib/queue";
 import { OutboxDispatcher } from "./dispatcher";
 import { createVideoValidationWorker } from "./queues/video-validation-worker";
+import { createAiAnalysisWorker } from "./queues/ai-analysis-worker";
 
 async function main() {
   console.log("==========================================");
@@ -30,10 +31,14 @@ async function main() {
   const dispatcher = new OutboxDispatcher(3000);
   dispatcher.start();
 
-  // 4. Start BullMQ Worker
-  const concurrency = parseInt(process.env.WORKER_CONCURRENCY || "2", 10);
-  const worker = createVideoValidationWorker(concurrency);
-  console.log(`[Worker] Video validation worker active with concurrency=${concurrency}.`);
+  // 4. Start BullMQ Workers
+  const valConcurrency = parseInt(process.env.WORKER_CONCURRENCY || "2", 10);
+  const validationWorker = createVideoValidationWorker(valConcurrency);
+  console.log(`[Worker] Video validation worker active with concurrency=${valConcurrency}.`);
+
+  const aiConcurrency = parseInt(process.env.AI_WORKER_CONCURRENCY || "1", 10);
+  const aiWorker = createAiAnalysisWorker(aiConcurrency);
+  console.log(`[Worker] AI analysis worker active with concurrency=${aiConcurrency}.`);
 
   // 5. Graceful shutdown handler
   let isShuttingDown = false;
@@ -45,8 +50,11 @@ async function main() {
     dispatcher.stop();
 
     try {
-      console.log("[Worker] Closing BullMQ worker...");
-      await worker.close();
+      console.log("[Worker] Closing BullMQ workers...");
+      await Promise.all([
+        validationWorker.close(),
+        aiWorker.close(),
+      ]);
 
       console.log("[Worker] Closing producer queues...");
       await closeQueues();
@@ -64,6 +72,7 @@ async function main() {
       process.exit(1);
     }
   };
+
 
   process.on("SIGINT", () => shutdown("SIGINT"));
   process.on("SIGTERM", () => shutdown("SIGTERM"));

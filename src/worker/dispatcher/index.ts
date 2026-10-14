@@ -1,4 +1,8 @@
-import { dispatchPendingValidationJobs, DispatchResult } from "../../lib/services/jobs";
+import {
+  dispatchPendingValidationJobs,
+  dispatchPendingAiAnalysisJobs,
+  DispatchResult,
+} from "../../lib/services/jobs";
 
 export class OutboxDispatcher {
   private intervalTimer: NodeJS.Timeout | null = null;
@@ -28,18 +32,30 @@ export class OutboxDispatcher {
   }
 
   /**
-   * Executes a single dispatch iteration.
+   * Executes a single dispatch iteration for both validation and AI jobs.
    */
   async tick(): Promise<DispatchResult | null> {
     if (this.isProcessing) return null;
     this.isProcessing = true;
 
     try {
-      const result = await dispatchPendingValidationJobs(10);
-      if (result.dispatched > 0) {
-        console.log(`[OutboxDispatcher] Dispatched ${result.dispatched} pending job(s) to BullMQ.`);
+      const [validationResult, aiResult] = await Promise.all([
+        dispatchPendingValidationJobs(10),
+        dispatchPendingAiAnalysisJobs(10),
+      ]);
+
+      const totalDispatched = validationResult.dispatched + aiResult.dispatched;
+      if (totalDispatched > 0) {
+        console.log(
+          `[OutboxDispatcher] Dispatched ${totalDispatched} job(s) (Validation: ${validationResult.dispatched}, AI: ${aiResult.dispatched}) to BullMQ.`
+        );
       }
-      return result;
+
+      return {
+        dispatched: totalDispatched,
+        failed: validationResult.failed + aiResult.failed,
+        errors: [...validationResult.errors, ...aiResult.errors],
+      };
     } catch (err: unknown) {
       console.warn("[OutboxDispatcher] Dispatch tick encountered an error:", err);
       return null;
@@ -47,6 +63,7 @@ export class OutboxDispatcher {
       this.isProcessing = false;
     }
   }
+
 
   /**
    * Stops the dispatcher loop.

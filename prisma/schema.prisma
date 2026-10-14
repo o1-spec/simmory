@@ -220,6 +220,7 @@ model CookingVideo {
   updatedAt        DateTime              @updatedAt
 
   processingJobs   ProcessingJob[]
+  analyses         AIAnalysis[]
 
   @@index([kitchenId])
   @@index([recipeId])
@@ -251,6 +252,8 @@ model ProcessingJob {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
+  aiAnalyses     AIAnalysis[]
+
   @@index([videoId])
   @@index([kitchenId])
   @@index([status])
@@ -258,3 +261,107 @@ model ProcessingJob {
   @@index([createdAt])
   @@map("processing_jobs")
 }
+
+enum SpeechStatus {
+  USABLE_SPEECH
+  NO_AUDIO_TRACK
+  NO_USABLE_SPEECH
+  LOW_CONFIDENCE
+  TRANSCRIPTION_FAILED
+}
+
+enum AIAnalysisStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+  NEEDS_REVIEW
+}
+
+model AIAnalysis {
+  id               String           @id @default(uuid()) @db.Uuid
+  videoId          String           @db.Uuid
+  video            CookingVideo     @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  jobId            String?          @db.Uuid
+  job              ProcessingJob?   @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  schemaVersion    String           @default("1.0.0")
+  whisperModel     String           @default("small")
+  visionModel      String           @default("gemma4:e4b-it-qat")
+  speechStatus     SpeechStatus     @default(NO_USABLE_SPEECH)
+  detectedLanguage String?
+  status           AIAnalysisStatus @default(PROCESSING)
+  summary          String?
+  totalFrames      Int              @default(0)
+  startedAt        DateTime?
+  completedAt      DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  transcriptSegments TranscriptSegment[]
+  visualObservations VisualObservation[]
+  proposedEvents     ProposedCookingEvent[]
+
+  @@index([videoId])
+  @@index([jobId])
+  @@index([status])
+  @@map("ai_analyses")
+}
+
+model TranscriptSegment {
+  id          String     @id @default(uuid()) @db.Uuid
+  analysisId  String     @db.Uuid
+  analysis    AIAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  start       Float
+  end         Float
+  text        String
+  language    String?
+  needsReview Boolean    @default(false)
+  position    Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([analysisId])
+  @@index([position])
+  @@map("transcript_segments")
+}
+
+model VisualObservation {
+  id               String     @id @default(uuid()) @db.Uuid
+  analysisId       String     @db.Uuid
+  analysis         AIAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  frameId          String
+  timestampSeconds Float
+  visibleObjects   Json
+  visibleAction    String?
+  foodAppearance   String?
+  uncertainDetails Json
+  position         Int        @default(0)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  @@index([analysisId])
+  @@index([frameId])
+  @@index([timestampSeconds])
+  @@map("visual_observations")
+}
+
+model ProposedCookingEvent {
+  id                  String     @id @default(uuid()) @db.Uuid
+  analysisId          String     @db.Uuid
+  analysis            AIAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  position            Int        @default(0)
+  title               String
+  description         String
+  evidenceFrames      Json
+  evidenceTranscripts Json?
+  observedTimestamps  Json
+  uncertainties       Json
+  questionForCook     String?
+  verified            Boolean    @default(false)
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  @@index([analysisId])
+  @@index([position])
+  @@map("proposed_cooking_events")
+}
+

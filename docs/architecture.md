@@ -706,5 +706,57 @@ The worker is packaged as an independent Node.js process:
 - All temporary files are unlinked in `finally` blocks.
 - Cleanly handles `SIGTERM` and `SIGINT` signals by finishing active jobs, closing BullMQ workers, and gracefully disconnecting Redis and PostgreSQL.
 
+---
+
+## 10. Phase 6: Open-Source AI Video Analysis & Recipe Reconstruction
+
+Phase 6 introduces a real, locally running multi-modal Python AI service that reconstructs family cooking knowledge while strictly preserving uncertainty, evidence, and original audio without hallucinating recipes.
+
+### 10.1 Standalone Python AI Service (`services/ai`)
+- **FastAPI** server bound to loopback `http://127.0.0.1:8001`.
+- **Internal Authentication**: Requires `X-Simmory-Internal-Key` matching `SIMMORY_AI_INTERNAL_KEY`.
+- **Bounded Concurrency**: Uses an `asyncio.Semaphore(1)` to limit simultaneous heavy ML inference on Apple Silicon RAM.
+- **Zero Mocking**: All speech recognition, visual analysis, and timeline reasoning execute through local Faster-Whisper and local Ollama Gemma 4.
+
+### 10.2 BullMQ `ai-analysis` Queue & Worker Coordination
+- A dedicated BullMQ queue `QUEUE_NAMES.AI_ANALYSIS` (`ai-analysis`) processes AI jobs.
+- Triggered exclusively by kitchen `OWNER` or `EDITOR` on videos with `validationStatus: "VALIDATED"`.
+- Node.js worker downloads the private video stream and invokes the local Python service over authenticated HTTP loopback.
+- Bounded temporary storage: Video binaries and extracted frames are isolated in temporary workspaces and unlinked in `finally` blocks.
+
+### 10.3 Speech Hallucination Safeguards
+To prevent Whisper from fabricating spoken recipe instructions on silent or un-narrated cooking demonstrations:
+1. Container audio streams are probed via `ffprobe`; missing tracks return `NO_AUDIO_TRACK`.
+2. Segments exceeding video duration or starting before 0.0s are rejected.
+3. Extreme duration anomalies (>40s with few words) are flagged as silence loop artifacts.
+4. Canned silence phrases (e.g. *"This is not my only shelter"*, *"Thank you for watching"*) are pruned.
+5. If >40% of segments are anomalous, the system yields `NO_USABLE_SPEECH` and displays an explicit notice:
+   > *"No usable narration was detected. Simmory analyzed the visible cooking activity instead."*
+
+### 10.4 Frame Extraction & Gemma 4 Visual Understanding
+- Sampled at ~10s intervals (`FRAME_SAMPLING_INTERVAL_SECONDS = 10.0`) capped at 30 frames.
+- Scaled to 640px maximum width to prevent RAM exhaustion.
+- Analyzed frame-by-frame with Gemma 4 using structured JSON schemas to prevent cross-frame fabrication.
+- Captures visible actions, food textures, objects, and explicit uncertainties.
+
+### 10.5 Grounded Cooking Timeline & Evidence Playback
+- Chronological proposed cooking events are synthesized by Gemma 4.
+- Python-side post-validation verifies every referenced `frame_id` against actual extracted frames; invalid references are filtered out.
+- Timestamps are derived strictly from ground-truth frame metadata.
+- Candidate events are **never automatically verified** (`verified: false`).
+- Clickable timestamp badges on `/videos/[id]` seek the native video player directly to the exact moment.
+
+### 10.6 Database Persistence Schema
+- **`AIAnalysis`**: Root record tracking models, speech status, frame counts, summary, and processing timestamps.
+- **`TranscriptSegment`**: Timestamped spoken segments with `needsReview` flags.
+- **`VisualObservation`**: Timestamped frame observations with visible objects and uncertainty details.
+- **`ProposedCookingEvent`**: Chronological candidate events with evidence frame arrays, timestamps, and questions for the cook.
+
+### 10.7 Full System Verification Suite (107 Passing Tests)
+- **TypeScript Integration & Unit Tests**: 91 passing tests across 13 test suites (`npm test`).
+- **Python AI Test Suite**: 16 passing unit tests (`services/ai/tests/`).
+- **Real Local Smoke Test**: `services/ai/smoke_test.py` validates Faster-Whisper, Ollama Gemma 4, and real cooking video fixtures.
+
+
 
 

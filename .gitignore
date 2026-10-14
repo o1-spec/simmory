@@ -43,3 +43,13 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# python & ai service
+.venv/
+*/.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+services/ai/tmp/
+services/ai/frames/
+

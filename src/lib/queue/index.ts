@@ -23,6 +23,7 @@ export interface AiAnalysisJobPayload {
 }
 
 let validationQueue: Queue<VideoValidationJobPayload> | null = null;
+let aiAnalysisQueue: Queue<AiAnalysisJobPayload> | null = null;
 
 const defaultQueueOptions: Omit<QueueOptions, "connection"> = {
   defaultJobOptions: {
@@ -61,6 +62,24 @@ export function getVideoValidationQueue(): Queue<VideoValidationJobPayload> {
 }
 
 /**
+ * Returns the BullMQ AI Analysis Queue.
+ * Uses lazy connection via shared Redis instance.
+ */
+export function getAiAnalysisQueue(): Queue<AiAnalysisJobPayload> {
+  if (!aiAnalysisQueue) {
+    const connection = getSharedRedis();
+    aiAnalysisQueue = new Queue<AiAnalysisJobPayload>(
+      QUEUE_NAMES.AI_ANALYSIS,
+      {
+        ...defaultQueueOptions,
+        connection,
+      }
+    );
+  }
+  return aiAnalysisQueue;
+}
+
+/**
  * Closes all producer queues gracefully.
  */
 export async function closeQueues(): Promise<void> {
@@ -68,4 +87,9 @@ export async function closeQueues(): Promise<void> {
     await validationQueue.close();
     validationQueue = null;
   }
+  if (aiAnalysisQueue) {
+    await aiAnalysisQueue.close();
+    aiAnalysisQueue = null;
+  }
 }
+

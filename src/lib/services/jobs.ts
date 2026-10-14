@@ -1,6 +1,11 @@
 import { db } from "../db";
 import { Prisma } from "../../generated/prisma/client";
-import { getVideoValidationQueue, VideoValidationJobPayload } from "../queue";
+import {
+  getVideoValidationQueue,
+  getAiAnalysisQueue,
+  VideoValidationJobPayload,
+  AiAnalysisJobPayload,
+} from "../queue";
 import { canEditVideo, getVideoWithAccess } from "../auth/permissions";
 
 /**
@@ -49,6 +54,56 @@ export async function createOrGetPendingValidationJob(
     data: {
       validationStatus: "QUEUED",
       validationError: null,
+    },
+  });
+
+  return job;
+}
+
+/**
+ * Creates or retrieves a pending AI analysis job transactionally.
+ * Guarantees that at most one active AI analysis job exists per video.
+ */
+export async function createOrGetPendingAiAnalysisJob(
+  tx: Prisma.TransactionClient,
+  params: {
+    videoId: string;
+    kitchenId: string;
+  }
+) {
+  // Check for any currently active AI analysis job for this video
+  const existingActiveJob = await tx.processingJob.findFirst({
+    where: {
+      videoId: params.videoId,
+      jobType: "AI_ANALYSIS",
+      status: {
+        in: ["PENDING_DISPATCH", "QUEUED", "PROCESSING"],
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  if (existingActiveJob) {
+    return existingActiveJob;
+  }
+
+  // Create new pending AI job in outbox
+  const job = await tx.processingJob.create({
+    data: {
+      videoId: params.videoId,
+      kitchenId: params.kitchenId,
+      jobType: "AI_ANALYSIS",
+      status: "PENDING_DISPATCH",
+      stage: "WAITING_FOR_DISPATCH",
+      maxAttempts: 3,
+    },
+  });
+
+  // Transition video processing status to QUEUED
+  await tx.cookingVideo.update({
+    where: { id: params.videoId },
+    data: {
+      processingStatus: "QUEUED",
     },
   });
 
@@ -160,6 +215,98 @@ export async function dispatchPendingValidationJobs(
 }
 
 /**
+ * Reads PENDING_DISPATCH AI analysis jobs and dispatches them to BullMQ.
+ */
+export async function dispatchPendingAiAnalysisJobs(
+  batchSize = 20
+): Promise<DispatchResult> {
+  const result: DispatchResult = { dispatched: 0, failed: 0, errors: [] };
+
+  try {
+    const pendingJobs = await db.processingJob.findMany({
+      where: {
+        status: "PENDING_DISPATCH",
+        jobType: "AI_ANALYSIS",
+      },
+      include: {
+        video: {
+          select: {
+            id: true,
+            storageKey: true,
+            validationStatus: true,
+            uploadStatus: true,
+          },
+        },
+      },
+      take: batchSize,
+      orderBy: { createdAt: "asc" },
+    });
+
+    if (pendingJobs.length === 0) {
+      return result;
+    }
+
+    const queue = getAiAnalysisQueue();
+
+    for (const job of pendingJobs) {
+      try {
+        if (!job.video || job.video.validationStatus !== "VALIDATED") {
+          await db.processingJob.update({
+            where: { id: job.id },
+            data: {
+              status: "CANCELLED",
+              stage: "CANCELLED",
+              errorMessage: "Video is not validated or was deleted prior to AI analysis dispatch.",
+            },
+          });
+          continue;
+        }
+
+        const deterministicJobId = `ai-analysis-${job.id}`;
+        const payload: AiAnalysisJobPayload = {
+          jobId: job.id,
+          videoId: job.videoId,
+          kitchenId: job.kitchenId,
+        };
+
+        await queue.add("analyze-video", payload, {
+          jobId: deterministicJobId,
+        });
+
+        const updateCount = await db.processingJob.updateMany({
+          where: {
+            id: job.id,
+            status: "PENDING_DISPATCH",
+          },
+          data: {
+            status: "QUEUED",
+            stage: "QUEUED",
+            queuedAt: new Date(),
+            bullMqJobId: deterministicJobId,
+          },
+        });
+
+        if (updateCount.count > 0) {
+          result.dispatched += 1;
+        }
+      } catch (jobError: unknown) {
+        result.failed += 1;
+        const msg = jobError instanceof Error ? jobError.message : String(jobError);
+        result.errors.push(`AI Job ${job.id}: ${msg}`);
+        console.warn(`[Dispatcher] Failed to dispatch AI job ${job.id}:`, msg);
+      }
+    }
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
+    result.errors.push(`Dispatcher error: ${msg}`);
+    console.warn("[Dispatcher] AI dispatch batch failed:", msg);
+  }
+
+  return result;
+}
+
+
+/**
  * Retrieves the full processing & validation status for a video.
  * Enforces kitchen access (OWNER, EDITOR, VIEWER).
  */
@@ -171,13 +318,22 @@ export async function getVideoProcessingStatus(userId: string, videoId: string) 
 
   const { video } = result;
 
-  const latestJob = await db.processingJob.findFirst({
-    where: {
-      videoId,
-      jobType: "VIDEO_VALIDATION",
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  const [latestValidationJob, latestAiJob] = await Promise.all([
+    db.processingJob.findFirst({
+      where: {
+        videoId,
+        jobType: "VIDEO_VALIDATION",
+      },
+      orderBy: { createdAt: "desc" },
+    }),
+    db.processingJob.findFirst({
+      where: {
+        videoId,
+        jobType: "AI_ANALYSIS",
+      },
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
 
   return {
     video: {
@@ -196,21 +352,38 @@ export async function getVideoProcessingStatus(userId: string, videoId: string) 
       validationError: video.validationError,
       completedAt: video.completedAt,
     },
-    latestJob: latestJob
+    latestJob: latestValidationJob
       ? {
-          id: latestJob.id,
-          status: latestJob.status,
-          stage: latestJob.stage,
-          attempts: latestJob.attempts,
-          maxAttempts: latestJob.maxAttempts,
-          errorCode: latestJob.errorCode,
-          errorMessage: latestJob.errorMessage,
-          progressInfo: latestJob.progressInfo,
-          queuedAt: latestJob.queuedAt,
-          startedAt: latestJob.startedAt,
-          completedAt: latestJob.completedAt,
-          createdAt: latestJob.createdAt,
-          updatedAt: latestJob.updatedAt,
+          id: latestValidationJob.id,
+          status: latestValidationJob.status,
+          stage: latestValidationJob.stage,
+          attempts: latestValidationJob.attempts,
+          maxAttempts: latestValidationJob.maxAttempts,
+          errorCode: latestValidationJob.errorCode,
+          errorMessage: latestValidationJob.errorMessage,
+          progressInfo: latestValidationJob.progressInfo,
+          queuedAt: latestValidationJob.queuedAt,
+          startedAt: latestValidationJob.startedAt,
+          completedAt: latestValidationJob.completedAt,
+          createdAt: latestValidationJob.createdAt,
+          updatedAt: latestValidationJob.updatedAt,
+        }
+      : null,
+    latestAiJob: latestAiJob
+      ? {
+          id: latestAiJob.id,
+          status: latestAiJob.status,
+          stage: latestAiJob.stage,
+          attempts: latestAiJob.attempts,
+          maxAttempts: latestAiJob.maxAttempts,
+          errorCode: latestAiJob.errorCode,
+          errorMessage: latestAiJob.errorMessage,
+          progressInfo: latestAiJob.progressInfo,
+          queuedAt: latestAiJob.queuedAt,
+          startedAt: latestAiJob.startedAt,
+          completedAt: latestAiJob.completedAt,
+          createdAt: latestAiJob.createdAt,
+          updatedAt: latestAiJob.updatedAt,
         }
       : null,
   };
@@ -260,6 +433,54 @@ export async function triggerVideoValidation(userId: string, videoId: string) {
 
   return newJob;
 }
+
+/**
+ * Allows an authorized OWNER or EDITOR to trigger AI analysis for a media-validated video.
+ */
+export async function triggerAiAnalysis(userId: string, videoId: string) {
+  const result = await canEditVideo(videoId, userId);
+  if (!result) {
+    throw new Error("VIDEO_NOT_FOUND_OR_FORBIDDEN");
+  }
+
+  const { video } = result;
+  if (video.uploadStatus !== "UPLOADED") {
+    throw new Error("VIDEO_NOT_UPLOADED");
+  }
+
+  if (video.validationStatus !== "VALIDATED") {
+    throw new Error("VIDEO_NOT_VALIDATED: Only media-validated videos can be analyzed by AI.");
+  }
+
+  // Check if there is already an active AI analysis job
+  const activeJob = await db.processingJob.findFirst({
+    where: {
+      videoId,
+      jobType: "AI_ANALYSIS",
+      status: { in: ["PENDING_DISPATCH", "QUEUED", "PROCESSING"] },
+    },
+  });
+
+  if (activeJob) {
+    return activeJob;
+  }
+
+  // Create new AI analysis job in transaction
+  const newJob = await db.$transaction(async (tx) => {
+    return createOrGetPendingAiAnalysisJob(tx, {
+      videoId: video.id,
+      kitchenId: video.kitchenId,
+    });
+  });
+
+  // Attempt immediate outbox dispatch (non-blocking)
+  dispatchPendingAiAnalysisJobs(5).catch((err) => {
+    console.warn("[triggerAiAnalysis] Background dispatch trigger:", err.message);
+  });
+
+  return newJob;
+}
+
 
 /**
  * Returns genuine database-derived video validation metrics across user's accessible kitchens.
