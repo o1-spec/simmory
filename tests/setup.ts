@@ -23,6 +23,6 @@ export const testDb = new PrismaClient({ adapter });
 
 export async function clearTestDatabase() {
   await testDb.$executeRawUnsafe(`
-    TRUNCATE TABLE "processing_jobs", "cooking_videos", "recipes", "kitchen_members", "kitchens", "refresh_sessions", "users" CASCADE;
+    TRUNCATE TABLE "cooking_sessions", "cooking_reviews", "processing_jobs", "cooking_videos", "recipes", "kitchen_members", "kitchens", "refresh_sessions", "users" CASCADE;
   `);
 }

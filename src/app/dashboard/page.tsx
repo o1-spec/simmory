@@ -33,7 +33,14 @@ async function DashboardContent() {
   const session = await requireUser("/dashboard");
 
   // Query authentic metrics in parallel without N+1
-  const [kitchens, recentRecipesResult, recentVideosResult, validationStats, pendingReviews] = await Promise.all([
+  const [
+    kitchens,
+    recentRecipesResult,
+    recentVideosResult,
+    validationStats,
+    pendingReviews,
+    activeCookingSessions,
+  ] = await Promise.all([
     listUserKitchens(session.user.id),
     listUserRecipes(session.user.id, { page: 1, limit: 6 }),
     listUserVideos(session.user.id, { page: 1, limit: 3 }),
@@ -56,6 +63,27 @@ async function DashboardContent() {
         kitchen: { select: { name: true } },
       },
       take: 3,
+    }),
+    prisma.cookingSession.findMany({
+      where: {
+        userId: session.user.id,
+        status: { in: ["IN_PROGRESS", "PAUSED"] },
+      },
+      include: {
+        recipe: {
+          select: {
+            id: true,
+            title: true,
+            cookName: true,
+            steps: { select: { id: true } },
+          },
+        },
+        sessionSteps: {
+          where: { completed: true },
+        },
+      },
+      orderBy: { updatedAt: "desc" },
+      take: 2,
     }),
   ]);
 
@@ -211,6 +239,70 @@ async function DashboardContent() {
                 Review &ldquo;{pendingReviews[0].originalFilename.replace(/\.[^/.]+$/, "")}&rdquo;
               </Button>
             </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Active Cooking Sessions (Continue Cooking) */}
+      {activeCookingSessions.length > 0 && (
+        <div className="mb-8 p-5 bg-emerald-50/70 border border-emerald-200/80 rounded-3xl space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Play className="w-4 h-4 text-emerald-700 fill-emerald-600" />
+              <h3 className="text-sm font-semibold text-emerald-950">
+                Continue Cooking — Active Session
+              </h3>
+            </div>
+            <span className="text-xs text-emerald-700 font-medium">
+              Pick up right where you left off
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {activeCookingSessions.map((act) => {
+              const totalSteps = act.recipe.steps.length;
+              const completedCount = act.sessionSteps.length;
+              const progressPct =
+                totalSteps > 0
+                  ? Math.round((completedCount / totalSteps) * 100)
+                  : 0;
+
+              return (
+                <div
+                  key={act.id}
+                  className="p-4 bg-white rounded-2xl border border-emerald-200/60 shadow-xs flex items-center justify-between gap-4"
+                >
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-serif text-base font-medium text-warm-900 truncate">
+                      {act.recipe.title}
+                    </h4>
+                    <p className="text-xs text-warm-500 truncate mb-2">
+                      Cooked by {act.recipe.cookName}
+                    </p>
+                    <div className="w-full bg-warm-100 h-1.5 rounded-full overflow-hidden max-w-xs">
+                      <div
+                        className="bg-emerald-500 h-full transition-all"
+                        style={{ width: `${progressPct}%` }}
+                      />
+                    </div>
+                    <span className="text-[11px] text-warm-500 mt-1 block">
+                      Step {act.currentStepPosition + 1} of {totalSteps} &bull;{" "}
+                      {completedCount} completed ({progressPct}%)
+                    </span>
+                  </div>
+
+                  <Link href={`/cook/${act.recipe.id}`}>
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      className="bg-emerald-700 hover:bg-emerald-800 shrink-0 font-medium"
+                    >
+                      Resume
+                    </Button>
+                  </Link>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

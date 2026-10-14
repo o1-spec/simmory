@@ -167,12 +167,21 @@ async function KitchenDetailContent({ params }: { params: Promise<{ id: string }
                     <span>
                       {recipe._count.ingredients} ingredients • {recipe._count.steps} steps
                     </span>
-                    <Link
-                      href={`/recipes/${recipe.id}`}
-                      className="text-terracotta-600 hover:text-terracotta-700 font-medium"
-                    >
-                      View &rarr;
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href={`/cook/${recipe.id}`}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2 py-0.5 rounded-lg transition-colors"
+                      >
+                        <Play className="w-2.5 h-2.5 fill-emerald-600" />
+                        Cook
+                      </Link>
+                      <Link
+                        href={`/recipes/${recipe.id}`}
+                        className="text-terracotta-600 hover:text-terracotta-700 font-medium"
+                      >
+                        View &rarr;
+                      </Link>
+                    </div>
                   </div>
                 </Card>
               ))}

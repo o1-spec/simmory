@@ -790,6 +790,52 @@ AI outputs are treated as working hypotheses. Cooking knowledge that exists in g
 - **TypeScript Integration & Unit Tests**: 104 passing tests across 14 test suites (`npm test`).
 - **Python AI Test Suite**: 17 passing tests (`services/ai/tests/`).
 
+---
+
+## 12. Phase 8: Interactive Cook Along Architecture
+
+Phase 8 completes Simmory's core experience: **Upload → Analyze → Review → Preserve → Cook Along**. It delivers a real-time, responsive cooking interface allowing family members to prepare heirloom recipes with step-by-step guidance, synchronized video playback, sensory cues, monotonic cooking timers, and personal session persistence.
+
+### 12.1 Relational Data Models & Persistence (PostgreSQL & Prisma 7)
+- **`CookingSession`**: Manages personal cooking session lifecycle (`IN_PROGRESS`, `PAUSED`, `COMPLETED`, `ABANDONED`) with `currentStepId`, `currentStepPosition`, `version` (optimistic concurrency lock), `startedAt`, `lastActivityAt`, and `completedAt`.
+- **`CookingSessionStep`**: Authoritative step completion records (`sessionId`, `stepId`, `completed`, `completedAt`).
+- **`CookingSessionIngredient`**: Mise en place ingredient preparation checklist records (`sessionId`, `ingredientId`, `checked`, `checkedAt`).
+- Migration `20261014184402_add_cooking_session_models` preserves relational integrity with cascade deletes on recipe/user removal.
+
+### 12.2 Canonical Route & Dynamic Loading
+- Canonical route: `/cook/[id]` where `[id]` is a **Recipe ID**.
+- Server Component shell utilizes Next.js 16 Partial Prerendering and streaming Suspense.
+- Server-side data loader fetches normalized recipe details, linked `RecipeEvidence`, authentic qualitative ingredient quantities, and temporary signed video playback tokens.
+
+### 12.3 Video Synchronization & Multi-Video Handling
+- Synchronized video player seeks to step start timestamps using `seeked` event listener guards to eliminate WebKit/Safari resets to `00:00`.
+- Supports recipes referencing multiple video recordings by switching source tokens based on active step evidence.
+- Provides an honest, warm editorial fallback for handwritten recipes lacking video demonstrations.
+
+### 12.4 Monotonic Cooking Timers & Audio Feedback
+- Timers use target deadline timestamps (`Date.now() + remainingMs`) to remain accurate across browser background tab throttling and device sleep.
+- `visibilitychange` listener recalculates remaining time immediately upon tab focus.
+- Synthesizes chime tones directly using the Web Audio API without external audio file dependencies.
+- Handles both unambiguous numeric durations (with presets) and qualitative descriptions (e.g. "until oil rises") without forced artificial countdowns.
+
+### 12.5 Sensory Cooking Cues & Traditional Measurements
+- Distinct editorial presentation ("How You'll Know It's Ready") highlighting sight, sound, aroma, and texture cues.
+- Preserves cook's original non-metric measurements (e.g., "a handful", "two knuckle-depths") without forced metricization.
+
+### 12.6 Multi-Device Usability & Focus Mode
+- Responsive two-panel desktop layout and touch-optimized mobile drawer system.
+- High-contrast, distraction-free **Focus Mode** for active kitchen cooking.
+- Keyboard shortcuts (`ArrowLeft`, `ArrowRight`, `Space`, `M`, `F`, `Escape`) disabled inside form inputs.
+
+### 12.7 Truthful Verification Semantics
+- Completing a cooking session finishes the session record and shows celebration metrics, but **strictly preserves** the underlying recipe's verification status (`cookVerified`, `status`). Cooking accomplishment never fabricates original-cook approval.
+
+### 12.8 Full System Verification Suite (134 Passing Tests)
+- **TypeScript Integration & Unit Tests**: 117 passing tests across 15 test suites (`npm test`).
+- **Python AI Test Suite**: 17 passing tests (`services/ai/tests/`).
+- **Production Build**: 0 errors with Turbopack across 32 routes (`npm run build`).
+
+
 
 
 

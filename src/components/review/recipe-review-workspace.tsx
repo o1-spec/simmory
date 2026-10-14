@@ -9,6 +9,8 @@ import {
   Plus,
   ShieldCheck,
   Eye,
+  Play,
+  CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -462,6 +464,30 @@ export function RecipeReviewWorkspace({
           </div>
         </div>
       </div>
+
+      {review.recipe?.id && (
+        <div className="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-emerald-950">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>
+              Converted to Recipe: <strong className="font-semibold">{review.recipe.title}</strong>
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link href={`/cook/${review.recipe.id}`}>
+              <Button size="sm" variant="primary" className="bg-emerald-700 hover:bg-emerald-800 gap-1.5 font-medium">
+                <Play className="w-3.5 h-3.5 fill-white" />
+                Cook This Recipe
+              </Button>
+            </Link>
+            <Link href={`/recipes/${review.recipe.id}`}>
+              <Button size="sm" variant="secondary">
+                View Recipe
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {errorMessage && (
         <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center justify-between">

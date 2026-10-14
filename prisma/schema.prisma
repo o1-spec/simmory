@@ -96,6 +96,13 @@ enum IngredientProvenance {
   HUMAN_CONFIRMED
 }
 
+enum CookingSessionStatus {
+  IN_PROGRESS
+  PAUSED
+  COMPLETED
+  ABANDONED
+}
+
 model User {
   id           String    @id @default(uuid()) @db.Uuid
   name         String
@@ -113,6 +120,7 @@ model User {
   reviewedRecipes    Recipe[]         @relation("RecipeReviewer")
   uploadedVideos     CookingVideo[]   @relation("UserVideos")
   reviews            CookingReview[]
+  cookingSessions    CookingSession[]
 
   @@map("users")
 }
@@ -147,6 +155,7 @@ model Kitchen {
   videos  CookingVideo[]
   processingJobs ProcessingJob[]
   reviews CookingReview[]
+  cookingSessions CookingSession[]
 
   @@index([ownerId])
   @@map("kitchens")
@@ -194,6 +203,7 @@ model Recipe {
   steps       RecipeStep[]
   videos      CookingVideo[]
   reviews     CookingReview[]
+  cookingSessions CookingSession[]
 
   @@index([kitchenId])
   @@index([createdById])
@@ -211,6 +221,8 @@ model RecipeIngredient {
   position  Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  sessionIngredients CookingSessionIngredient[]
 
   @@index([recipeId])
   @@map("recipe_ingredients")
@@ -231,6 +243,7 @@ model RecipeStep {
   updatedAt           DateTime @updatedAt
 
   evidence            RecipeEvidence[]
+  sessionSteps        CookingSessionStep[]
 
   @@index([recipeId])
   @@map("recipe_steps")
@@ -534,5 +547,64 @@ model RecipeEvidence {
   @@index([videoId])
   @@map("recipe_evidences")
 }
+
+model CookingSession {
+  id                  String               @id @default(uuid()) @db.Uuid
+  recipeId            String               @db.Uuid
+  recipe              Recipe               @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  userId              String               @db.Uuid
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kitchenId           String               @db.Uuid
+  kitchen             Kitchen              @relation(fields: [kitchenId], references: [id], onDelete: Cascade)
+  status              CookingSessionStatus @default(IN_PROGRESS)
+  currentStepId       String?              @db.Uuid
+  currentStepPosition Int                  @default(0)
+  startedAt           DateTime             @default(now())
+  lastActivityAt      DateTime             @default(now())
+  completedAt         DateTime?
+  version             Int                  @default(1)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+
+  sessionSteps        CookingSessionStep[]
+  sessionIngredients  CookingSessionIngredient[]
+
+  @@index([recipeId])
+  @@index([userId])
+  @@index([kitchenId])
+  @@index([status])
+  @@map("cooking_sessions")
+}
+
+model CookingSessionStep {
+  id          String         @id @default(uuid()) @db.Uuid
+  sessionId   String         @db.Uuid
+  session     CookingSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  stepId      String         @db.Uuid
+  step        RecipeStep     @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  completed   Boolean        @default(true)
+  completedAt DateTime       @default(now())
+
+  @@unique([sessionId, stepId])
+  @@index([sessionId])
+  @@index([stepId])
+  @@map("cooking_session_steps")
+}
+
+model CookingSessionIngredient {
+  id           String           @id @default(uuid()) @db.Uuid
+  sessionId    String           @db.Uuid
+  session      CookingSession   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  ingredientId String           @db.Uuid
+  ingredient   RecipeIngredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  checked      Boolean          @default(true)
+  checkedAt    DateTime         @default(now())
+
+  @@unique([sessionId, ingredientId])
+  @@index([sessionId])
+  @@index([ingredientId])
+  @@map("cooking_session_ingredients")
+}
+
 
 

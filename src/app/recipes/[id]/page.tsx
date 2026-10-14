@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { requireUser } from "@/lib/auth/get-user";
 import { getRecipeDetails } from "@/lib/services/recipes";
+import { db } from "@/lib/db";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,13 +35,21 @@ async function RecipeDetailContent({ params }: { params: Promise<{ id: string }>
     notFound();
   }
 
+  const activeSession = await db.cookingSession.findFirst({
+    where: {
+      recipeId: recipe.id,
+      userId: session.user.id,
+      status: { in: ["IN_PROGRESS", "PAUSED"] },
+    },
+  });
+
   const isVerified = recipe.status === "VERIFIED_BY_COOK" || recipe.cookVerified;
   const isReviewed = recipe.status === "REVIEW_PENDING" || recipe.reviewedAt != null;
 
   return (
     <article className="max-w-4xl mx-auto pb-16">
       {/* Navigation Breadcrumb */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <Link
           href={`/kitchens/${recipe.kitchenId}`}
           className="inline-flex items-center gap-1.5 text-xs font-medium text-warm-500 hover:text-warm-800 transition-colors"
@@ -49,24 +58,37 @@ async function RecipeDetailContent({ params }: { params: Promise<{ id: string }>
           Back to {recipe.kitchen.name}
         </Link>
 
-        {recipe.canEdit && (
-          <div className="flex items-center gap-2">
-            <Link href={`/recipes/${recipe.id}/edit`}>
-              <Button
-                variant="secondary"
-                size="sm"
-                leftIcon={<Edit className="w-3.5 h-3.5" />}
-              >
-                Edit Recipe
-              </Button>
-            </Link>
-            <DeleteRecipeDialog
-              recipeId={recipe.id}
-              recipeTitle={recipe.title}
-              redirectUrl={`/kitchens/${recipe.kitchenId}`}
-            />
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          <Link href={`/cook/${recipe.id}`}>
+            <Button
+              variant="primary"
+              size="sm"
+              leftIcon={<Play className="w-3.5 h-3.5 fill-white text-terracotta-600" />}
+              className="font-medium"
+            >
+              {activeSession ? "Continue Cooking" : "Start Cooking"}
+            </Button>
+          </Link>
+
+          {recipe.canEdit && (
+            <>
+              <Link href={`/recipes/${recipe.id}/edit`}>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  leftIcon={<Edit className="w-3.5 h-3.5" />}
+                >
+                  Edit Recipe
+                </Button>
+              </Link>
+              <DeleteRecipeDialog
+                recipeId={recipe.id}
+                recipeTitle={recipe.title}
+                redirectUrl={`/kitchens/${recipe.kitchenId}`}
+              />
+            </>
+          )}
+        </div>
       </div>
 
       {/* Editorial Header */}

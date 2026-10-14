@@ -5,23 +5,29 @@ import { AlertCircle, RefreshCw, Play, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VideoUploadStatus } from "@/generated/prisma/client";
 
-interface VideoPlayerProps {
-  videoId: string;
-  uploadStatus: VideoUploadStatus;
-  storageConfigured: boolean;
+export interface VideoPlayerProps {
+  videoId?: string;
+  uploadStatus?: VideoUploadStatus;
+  storageConfigured?: boolean;
   seekTime?: number | null;
+  src?: string | null;
+  title?: string;
+  className?: string;
 }
 
 export function VideoPlayer({
   videoId,
-  uploadStatus,
-  storageConfigured,
+  uploadStatus = "UPLOADED",
+  storageConfigured = true,
   seekTime,
+  src,
+  className,
 }: VideoPlayerProps) {
   const videoRef = React.useRef<HTMLVideoElement | null>(null);
-  const [playbackUrl, setPlaybackUrl] = useState<string | null>(null);
+  const [fetchedPlaybackUrl, setFetchedPlaybackUrl] = useState<string | null>(null);
+  const playbackUrl = src || fetchedPlaybackUrl;
   const [isLoading, setIsLoading] = useState(
-    storageConfigured && uploadStatus === "UPLOADED"
+    !src && storageConfigured && uploadStatus === "UPLOADED" && !!videoId
   );
   const [error, setError] = useState<string | null>(null);
 
@@ -38,9 +44,8 @@ export function VideoPlayer({
     }
   }, [seekTime]);
 
-
-
   const refreshPlaybackUrl = async () => {
+    if (!videoId) return;
     if (!storageConfigured || uploadStatus !== "UPLOADED") return;
     setIsLoading(true);
     setError(null);
@@ -52,7 +57,7 @@ export function VideoPlayer({
         throw new Error(data.error || "Failed to load secure video stream.");
       }
       const data = await res.json();
-      setPlaybackUrl(data.playbackUrl);
+      setFetchedPlaybackUrl(data.playbackUrl);
     } catch (err: unknown) {
       setError(
         err instanceof Error ? err.message : "Error loading video stream."
@@ -63,6 +68,8 @@ export function VideoPlayer({
   };
 
   useEffect(() => {
+    if (src) return;
+    if (!videoId) return;
     let isCancelled = false;
     if (!storageConfigured || uploadStatus !== "UPLOADED") {
       return;
@@ -78,7 +85,7 @@ export function VideoPlayer({
       })
       .then((data) => {
         if (!isCancelled) {
-          setPlaybackUrl(data.playbackUrl);
+          setFetchedPlaybackUrl(data.playbackUrl);
           setIsLoading(false);
         }
       })
@@ -94,11 +101,11 @@ export function VideoPlayer({
     return () => {
       isCancelled = true;
     };
-  }, [videoId, storageConfigured, uploadStatus]);
+  }, [videoId, storageConfigured, uploadStatus, src]);
 
   if (!storageConfigured) {
     return (
-      <div className="w-full aspect-video rounded-2xl bg-warm-900 flex flex-col items-center justify-center p-6 text-center text-white border border-warm-800">
+      <div className={`w-full aspect-video rounded-2xl bg-warm-900 flex flex-col items-center justify-center p-6 text-center text-white border border-warm-800 ${className || ""}`}>
         <Lock className="w-10 h-10 text-amber-400 mb-3" />
         <h3 className="font-serif text-lg font-medium mb-1">
           Cloudflare R2 Storage Configuration Required
@@ -114,7 +121,7 @@ export function VideoPlayer({
 
   if (uploadStatus !== "UPLOADED") {
     return (
-      <div className="w-full aspect-video rounded-2xl bg-warm-900 flex flex-col items-center justify-center p-6 text-center text-white border border-warm-800">
+      <div className={`w-full aspect-video rounded-2xl bg-warm-900 flex flex-col items-center justify-center p-6 text-center text-white border border-warm-800 ${className || ""}`}>
         <AlertCircle className="w-10 h-10 text-warm-400 mb-3" />
         <h3 className="font-serif text-lg font-medium mb-1">
           Upload Incomplete
@@ -129,7 +136,7 @@ export function VideoPlayer({
 
   if (error) {
     return (
-      <div className="w-full aspect-video rounded-2xl bg-warm-900 flex flex-col items-center justify-center p-6 text-center text-white border border-warm-800 space-y-3">
+      <div className={`w-full aspect-video rounded-2xl bg-warm-900 flex flex-col items-center justify-center p-6 text-center text-white border border-warm-800 space-y-3 ${className || ""}`}>
         <AlertCircle className="w-10 h-10 text-red-400" />
         <p className="text-sm font-medium">{error}</p>
         <Button
@@ -147,7 +154,7 @@ export function VideoPlayer({
 
   if (isLoading || !playbackUrl) {
     return (
-      <div className="w-full aspect-video rounded-2xl bg-warm-900 flex flex-col items-center justify-center p-6 text-center text-white border border-warm-800">
+      <div className={`w-full aspect-video rounded-2xl bg-warm-900 flex flex-col items-center justify-center p-6 text-center text-white border border-warm-800 ${className || ""}`}>
         <div className="w-8 h-8 rounded-full border-2 border-terracotta-500 border-t-transparent animate-spin mb-3" />
         <p className="text-xs text-warm-300 font-mono">
           Authorizing secure playback token...
@@ -157,7 +164,7 @@ export function VideoPlayer({
   }
 
   return (
-    <div className="w-full rounded-2xl overflow-hidden bg-black shadow-lg border border-warm-800">
+    <div className={`w-full rounded-2xl overflow-hidden bg-black shadow-lg border border-warm-800 ${className || ""}`}>
       <video
         ref={videoRef}
         key={playbackUrl}
