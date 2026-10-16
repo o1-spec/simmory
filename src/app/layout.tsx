@@ -27,6 +27,14 @@ export const metadata: Metadata = {
   title: "Simmory — The way they made it, remembered.",
   description:
     "Preserve family cooking knowledge, traditional recipes, sensory cues, and original demonstration videos in a private culinary archive.",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "32x32" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+  },
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({
