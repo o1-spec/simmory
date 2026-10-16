@@ -95,3 +95,149 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #CFCDBF;
 }
+
+/* ========================================================================= */
+/* SIMMORY PREMIUM INITIAL APPLICATION LOADER                                */
+/* ========================================================================= */
+
+.simmory-hat-settle {
+  animation: simmoryHatSettle 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.simmory-hat-stroke {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+
+.simmory-hat-stroke-crown {
+  animation: simmoryStrokeDraw 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.05s forwards;
+}
+
+.simmory-hat-stroke-band {
+  animation: simmoryStrokeDraw 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.18s forwards;
+}
+
+.simmory-hat-stroke-stitch {
+  animation: simmoryStrokeDraw 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.35s forwards;
+}
+
+.simmory-ochre-accent {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: simmoryAccentDraw 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.28s forwards;
+}
+
+.simmory-loader-text-brand {
+  opacity: 0;
+  animation: simmoryTextFadeIn 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.32s forwards;
+}
+
+.simmory-loader-text-tagline {
+  opacity: 0;
+  animation: simmoryTextFadeIn 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.42s forwards;
+}
+
+.simmory-loader-text-dots {
+  opacity: 0;
+  animation: simmoryTextFadeIn 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.52s forwards;
+}
+
+.simmory-loader-dot {
+  animation: simmoryDotPulse 1.4s ease-in-out infinite;
+}
+
+.simmory-loader-dot-1 {
+  animation-delay: 0s;
+}
+
+.simmory-loader-dot-2 {
+  animation-delay: 0.2s;
+}
+
+.simmory-loader-dot-3 {
+  animation-delay: 0.4s;
+}
+
+@keyframes simmoryStrokeDraw {
+  0% {
+    stroke-dashoffset: 100;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes simmoryAccentDraw {
+  0% {
+    stroke-dashoffset: 100;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes simmoryHatSettle {
+  0% {
+    transform: translateY(-8px) scale(0.97);
+    opacity: 0;
+  }
+  65% {
+    transform: translateY(1px) scale(1.008);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes simmoryTextFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes simmoryDotPulse {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .simmory-hat-stroke,
+  .simmory-ochre-accent {
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
+    opacity: 1 !important;
+  }
+  .simmory-hat-settle,
+  .simmory-loader-text-brand,
+  .simmory-loader-text-tagline,
+  .simmory-loader-text-dots {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .simmory-loader-dot {
+    animation: none !important;
+    opacity: 0.75 !important;
+    transform: none !important;
+  }
+}
+

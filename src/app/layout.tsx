@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Barlow_Semi_Condensed, Inter, Martian_Mono } from "next/font/google";
+import { InitialAppLoader } from "@/components/ui/initial-loader";
 import "./globals.css";
 
 const barlowCondensed = Barlow_Semi_Condensed({
@@ -39,6 +40,7 @@ export default function RootLayout({
       className={`${barlowCondensed.variable} ${inter.variable} ${martianMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-[#F2F2EB] text-[#202723] selection:bg-[#2E4742] selection:text-[#F2F2EB]">
+        <InitialAppLoader />
         {children}
       </body>
     </html>
