@@ -13,9 +13,10 @@ export function AppHeader() {
   const isLanding = pathname === "/";
 
   const publicNavLinks = [
+    { label: "The Story", href: "/#story" },
     { label: "How It Works", href: "/#how-it-works" },
-    { label: "Family Kitchen", href: "/#family-kitchen" },
-    { label: "AI Analysis", href: "/#ai-analysis" },
+    { label: "Recipe Archive", href: "/#recipes" },
+    { label: "Family Kitchen", href: "/#kitchen" },
     { label: "Cook Along", href: "/#cook-along" },
   ];
 
