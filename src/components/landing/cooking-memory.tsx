@@ -55,7 +55,7 @@ export function CookingMemory() {
     <section
       id="story"
       ref={containerRef}
-      className="relative py-20 lg:py-32 px-4 sm:px-6 lg:px-8 border-b border-[#DDDCD3] bg-[#F2F2EB] overflow-hidden"
+      className="relative py-20 lg:py-32 px-4 sm:px-6 lg:px-8 border-b border-[#DDDCD3] bg-[#F2F2EB] overflow-hidden scroll-mt-20"
     >
       <div className="max-w-7xl mx-auto space-y-16 lg:space-y-20">
         {/* Section Header */}

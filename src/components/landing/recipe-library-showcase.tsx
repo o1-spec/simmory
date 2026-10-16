@@ -80,7 +80,7 @@ export function RecipeLibraryShowcase() {
   const filtered = activeTab === "all" ? RECIPES : RECIPES.filter((r) => r.category === activeTab);
 
   return (
-    <section id="recipes" className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 border-b border-[#DDDCD3] bg-[#FAF9F5]">
+    <section id="recipes" className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 border-b border-[#DDDCD3] bg-[#FAF9F5] scroll-mt-20">
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">

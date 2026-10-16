@@ -18,22 +18,16 @@ export function CinematicHero() {
 
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-      tl.from(".hero-badge", {
-        opacity: 0,
-        y: -12,
-        duration: 0.6,
-        delay: 0.1,
-      })
-        .from(
-          ".hero-heading-line",
-          {
-            opacity: 0,
-            y: 28,
-            stagger: 0.12,
-            duration: 0.8,
-          },
-          "-=0.4"
-        )
+      tl.from(
+        ".hero-heading-line",
+        {
+          opacity: 0,
+          y: 28,
+          stagger: 0.12,
+          duration: 0.8,
+          delay: 0.1,
+        }
+      )
         .from(
           ".hero-description",
           {
@@ -108,14 +102,6 @@ export function CinematicHero() {
         {/* CENTERED EDITORIAL HERO CONTENT                                           */}
         {/* ========================================================================= */}
         <div className="text-center max-w-4xl mx-auto space-y-6 sm:space-y-8">
-          {/* Top Eyebrow */}
-          <div className="hero-badge flex items-center justify-center">
-            <span className="font-mono text-xs uppercase tracking-widest text-[#2E4742] font-semibold bg-[#FAF9F5] px-4 py-1.5 rounded-full border border-[#DDDCD3] shadow-xs flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#F5B726] animate-pulse" />
-              Simmory — The Family Culinary Archive
-            </span>
-          </div>
-
           {/* Centered Editorial Headline */}
           <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-[5.4rem] font-extrabold text-[#202723] tracking-tight leading-[0.98]">
             <span className="hero-heading-line block">Every recipe has</span>

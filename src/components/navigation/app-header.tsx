@@ -20,12 +20,39 @@ export function AppHeader() {
     { label: "Cook Along", href: "/#cook-along" },
   ];
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (isLanding && href.startsWith("/#")) {
+      e.preventDefault();
+      const targetId = href.replace("/#", "");
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+        window.history.pushState(null, "", `#${targetId}`);
+      }
+      if (mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    }
+  };
+
+  const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (isLanding) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.history.pushState(null, "", "/");
+      if (mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    }
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-[#DDDCD3] bg-[#F2F2EB]/95 backdrop-blur-md transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between">
         {/* Simmory Wordmark */}
         <Link
           href="/"
+          onClick={handleLogoClick}
           className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2E4742] rounded-lg p-1"
         >
           <div className="w-10 h-10 rounded-xl bg-[#2E4742] text-[#F2F2EB] flex items-center justify-center shadow-xs transition-transform duration-200 group-hover:scale-105">
@@ -48,6 +75,7 @@ export function AppHeader() {
               <Link
                 key={link.label}
                 href={link.href}
+                onClick={(e) => handleNavClick(e, link.href)}
                 className="text-sm font-medium text-[#525B56] hover:text-[#2E4742] transition-colors"
               >
                 {link.label}
@@ -58,12 +86,12 @@ export function AppHeader() {
 
         {/* Right CTA / Action */}
         <div className="hidden sm:flex items-center gap-3">
-          <Link
+          {/* <Link
             href="/login"
             className="text-sm font-medium text-[#525B56] hover:text-[#202723] transition-colors px-3 py-1.5"
           >
             Sign In
-          </Link>
+          </Link> */}
           <Link href="/upload">
             <Button
               variant="outline"
@@ -111,7 +139,7 @@ export function AppHeader() {
                 <Link
                   key={link.label}
                   href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={(e) => handleNavClick(e, link.href)}
                   className="block px-3 py-2 rounded-lg text-sm font-medium text-[#525B56] hover:text-[#2E4742] hover:bg-[#EAE9E1]/60"
                 >
                   {link.label}

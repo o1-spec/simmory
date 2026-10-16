@@ -99,7 +99,7 @@ export function VideoToRecipeScroll() {
   );
 
   return (
-    <section id="how-it-works" ref={containerRef} className="relative bg-[#FAF9F5] border-b border-[#DDDCD3]">
+    <section id="how-it-works" ref={containerRef} className="relative bg-[#FAF9F5] border-b border-[#DDDCD3] scroll-mt-20">
       {/* Desktop Pinned Scroll Container */}
       <div ref={pinWrapperRef} className="hidden lg:flex flex-col justify-center min-h-screen py-16 px-8 max-w-7xl mx-auto overflow-hidden">
         {/* Dynamic Header State */}

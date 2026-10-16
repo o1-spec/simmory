@@ -6,7 +6,7 @@ import { Users, ChefHat } from "lucide-react";
 
 export function FamilyKitchenShowcase() {
   return (
-    <section id="kitchen" className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 border-b border-[#DDDCD3] bg-[#F2F2EB]">
+    <section id="kitchen" className="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 border-b border-[#DDDCD3] bg-[#F2F2EB] scroll-mt-20">
       <div className="max-w-7xl mx-auto space-y-14 lg:space-y-16">
         {/* Header */}
         <div className="max-w-3xl space-y-3">

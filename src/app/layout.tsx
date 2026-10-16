@@ -37,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${barlowCondensed.variable} ${inter.variable} ${martianMono.variable} h-full antialiased`}
+      className={`${barlowCondensed.variable} ${inter.variable} ${martianMono.variable} h-full antialiased scroll-smooth scroll-pt-20 sm:scroll-pt-24`}
     >
       <body className="min-h-full flex flex-col font-sans bg-[#F2F2EB] text-[#202723] selection:bg-[#2E4742] selection:text-[#F2F2EB]">
         <InitialAppLoader />
