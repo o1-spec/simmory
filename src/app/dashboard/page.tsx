@@ -126,92 +126,92 @@ async function DashboardContent() {
 
       {/* Metrics Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Card className="p-5">
+        <Card className="p-5 bg-white border border-[#DDDCD3]">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-warm-500">
+            <span className="text-xs font-mono font-medium uppercase tracking-wider text-[#202723]/60">
               Preserved Recipes
             </span>
-            <div className="w-8 h-8 rounded-lg bg-warm-100 text-warm-700 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#2E4742]/10 text-[#2E4742] flex items-center justify-center">
               <BookOpen className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="font-serif text-3xl font-medium text-warm-900">
+            <span className="font-display text-3xl sm:text-4xl font-bold text-[#202723]">
               {totalRecipes}
             </span>
-            <span className="text-xs text-warm-500">
+            <span className="text-xs font-sans text-[#202723]/60">
               {totalRecipes === 1 ? "recipe" : "recipes"}
             </span>
           </div>
-          <p className="text-[11px] text-warm-400 mt-1">
+          <p className="text-[11px] font-sans text-[#202723]/50 mt-1">
             {totalRecipes === 0 ? "Ready for your first family recipe" : "Preserved in family archive"}
           </p>
         </Card>
 
-        <Card className="p-5">
+        <Card className="p-5 bg-white border border-[#DDDCD3]">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-warm-500">
+            <span className="text-xs font-mono font-medium uppercase tracking-wider text-[#202723]/60">
               Family Kitchens
             </span>
-            <div className="w-8 h-8 rounded-lg bg-terracotta-100 text-terracotta-700 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#2E4742]/10 text-[#2E4742] flex items-center justify-center">
               <FolderHeart className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="font-serif text-3xl font-medium text-warm-900">
+            <span className="font-display text-3xl sm:text-4xl font-bold text-[#202723]">
               {totalKitchens}
             </span>
-            <span className="text-xs text-warm-500">
+            <span className="text-xs font-sans text-[#202723]/60">
               {totalKitchens === 1 ? "active space" : "active spaces"}
             </span>
           </div>
-          <p className="text-[11px] text-warm-400 mt-1">
+          <p className="text-[11px] font-sans text-[#202723]/50 mt-1">
             {totalKitchens === 1 ? "Default family space active" : "Multi-generational collections"}
           </p>
         </Card>
 
-        <Card className="p-5">
+        <Card className="p-5 bg-white border border-[#DDDCD3]">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-warm-500">
+            <span className="text-xs font-mono font-medium uppercase tracking-wider text-[#202723]/60">
               Cooking Videos
             </span>
-            <div className="w-8 h-8 rounded-lg bg-sage-100 text-sage-700 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#8BB2DE]/20 text-[#2E4742] flex items-center justify-center">
               <Video className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="font-serif text-3xl font-medium text-warm-900">
+            <span className="font-display text-3xl sm:text-4xl font-bold text-[#202723]">
               {validationStats.uploaded}
             </span>
-            <span className="text-xs text-warm-500">
+            <span className="text-xs font-sans text-[#202723]/60">
               {validationStats.uploaded === 1 ? "video" : "videos"}
             </span>
           </div>
-          <p className="text-[11px] text-warm-400 mt-1">
+          <p className="text-[11px] font-sans text-[#202723]/50 mt-1">
             {validationStats.uploaded === 0
               ? "Stored in Cloudflare R2"
               : `${validationStats.validated} validated by worker`}
           </p>
         </Card>
 
-        <Card className="p-5">
+        <Card className="p-5 bg-white border border-[#DDDCD3]">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-warm-500">
-              Media Stream Validation
+            <span className="text-xs font-mono font-medium uppercase tracking-wider text-[#202723]/60">
+              Media Streams
             </span>
-            <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#F5B726]/20 text-[#A86E00] flex items-center justify-center">
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="font-serif text-3xl font-medium text-warm-900">
+            <span className="font-display text-3xl sm:text-4xl font-bold text-[#202723]">
               {validationStats.validated}
             </span>
-            <span className="text-xs text-warm-500">
+            <span className="text-xs font-sans text-[#202723]/60">
               / {validationStats.uploaded}
             </span>
           </div>
-          <p className="text-[11px] text-warm-400 mt-1">
+          <p className="text-[11px] font-sans text-[#202723]/50 mt-1">
             {validationStats.awaitingValidation > 0
               ? `${validationStats.awaitingValidation} awaiting validation`
               : validationStats.failedValidation > 0
@@ -223,21 +223,21 @@ async function DashboardContent() {
 
       {/* Pending AI Reviews Banner */}
       {pendingReviews.length > 0 && (
-        <div className="mb-8 p-5 bg-terracotta-50/80 border border-terracotta-200/80 rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="mb-8 p-5 bg-white border-l-4 border-l-[#2E4742] border-[#DDDCD3] rounded-2xl shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-terracotta-600" />
-              <h3 className="text-sm font-semibold text-terracotta-900">
+              <Sparkles className="w-4 h-4 text-[#2E4742]" />
+              <h3 className="font-display text-base font-bold text-[#202723]">
                 AI Video Analysis Complete — Human Review Pending
               </h3>
             </div>
-            <p className="text-xs text-warm-700 font-sans leading-relaxed">
+            <p className="text-xs text-[#202723]/70 font-sans leading-relaxed">
               You have {pendingReviews.length} cooking video(s) ready for review. Confirm candidate actions, answer questions for the cook, and reconstruct family recipes.
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <Link href={`/review/${pendingReviews[0].id}`}>
-              <Button size="sm" variant="primary" className="gap-1.5">
+              <Button size="sm" variant="forest" className="gap-1.5">
                 <BookOpen className="w-3.5 h-3.5" />
                 Review &ldquo;{pendingReviews[0].originalFilename.replace(/\.[^/.]+$/, "")}&rdquo;
               </Button>
@@ -248,15 +248,15 @@ async function DashboardContent() {
 
       {/* Active Cooking Sessions (Continue Cooking) */}
       {activeCookingSessions.length > 0 && (
-        <div className="mb-8 p-5 bg-emerald-50/70 border border-emerald-200/80 rounded-3xl space-y-3">
+        <div className="mb-8 p-5 bg-white border border-[#DDDCD3] rounded-2xl shadow-xs space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Play className="w-4 h-4 text-emerald-700 fill-emerald-600" />
-              <h3 className="text-sm font-semibold text-emerald-950">
+              <Play className="w-4 h-4 text-[#2E4742] fill-[#2E4742]" />
+              <h3 className="font-display text-base font-bold text-[#202723]">
                 Continue Cooking — Active Session
               </h3>
             </div>
-            <span className="text-xs text-emerald-700 font-medium">
+            <span className="text-xs font-mono text-[#2E4742] font-medium">
               Pick up right where you left off
             </span>
           </div>
@@ -273,22 +273,22 @@ async function DashboardContent() {
               return (
                 <div
                   key={act.id}
-                  className="p-4 bg-white rounded-2xl border border-emerald-200/60 shadow-xs flex items-center justify-between gap-4"
+                  className="p-4 bg-[#FAF9F5] rounded-xl border border-[#DDDCD3] shadow-xs flex items-center justify-between gap-4"
                 >
                   <div className="min-w-0 flex-1">
-                    <h4 className="font-serif text-base font-medium text-warm-900 truncate">
+                    <h4 className="font-display text-base font-bold text-[#202723] truncate">
                       {act.recipe.title}
                     </h4>
-                    <p className="text-xs text-warm-500 truncate mb-2">
+                    <p className="text-xs text-[#202723]/60 truncate mb-2">
                       Cooked by {act.recipe.cookName}
                     </p>
-                    <div className="w-full bg-warm-100 h-1.5 rounded-full overflow-hidden max-w-xs">
+                    <div className="w-full bg-[#EAE9E1] h-1.5 rounded-full overflow-hidden max-w-xs">
                       <div
-                        className="bg-emerald-500 h-full transition-all"
+                        className="bg-[#2E4742] h-full transition-all"
                         style={{ width: `${progressPct}%` }}
                       />
                     </div>
-                    <span className="text-[11px] text-warm-500 mt-1 block">
+                    <span className="text-[11px] font-mono text-[#202723]/60 mt-1 block">
                       Step {act.currentStepPosition + 1} of {totalSteps} &bull;{" "}
                       {completedCount} completed ({progressPct}%)
                     </span>
@@ -297,8 +297,8 @@ async function DashboardContent() {
                   <Link href={`/cook/${act.recipe.id}`}>
                     <Button
                       size="sm"
-                      variant="primary"
-                      className="bg-emerald-700 hover:bg-emerald-800 shrink-0 font-medium"
+                      variant="forest"
+                      className="shrink-0 font-medium"
                     >
                       Resume
                     </Button>
@@ -314,17 +314,17 @@ async function DashboardContent() {
       <div className="mb-10">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="font-serif text-xl font-medium text-warm-900">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-[#202723]">
               Recently Preserved Recipes
             </h2>
-            <p className="text-xs text-warm-500 mt-0.5">
+            <p className="text-xs text-[#202723]/60 mt-0.5">
               Heirloom recipes saved across all your family kitchen collections.
             </p>
           </div>
           {totalRecipes > 0 && (
             <Link
               href="/recipes"
-              className="text-xs font-medium text-terracotta-600 hover:text-terracotta-700 flex items-center gap-1 group"
+              className="text-xs font-mono font-medium text-[#2E4742] hover:text-[#202723] flex items-center gap-1 group"
             >
               Browse All ({totalRecipes})
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -353,38 +353,38 @@ async function DashboardContent() {
                     </span>
                   </div>
 
-                  <h3 className="font-serif text-lg text-warm-900 font-medium">
+                  <h3 className="font-display text-lg text-[#202723] font-bold">
                     <Link
                       href={`/recipes/${recipe.id}`}
-                      className="hover:text-terracotta-700 transition-colors"
+                      className="hover:text-[#2E4742] transition-colors"
                     >
                       {recipe.title}
                     </Link>
                   </h3>
 
-                  <p className="text-xs text-warm-500 mt-1 flex items-center gap-1">
-                    <ChefHat className="w-3.5 h-3.5 text-terracotta-500" />
+                  <p className="text-xs text-[#202723]/60 mt-1 flex items-center gap-1">
+                    <ChefHat className="w-3.5 h-3.5 text-[#2E4742]" />
                     As made by{" "}
-                    <span className="font-medium text-warm-800">
+                    <span className="font-medium text-[#202723]">
                       {recipe.cookName}
                     </span>
                   </p>
 
                   {recipe.description && (
-                    <p className="text-xs text-warm-600 mt-2 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-[#202723]/70 mt-2 line-clamp-2 leading-relaxed">
                       {recipe.description}
                     </p>
                   )}
                 </div>
 
-                <div className="pt-4 mt-4 border-t border-warm-100 flex items-center justify-between text-xs text-warm-500">
-                  <span className="flex items-center gap-1.5">
-                    <Sparkles className="w-3 h-3 text-amber-500" />
+                <div className="pt-4 mt-4 border-t border-[#DDDCD3] flex items-center justify-between text-xs text-[#202723]/60">
+                  <span className="flex items-center gap-1.5 font-mono text-[11px]">
+                    <Sparkles className="w-3 h-3 text-[#F5B726]" />
                     {recipe.stepCount} steps • {recipe.ingredientCount} ingredients
                   </span>
                   <Link
                     href={`/recipes/${recipe.id}`}
-                    className="text-terracotta-600 hover:text-terracotta-700 font-medium"
+                    className="text-[#2E4742] hover:text-[#202723] font-medium"
                   >
                     View Recipe &rarr;
                   </Link>
@@ -399,7 +399,7 @@ async function DashboardContent() {
             description="Your family archive is waiting for its first dish. Document instructions, textual measurements, and sensory cues."
             action={
               <Link href="/recipes/new">
-                <Button variant="primary" size="md" leftIcon={<Plus className="w-4 h-4" />}>
+                <Button variant="forest" size="md" leftIcon={<Plus className="w-4 h-4" />}>
                   Preserve Your First Recipe
                 </Button>
               </Link>
@@ -412,17 +412,17 @@ async function DashboardContent() {
       <div className="mb-10">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="font-serif text-xl font-medium text-warm-900">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-[#202723]">
               Recent Cooking Recordings
             </h2>
-            <p className="text-xs text-warm-500 mt-0.5">
+            <p className="text-xs text-[#202723]/60 mt-0.5">
               Original cooking videos uploaded directly to your private Cloudflare R2 vault.
             </p>
           </div>
           {totalVideos > 0 && (
             <Link
               href="/videos"
-              className="text-xs font-medium text-terracotta-600 hover:text-terracotta-700 flex items-center gap-1 group"
+              className="text-xs font-mono font-medium text-[#2E4742] hover:text-[#202723] flex items-center gap-1 group"
             >
               Browse Vault ({totalVideos})
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -441,43 +441,43 @@ async function DashboardContent() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <Badge
-                      variant={video.uploadStatus === "UPLOADED" ? "sage" : "warm"}
+                      variant={video.uploadStatus === "UPLOADED" ? "forest" : "warm"}
                       size="sm"
                     >
                       {video.uploadStatus === "UPLOADED" ? "Ready" : video.uploadStatus}
                     </Badge>
-                    <span className="text-[11px] text-warm-500 font-medium">
+                    <span className="text-[11px] font-mono text-[#202723]/60 font-medium">
                       {video.kitchen.name}
                     </span>
                   </div>
 
-                  <h3 className="font-serif text-base text-warm-900 font-medium line-clamp-1">
+                  <h3 className="font-display text-base text-[#202723] font-bold line-clamp-1">
                     <Link
                       href={`/videos/${video.id}`}
-                      className="hover:text-terracotta-700 transition-colors"
+                      className="hover:text-[#2E4742] transition-colors"
                     >
                       {video.originalFilename}
                     </Link>
                   </h3>
 
                   {video.recipe ? (
-                    <p className="text-xs text-warm-600 mt-1 truncate">
+                    <p className="text-xs text-[#202723]/70 mt-1 truncate">
                       Linked to: <strong>{video.recipe.title}</strong>
                     </p>
                   ) : (
-                    <p className="text-xs text-warm-400 italic mt-1">
+                    <p className="text-xs text-[#202723]/50 italic mt-1">
                       Unassigned recording
                     </p>
                   )}
                 </div>
 
-                <div className="pt-4 mt-4 border-t border-warm-100 flex items-center justify-between text-xs text-warm-500">
-                  <span>
+                <div className="pt-4 mt-4 border-t border-[#DDDCD3] flex items-center justify-between text-xs text-[#202723]/60">
+                  <span className="font-mono text-[11px]">
                     {((video.actualSize ?? video.expectedSize) / (1024 * 1024)).toFixed(1)} MB
                   </span>
                   <Link
                     href={`/videos/${video.id}`}
-                    className="text-terracotta-600 hover:text-terracotta-700 font-medium flex items-center gap-1"
+                    className="text-[#2E4742] hover:text-[#202723] font-medium flex items-center gap-1"
                   >
                     <Play className="w-3.5 h-3.5 fill-current" />
                     Play &rarr;
@@ -487,8 +487,8 @@ async function DashboardContent() {
             ))}
           </div>
         ) : (
-          <div className="p-6 bg-warm-50/70 rounded-2xl border border-warm-200/60 text-center space-y-2">
-            <p className="text-xs text-warm-600">
+          <div className="p-6 bg-white rounded-2xl border border-[#DDDCD3] text-center space-y-2">
+            <p className="text-xs text-[#202723]/70">
               No cooking videos preserved yet. Capture your loved one preparing their signature dish.
             </p>
             <Link href="/upload">
@@ -504,16 +504,16 @@ async function DashboardContent() {
       <div className="mb-10">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="font-serif text-xl font-medium text-warm-900">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-[#202723]">
               Your Family Kitchens
             </h2>
-            <p className="text-xs text-warm-500 mt-0.5">
+            <p className="text-xs text-[#202723]/60 mt-0.5">
               Spaces where you hold owner, editor, or viewer membership.
             </p>
           </div>
           <Link
             href="/kitchens"
-            className="text-xs font-medium text-terracotta-600 hover:text-terracotta-700 flex items-center gap-1 group"
+            className="text-xs font-mono font-medium text-[#2E4742] hover:text-[#202723] flex items-center gap-1 group"
           >
             Manage Kitchens
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -525,29 +525,29 @@ async function DashboardContent() {
             <Card key={k.id} hoverEffect className="p-5 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <Badge variant={k.isOwner ? "sage" : "outline"} size="sm">
+                  <Badge variant={k.isOwner ? "forest" : "outline"} size="sm">
                     {k.isOwner ? "Owner" : k.myRole}
                   </Badge>
-                  <span className="text-[11px] text-warm-500">
+                  <span className="text-[11px] font-mono text-[#202723]/60">
                     {k.recipeCount} {k.recipeCount === 1 ? "recipe" : "recipes"}
                   </span>
                 </div>
-                <h3 className="font-serif text-base font-medium text-warm-900">
-                  <Link href={`/kitchens/${k.id}`} className="hover:text-terracotta-700">
+                <h3 className="font-display text-base font-bold text-[#202723]">
+                  <Link href={`/kitchens/${k.id}`} className="hover:text-[#2E4742]">
                     {k.name}
                   </Link>
                 </h3>
                 {k.description && (
-                  <p className="text-xs text-warm-600 mt-1 line-clamp-2">
+                  <p className="text-xs text-[#202723]/70 mt-1 line-clamp-2">
                     {k.description}
                   </p>
                 )}
               </div>
-              <div className="pt-3 mt-3 border-t border-warm-100 flex items-center justify-between text-xs text-warm-500">
+              <div className="pt-3 mt-3 border-t border-[#DDDCD3] flex items-center justify-between text-xs text-[#202723]/60">
                 <span>By {k.ownerName}</span>
                 <Link
                   href={`/kitchens/${k.id}`}
-                  className="text-terracotta-600 hover:text-terracotta-700 font-medium"
+                  className="text-[#2E4742] hover:text-[#202723] font-medium"
                 >
                   Open &rarr;
                 </Link>

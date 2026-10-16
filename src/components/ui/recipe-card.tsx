@@ -45,44 +45,44 @@ export function RecipeCard({ recipe, className }: RecipeCardProps) {
 
         {/* Recipe Title & Subtitle */}
         <div className="mb-3">
-          <h3 className="font-serif text-lg font-medium text-warm-900 line-clamp-1">
+          <h3 className="font-display text-lg font-bold text-[#202723] line-clamp-1">
             {recipe.title}
           </h3>
           {recipe.originalDishName && (
-            <p className="text-xs text-warm-500 italic mt-0.5">
+            <p className="text-xs text-[#202723]/60 italic mt-0.5">
               &ldquo;{recipe.originalDishName}&rdquo;
             </p>
           )}
         </div>
 
         {/* Cook Attribution */}
-        <div className="flex items-center gap-2 mb-4 text-xs text-warm-700 bg-warm-50 p-2.5 rounded-xl border border-warm-200/60">
-          <div className="w-6 h-6 rounded-full bg-terracotta-100 text-terracotta-700 flex items-center justify-center font-serif font-bold text-xs shrink-0">
+        <div className="flex items-center gap-2 mb-4 text-xs text-[#202723]/80 bg-[#FAF9F5] p-2.5 rounded-xl border border-[#DDDCD3]">
+          <div className="w-6 h-6 rounded-full bg-[#2E4742]/10 text-[#2E4742] flex items-center justify-center font-display font-bold text-xs shrink-0">
             {recipe.cook.name.charAt(0)}
           </div>
           <div className="truncate">
-            <span className="font-medium text-warm-900">{recipe.cook.name}</span>
+            <span className="font-medium text-[#202723]">{recipe.cook.name}</span>
             {recipe.cook.relationship && (
-              <span className="text-warm-500"> ({recipe.cook.relationship})</span>
+              <span className="text-[#202723]/50"> ({recipe.cook.relationship})</span>
             )}
           </div>
         </div>
 
         {/* Description snippet */}
-        <p className="text-xs text-warm-600 line-clamp-2 leading-relaxed mb-4 flex-1">
+        <p className="text-xs text-[#202723]/70 line-clamp-2 leading-relaxed mb-4 flex-1">
           {recipe.description}
         </p>
 
         {/* Metadata Footer & Action */}
-        <div className="pt-3 border-t border-warm-100 flex items-center justify-between mt-auto text-xs text-warm-500">
+        <div className="pt-3 border-t border-[#DDDCD3] flex items-center justify-between mt-auto text-xs text-[#202723]/60">
           <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1">
-              <BookOpen className="w-3.5 h-3.5 text-warm-400" />
+            <span className="flex items-center gap-1 font-mono text-[11px]">
+              <BookOpen className="w-3.5 h-3.5 text-[#202723]/40" />
               {recipe.stepsCount} steps
             </span>
             {recipe.cuesCount > 0 && (
-              <span className="flex items-center gap-1 text-terracotta-600 font-medium">
-                <Flame className="w-3.5 h-3.5" />
+              <span className="flex items-center gap-1 text-[#2E4742] font-mono font-medium text-[11px]">
+                <Flame className="w-3.5 h-3.5 text-[#F5B726]" />
                 {recipe.cuesCount} cues
               </span>
             )}
@@ -90,7 +90,7 @@ export function RecipeCard({ recipe, className }: RecipeCardProps) {
 
           <Link
             href={`/cook/${recipe.id}`}
-            className="text-terracotta-600 hover:text-terracotta-700 font-medium hover:underline flex items-center gap-1 text-xs"
+            className="text-[#2E4742] hover:text-[#202723] font-medium hover:underline flex items-center gap-1 text-xs"
           >
             Cook Along &rarr;
           </Link>

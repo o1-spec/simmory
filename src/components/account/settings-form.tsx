@@ -134,7 +134,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
   return (
     <div className="space-y-8 max-w-3xl">
       {/* Profile Details Card */}
-      <Card className="p-6 bg-white">
+      <Card className="p-6 bg-white border border-[#DDDCD3]">
         <CardHeader className="p-0 pb-4">
           <CardTitle>Profile Information</CardTitle>
           <CardDescription>
@@ -146,9 +146,9 @@ export function SettingsForm({ user }: SettingsFormProps) {
           {profileSuccess && (
             <div
               role="status"
-              className="p-3.5 rounded-xl bg-sage-50 border border-sage-200 text-sage-800 text-xs flex items-center gap-2"
+              className="p-3.5 rounded-xl bg-[#2E4742]/10 border border-[#2E4742]/30 text-[#2E4742] text-xs flex items-center gap-2"
             >
-              <CheckCircle2 className="w-4 h-4 text-sage-600" />
+              <CheckCircle2 className="w-4 h-4 text-[#2E4742]" />
               <span>{profileSuccess}</span>
             </div>
           )}
@@ -182,7 +182,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
           <div className="pt-2">
             <Button
               type="submit"
-              variant="primary"
+              variant="forest"
               size="md"
               isLoading={profileLoading}
             >
@@ -193,7 +193,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
       </Card>
 
       {/* Password Change Card */}
-      <Card className="p-6 bg-white">
+      <Card className="p-6 bg-white border border-[#DDDCD3]">
         <CardHeader className="p-0 pb-4">
           <CardTitle>Change Password</CardTitle>
           <CardDescription>
@@ -295,13 +295,13 @@ export function SettingsForm({ user }: SettingsFormProps) {
       </Card>
 
       {/* Session & Sign Out Card */}
-      <Card className="p-6 bg-warm-100/50 border border-warm-200/80">
+      <Card className="p-6 bg-[#FAF9F5] border border-[#DDDCD3]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <h3 className="font-serif text-lg text-warm-900 font-medium">
+            <h3 className="font-display text-lg text-[#202723] font-bold">
               Sign Out of Account
             </h3>
-            <p className="text-xs text-warm-600 font-sans">
+            <p className="text-xs text-[#202723]/70 font-sans">
               Revokes the active refresh session and clears all secure HttpOnly cookies.
             </p>
           </div>

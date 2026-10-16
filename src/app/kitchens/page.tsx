@@ -28,7 +28,7 @@ async function KitchensContent() {
         description="Organize your recipes into distinct family spaces—preserving regional traditions, different generations, or branches of your family tree."
         actions={
           <Link href="/kitchens/new">
-            <Button variant="primary" size="md" leftIcon={<Plus className="w-4 h-4" />}>
+            <Button variant="forest" size="md" leftIcon={<Plus className="w-4 h-4" />}>
               Create New Kitchen
             </Button>
           </Link>
@@ -46,26 +46,26 @@ async function KitchensContent() {
                 : "Viewer";
 
             return (
-              <Card key={kitchen.id} hoverEffect className="flex flex-col justify-between">
+              <Card key={kitchen.id} hoverEffect className="flex flex-col justify-between border-[#DDDCD3]">
                 <div>
                   <CardHeader>
                     <div className="flex items-center justify-between mb-2">
                       <Badge
-                        variant={kitchen.isOwner ? "sage" : "outline"}
+                        variant={kitchen.isOwner ? "forest" : "outline"}
                         size="sm"
                         className="flex items-center gap-1"
                       >
                         <ShieldCheck className="w-3 h-3" />
                         {kitchen.isOwner ? "Owner Space" : "Member Space"}
                       </Badge>
-                      <span className="text-[11px] text-warm-500 font-medium">
+                      <span className="text-[11px] font-mono text-[#202723]/60 font-medium">
                         {roleLabel}
                       </span>
                     </div>
                     <CardTitle>
                       <Link
                         href={`/kitchens/${kitchen.id}`}
-                        className="hover:text-terracotta-700 transition-colors"
+                        className="hover:text-[#2E4742] transition-colors"
                       >
                         {kitchen.name}
                       </Link>
@@ -76,14 +76,14 @@ async function KitchensContent() {
                   </CardHeader>
 
                   <CardContent className="space-y-3">
-                    <div className="flex items-center justify-between text-xs text-warm-600 bg-warm-50 p-3 rounded-xl border border-warm-200/60">
-                      <span className="flex items-center gap-1.5">
-                        <BookOpen className="w-3.5 h-3.5 text-warm-400" />
+                    <div className="flex items-center justify-between text-xs text-[#202723]/70 bg-[#FAF9F5] p-3 rounded-xl border border-[#DDDCD3]">
+                      <span className="flex items-center gap-1.5 font-mono text-[11px]">
+                        <BookOpen className="w-3.5 h-3.5 text-[#2E4742]" />
                         {kitchen.recipeCount}{" "}
                         {kitchen.recipeCount === 1 ? "recipe saved" : "recipes saved"}
                       </span>
-                      <span className="flex items-center gap-1.5">
-                        <Users className="w-3.5 h-3.5 text-warm-400" />
+                      <span className="flex items-center gap-1.5 font-mono text-[11px]">
+                        <Users className="w-3.5 h-3.5 text-[#2E4742]" />
                         {kitchen.memberCount}{" "}
                         {kitchen.memberCount === 1 ? "member" : "members"}
                       </span>
@@ -91,8 +91,8 @@ async function KitchensContent() {
                   </CardContent>
                 </div>
 
-                <CardFooter className="pt-4 border-t border-warm-100 flex items-center justify-between">
-                  <span className="text-xs text-warm-400">
+                <CardFooter className="pt-4 border-t border-[#DDDCD3] flex items-center justify-between">
+                  <span className="text-xs font-mono text-[#202723]/50">
                     Updated{" "}
                     {new Date(kitchen.updatedAt).toLocaleDateString("en-US", {
                       month: "short",
@@ -101,7 +101,7 @@ async function KitchensContent() {
                   </span>
                   <Link
                     href={`/kitchens/${kitchen.id}`}
-                    className="text-xs font-medium text-terracotta-600 hover:text-terracotta-700 flex items-center gap-1 group"
+                    className="text-xs font-medium text-[#2E4742] hover:text-[#202723] flex items-center gap-1 group"
                   >
                     Open Kitchen
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />

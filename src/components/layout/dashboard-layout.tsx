@@ -8,15 +8,15 @@ export interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-warm-50 text-warm-900">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-[#F2F2EB] text-[#202723]">
       {/* Mobile Header / Navigation */}
-      <Suspense fallback={<div className="h-16 lg:hidden border-b border-warm-200/80 bg-warm-50" />}>
+      <Suspense fallback={<div className="h-16 lg:hidden border-b border-[#DDDCD3] bg-[#F2F2EB]" />}>
         <MobileNav />
       </Suspense>
 
       {/* Desktop App Sidebar */}
       <div className="hidden lg:block">
-        <Suspense fallback={<aside className="w-64 border-r border-warm-200/80 bg-warm-50/80 shrink-0 h-screen sticky top-0" />}>
+        <Suspense fallback={<aside className="w-64 border-r border-[#DDDCD3] bg-[#F2F2EB] shrink-0 h-screen sticky top-0" />}>
           <AppSidebar />
         </Suspense>
       </div>

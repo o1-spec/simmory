@@ -1,23 +1,31 @@
 import type { Metadata } from "next";
-import { Lora, Plus_Jakarta_Sans } from "next/font/google";
+import { Barlow_Semi_Condensed, Inter, Martian_Mono } from "next/font/google";
 import "./globals.css";
 
-const lora = Lora({
-  variable: "--font-serif",
+const barlowCondensed = Barlow_Semi_Condensed({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+});
+
+const inter = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
 });
 
-const plusJakarta = Plus_Jakarta_Sans({
-  variable: "--font-sans",
+const martianMono = Martian_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "Simmory — The way they made it, remembered.",
   description:
-    "Preserve family cooking knowledge and recreate traditional recipes through interactive, video-linked instructions.",
+    "Preserve family cooking knowledge, traditional recipes, sensory cues, and original demonstration videos in a private culinary archive.",
 };
 
 export default function RootLayout({
@@ -28,9 +36,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${plusJakarta.variable} ${lora.variable} h-full antialiased`}
+      className={`${barlowCondensed.variable} ${inter.variable} ${martianMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans bg-warm-50 text-warm-900 selection:bg-terracotta-100 selection:text-terracotta-800">
+      <body className="min-h-full flex flex-col font-sans bg-[#F2F2EB] text-[#202723] selection:bg-[#2E4742] selection:text-[#F2F2EB]">
         {children}
       </body>
     </html>

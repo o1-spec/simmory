@@ -84,7 +84,7 @@ async function VideosContent({
         description="Preserve, replay, and manage original unedited cooking footage from your private family kitchens."
         actions={
           <Link href="/upload">
-            <Button variant="primary" size="md">
+            <Button variant="forest" size="md">
               <Plus className="w-4 h-4 mr-2" />
               Upload Video
             </Button>
@@ -95,23 +95,23 @@ async function VideosContent({
       <VideoFilters kitchens={kitchens} />
 
       {videos.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-warm-200/80 p-8 space-y-4">
-          <div className="w-14 h-14 rounded-full bg-warm-100 text-warm-500 flex items-center justify-center mx-auto">
+        <div className="text-center py-16 bg-white rounded-2xl border border-[#DDDCD3] p-8 space-y-4">
+          <div className="w-14 h-14 rounded-2xl bg-[#FAF9F5] border border-[#DDDCD3] text-[#2E4742] flex items-center justify-center mx-auto">
             <Video className="w-7 h-7" />
           </div>
-          <h3 className="font-serif text-lg text-warm-900 font-medium">
+          <h3 className="font-display text-xl text-[#202723] font-bold">
             {kitchenId || uploadStatus
               ? "No videos match your active filter."
               : "No cooking videos uploaded yet."}
           </h3>
-          <p className="text-xs text-warm-500 max-w-sm mx-auto">
+          <p className="text-xs text-[#202723]/60 max-w-sm mx-auto">
             {kitchenId || uploadStatus
               ? "Try resetting your filter options to see all family recordings."
               : "Capture your loved one's cooking methods, unwritten habits, and original voice."}
           </p>
           <div className="pt-2">
             <Link href="/upload">
-              <Button variant="primary" size="sm">
+              <Button variant="forest" size="sm">
                 <Plus className="w-4 h-4 mr-1.5" />
                 Preserve First Video
               </Button>

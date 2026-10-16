@@ -66,7 +66,7 @@ async function RecipesContent({ searchParams }: PageProps) {
         actions={
           <Link href="/recipes/new">
             <Button
-              variant="primary"
+              variant="forest"
               size="md"
               leftIcon={<Plus className="w-4 h-4" />}
             >
@@ -96,48 +96,48 @@ async function RecipesContent({ searchParams }: PageProps) {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <Badge
-                      variant={recipe.status === "VERIFIED" ? "sage" : "saffron"}
+                      variant={recipe.status === "VERIFIED" ? "forest" : "ochre"}
                       size="sm"
                     >
                       {recipe.status === "VERIFIED" ? "Verified" : "Draft"}
                     </Badge>
-                    <span className="text-[11px] text-warm-500 font-medium">
+                    <span className="text-[11px] font-mono text-[#202723]/60 font-medium">
                       {recipe.kitchenName}
                     </span>
                   </div>
 
-                  <h3 className="font-serif text-lg text-warm-900 font-medium">
+                  <h3 className="font-display text-lg text-[#202723] font-bold">
                     <Link
                       href={`/recipes/${recipe.id}`}
-                      className="hover:text-terracotta-700 transition-colors"
+                      className="hover:text-[#2E4742] transition-colors"
                     >
                       {recipe.title}
                     </Link>
                   </h3>
 
-                  <p className="text-xs text-warm-500 mt-1 flex items-center gap-1">
-                    <ChefHat className="w-3.5 h-3.5 text-terracotta-500" />
+                  <p className="text-xs text-[#202723]/60 mt-1 flex items-center gap-1">
+                    <ChefHat className="w-3.5 h-3.5 text-[#2E4742]" />
                     As made by{" "}
-                    <span className="font-medium text-warm-800">
+                    <span className="font-medium text-[#202723]">
                       {recipe.cookName}
                     </span>
                   </p>
 
                   {recipe.description && (
-                    <p className="text-xs text-warm-600 mt-2 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-[#202723]/70 mt-2 line-clamp-2 leading-relaxed">
                       {recipe.description}
                     </p>
                   )}
                 </div>
 
-                <div className="pt-4 mt-4 border-t border-warm-100 flex items-center justify-between text-xs text-warm-500">
-                  <span className="flex items-center gap-1.5">
-                    <Sparkles className="w-3 h-3 text-amber-500" />
+                <div className="pt-4 mt-4 border-t border-[#DDDCD3] flex items-center justify-between text-xs text-[#202723]/60">
+                  <span className="flex items-center gap-1.5 font-mono text-[11px]">
+                    <Sparkles className="w-3 h-3 text-[#F5B726]" />
                     {recipe.stepCount} steps • {recipe.ingredientCount} ingredients
                   </span>
                   <Link
                     href={`/recipes/${recipe.id}`}
-                    className="text-terracotta-600 hover:text-terracotta-700 font-medium flex items-center gap-1"
+                    className="text-[#2E4742] hover:text-[#202723] font-medium flex items-center gap-1"
                   >
                     View Recipe &rarr;
                   </Link>

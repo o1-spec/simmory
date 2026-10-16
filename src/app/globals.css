@@ -1,69 +1,97 @@
 @import "tailwindcss";
 
 @theme {
-  --font-serif: var(--font-serif), Georgia, Cambria, "Times New Roman", serif;
-  --font-sans: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-display), "Barlow Semi Condensed", -apple-system, sans-serif;
+  --font-serif: var(--font-display), "Barlow Semi Condensed", -apple-system, sans-serif;
+  --font-sans: var(--font-sans), Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-mono), "Martian Mono", monospace;
 
-  --color-warm-50: #FAF8F5;
-  --color-warm-100: #F4EFEA;
-  --color-warm-200: #EBE3D7;
-  --color-warm-300: #DFD3C3;
-  --color-warm-400: #C2B29F;
-  --color-warm-500: #9E8C7A;
-  --color-warm-600: #746353;
-  --color-warm-700: #514438;
-  --color-warm-800: #332A23;
-  --color-warm-900: #1C1614;
+  /* Strict Phase 10 Dominant Background & Editorial Surfaces */
+  --color-cream-base: #F2F2EB;
+  --color-cream-card: #FAF9F5;
+  --color-cream-muted: #E8E7DF;
+  --color-cream-border: #DDDCD3;
 
-  --color-cream-50: #FCFAF7;
-  --color-cream-100: #F7F3EC;
-  --color-cream-200: #EFE8DC;
-  --color-cream-300: #E5DAC9;
+  /* Primary Deep Charcoal Typography */
+  --color-charcoal: #202723;
+  --color-charcoal-muted: #525B56;
+  --color-charcoal-subtle: #7A857F;
 
-  --color-terracotta-50: #FDF6F2;
-  --color-terracotta-100: #FAECE5;
-  --color-terracotta-200: #F4D5C5;
-  --color-terracotta-300: #EBB59D;
-  --color-terracotta-400: #DD8663;
-  --color-terracotta-500: #C85A32;
-  --color-terracotta-600: #B44C26;
-  --color-terracotta-700: #943C1C;
-  --color-terracotta-800: #773117;
-  --color-terracotta-900: #5C2713;
+  /* Brand Forest Green */
+  --color-forest: #2E4742;
+  --color-forest-hover: #233733;
+  --color-forest-light: #3D5C56;
+  --color-forest-subtle: #E3E9E8;
 
-  --color-sage-50: #F4F7F4;
-  --color-sage-100: #E5EDE6;
-  --color-sage-200: #CBDBCF;
-  --color-sage-500: #587F66;
-  --color-sage-600: #446851;
-  --color-sage-700: #34513E;
+  /* Editorial Accents */
+  --color-accent-sky: #8BB2DE;
+  --color-accent-sky-subtle: #EDF3FA;
+  --color-accent-ochre: #F5B726;
+  --color-accent-ochre-subtle: #FEF8EC;
+  --color-accent-coral: #E97B77;
+  --color-accent-coral-subtle: #FDF2F1;
 
-  --color-saffron-50: #FFF9ED;
-  --color-saffron-100: #FEF3D6;
-  --color-saffron-500: #D9822B;
-  --color-saffron-600: #BC6B1C;
+  /* Unified tokens for application consistency */
+  --color-warm-50: #F2F2EB;
+  --color-warm-100: #EAE9E1;
+  --color-warm-200: #DDDCD3;
+  --color-warm-300: #CFCDBF;
+  --color-warm-400: #A8A596;
+  --color-warm-500: #7A857F;
+  --color-warm-600: #525B56;
+  --color-warm-700: #3B443F;
+  --color-warm-800: #2B332F;
+  --color-warm-900: #202723;
+
+  --color-terracotta-50: #E3E9E8;
+  --color-terracotta-100: #D3DEDC;
+  --color-terracotta-200: #B7C8C5;
+  --color-terracotta-300: #88A39E;
+  --color-terracotta-400: #4B6E67;
+  --color-terracotta-500: #2E4742;
+  --color-terracotta-600: #233733;
+  --color-terracotta-700: #1C2D2A;
+  --color-terracotta-800: #14221F;
+  --color-terracotta-900: #0E1715;
+
+  --color-sage-50: #EDF3FA;
+  --color-sage-100: #DBE7F4;
+  --color-sage-200: #BBD2EC;
+  --color-sage-500: #2E4742;
+  --color-sage-600: #233733;
+  --color-sage-700: #1C2D2A;
+
+  --color-saffron-50: #FEF8EC;
+  --color-saffron-100: #FDE8BE;
+  --color-saffron-500: #F5B726;
+  --color-saffron-600: #D99B16;
 }
 
 :root {
-  --background: #FAF8F5;
-  --foreground: #1C1614;
+  --background: #F2F2EB;
+  --foreground: #202723;
 }
 
-/* Custom subtle scrollbar & transitions */
+body {
+  background-color: #F2F2EB;
+  color: #202723;
+}
+
+/* Custom subtle scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #FAF8F5;
+  background: #F2F2EB;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #DFD3C3;
+  background: #DDDCD3;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #C2B29F;
+  background: #CFCDBF;
 }

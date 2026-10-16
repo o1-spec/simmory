@@ -351,12 +351,12 @@ export function RecipeReviewWorkspace({
   return (
     <div className="space-y-6">
       {/* Top Header & Breadcrumb */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-warm-200/80">
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[#DDDCD3]">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-xs text-warm-500 font-sans">
+          <div className="flex items-center gap-2 text-xs font-mono text-[#202723]/60">
             <Link
               href={`/videos/${review.videoId}`}
-              className="inline-flex items-center gap-1 hover:text-warm-800 transition-colors"
+              className="inline-flex items-center gap-1 hover:text-[#202723] transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Video</span>
@@ -365,10 +365,10 @@ export function RecipeReviewWorkspace({
             <span>{kitchenName}</span>
           </div>
 
-          <h1 className="font-serif text-2xl sm:text-3xl text-warm-900 font-medium tracking-tight">
+          <h1 className="font-display text-2xl sm:text-3xl text-[#202723] font-bold tracking-tight">
             Reviewing Cooking Reconstruction
           </h1>
-          <p className="text-xs sm:text-sm text-warm-600 font-sans">
+          <p className="text-xs sm:text-sm text-[#202723]/70 font-sans">
             AI proposed candidate stages from the recording. Confirm details, add unwritten sensory cues, and preserve genuine family heritage.
           </p>
         </div>
@@ -385,7 +385,7 @@ export function RecipeReviewWorkspace({
 
           {canEdit && (
             <Button
-              variant="primary"
+              variant="forest"
               size="md"
               onClick={() => setShowConvertSection(true)}
               disabled={events.filter((e) => e.status === "ACCEPTED" || e.status === "EDITED").length === 0}
@@ -398,7 +398,7 @@ export function RecipeReviewWorkspace({
       </div>
 
       {/* Progress & Autosave Bar */}
-      <div className="p-4 rounded-2xl bg-white border border-warm-200/80 shadow-2xs flex flex-wrap items-center justify-between gap-4 text-xs font-sans">
+      <div className="p-4 rounded-2xl bg-white border border-[#DDDCD3] shadow-xs flex flex-wrap items-center justify-between gap-4 text-xs font-sans">
         <div className="flex items-center gap-4 flex-wrap">
           <div>
             <span className="text-warm-500 block text-[11px]">Reviewed Events:</span>

@@ -319,20 +319,20 @@ export function UploadForm({
   // If upload succeeded, show the celebration screen with direct navigation links
   if (status === "success" && completedVideo) {
     return (
-      <Card className="p-8 max-w-2xl mx-auto text-center border-sage-200 bg-warm-50/50">
-        <div className="w-16 h-16 rounded-full bg-sage-100 text-sage-600 flex items-center justify-center mx-auto mb-4">
+      <Card className="p-8 max-w-2xl mx-auto text-center border-[#DDDCD3] bg-white">
+        <div className="w-16 h-16 rounded-full bg-[#2E4742]/10 text-[#2E4742] flex items-center justify-center mx-auto mb-4">
           <CheckCircle2 className="w-8 h-8" />
         </div>
 
-        <Badge variant="sage" className="mb-2">
+        <Badge variant="forest" className="mb-2">
           Upload Complete
         </Badge>
 
-        <h2 className="font-serif text-2xl text-warm-900 font-medium mb-2">
+        <h2 className="font-display text-2xl sm:text-3xl text-[#202723] font-bold mb-2">
           Your video has been uploaded successfully.
         </h2>
 
-        <p className="text-sm text-warm-600 max-w-md mx-auto mb-6">
+        <p className="text-sm text-[#202723]/70 max-w-md mx-auto mb-6">
           <strong>{completedVideo.originalFilename}</strong> is safely preserved in
           your private family kitchen. The recording is ready for authorized playback
           and future AI timeline extraction.
@@ -340,7 +340,7 @@ export function UploadForm({
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link href={`/videos/${completedVideo.id}`}>
-            <Button variant="primary" size="lg">
+            <Button variant="forest" size="lg">
               View Video Details
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
@@ -375,10 +375,10 @@ export function UploadForm({
             </div>
           )}
 
-          <h2 className="font-serif text-xl text-warm-900 font-medium mb-1">
+          <h2 className="font-display text-xl text-[#202723] font-bold mb-1">
             Cooking Video File
           </h2>
-          <p className="text-xs text-warm-500 mb-6">
+          <p className="text-xs text-[#202723]/60 mb-6 font-mono">
             Supported formats: MP4, MOV, WebM. Maximum size: {maxUploadSizeMb} MB.
           </p>
 
@@ -386,9 +386,9 @@ export function UploadForm({
           <div className="mb-6">
             <label
               htmlFor="kitchen-select"
-              className="block text-xs font-medium text-warm-700 mb-1.5"
+              className="block text-xs font-mono font-medium text-[#202723] mb-1.5 uppercase"
             >
-              Select Family Kitchen <span className="text-terracotta-600">*</span>
+              Select Family Kitchen <span className="text-[#2E4742]">*</span>
             </label>
             {kitchens.length > 0 ? (
               <select
@@ -399,7 +399,7 @@ export function UploadForm({
                   setSelectedRecipeId("");
                 }}
                 disabled={status === "uploading" || status === "verifying"}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-warm-300 bg-white text-sm text-warm-900 focus:outline-none focus:ring-2 focus:ring-terracotta-500 transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#DDDCD3] bg-white text-sm text-[#202723] focus:outline-none focus:ring-2 focus:ring-[#2E4742]/20 focus:border-[#2E4742] transition-colors"
               >
                 {kitchens.map((k) => (
                   <option key={k.id} value={k.id}>
@@ -408,7 +408,7 @@ export function UploadForm({
                 ))}
               </select>
             ) : (
-              <div className="p-3 bg-warm-100 rounded-xl text-xs text-warm-600">
+              <div className="p-3 bg-[#FAF9F5] border border-[#DDDCD3] rounded-xl text-xs text-[#202723]/70">
                 You do not currently belong to any kitchens where you have editing
                 permissions. Please create or request editor access to a kitchen.
               </div>
@@ -422,8 +422,8 @@ export function UploadForm({
             onDrop={handleDrop}
             className={`relative border-2 border-dashed rounded-2xl p-8 sm:p-10 text-center transition-all flex flex-col items-center justify-center ${
               isDragOver
-                ? "border-terracotta-500 bg-terracotta-50/40"
-                : "border-warm-300 hover:border-terracotta-400 bg-warm-50/50"
+                ? "border-[#2E4742] bg-[#2E4742]/10"
+                : "border-[#DDDCD3] hover:border-[#2E4742] bg-[#FAF9F5]"
             }`}
           >
             <input
@@ -440,31 +440,31 @@ export function UploadForm({
               id="video-upload-input"
             />
 
-            <div className="w-14 h-14 rounded-2xl bg-white shadow-xs border border-warm-200/80 flex items-center justify-center text-terracotta-500 mb-3">
+            <div className="w-14 h-14 rounded-2xl bg-white shadow-xs border border-[#DDDCD3] flex items-center justify-center text-[#2E4742] mb-3">
               <UploadCloud className="w-7 h-7" />
             </div>
 
             {selectedFile ? (
               <div className="space-y-1.5 pointer-events-none">
-                <Badge variant="sage" className="mb-1">
+                <Badge variant="forest" className="mb-1">
                   File Selected
                 </Badge>
-                <p className="text-sm font-medium text-warm-900 flex items-center justify-center gap-1.5">
-                  <FileVideo className="w-4 h-4 text-warm-600" />
+                <p className="text-sm font-medium text-[#202723] flex items-center justify-center gap-1.5">
+                  <FileVideo className="w-4 h-4 text-[#2E4742]" />
                   {selectedFile.name}
                 </p>
-                <p className="text-xs text-warm-500">
+                <p className="text-xs font-mono text-[#202723]/60">
                   {(selectedFile.size / (1024 * 1024)).toFixed(1)} MB &bull;{" "}
                   {selectedFile.type || "video"}
                 </p>
               </div>
             ) : (
               <div className="space-y-1.5 pointer-events-none">
-                <p className="text-sm font-medium text-warm-900">
+                <p className="text-sm font-medium text-[#202723]">
                   Drag and drop your video file here, or{" "}
-                  <span className="text-terracotta-600 underline">browse</span>
+                  <span className="text-[#2E4742] underline">browse</span>
                 </p>
-                <p className="text-xs text-warm-500">
+                <p className="text-xs text-[#202723]/60">
                   Original full-resolution footage is preserved directly in Cloudflare R2
                 </p>
               </div>
@@ -472,8 +472,8 @@ export function UploadForm({
           </div>
 
           {/* Recipe Association Options */}
-          <div className="mt-6 pt-6 border-t border-warm-100 space-y-4">
-            <h3 className="font-serif text-base text-warm-900 font-medium">
+          <div className="mt-6 pt-6 border-t border-[#DDDCD3] space-y-4">
+            <h3 className="font-display text-base text-[#202723] font-bold">
               Recipe Association
             </h3>
 
@@ -483,11 +483,11 @@ export function UploadForm({
                 onClick={() => setRecipeOption("none")}
                 className={`p-3 rounded-xl border text-left text-xs transition-all ${
                   recipeOption === "none"
-                    ? "border-terracotta-500 bg-terracotta-50/50 font-medium text-warm-900 shadow-xs"
-                    : "border-warm-200 bg-white hover:bg-warm-50 text-warm-600"
+                    ? "border-[#2E4742] bg-[#2E4742]/10 font-medium text-[#202723] shadow-xs"
+                    : "border-[#DDDCD3] bg-white hover:bg-[#FAF9F5] text-[#202723]/70"
                 }`}
               >
-                <Layers className="w-4 h-4 mb-1 text-warm-500" />
+                <Layers className="w-4 h-4 mb-1 text-[#2E4742]" />
                 Unassigned Video
               </button>
 
@@ -496,11 +496,11 @@ export function UploadForm({
                 onClick={() => setRecipeOption("existing")}
                 className={`p-3 rounded-xl border text-left text-xs transition-all ${
                   recipeOption === "existing"
-                    ? "border-terracotta-500 bg-terracotta-50/50 font-medium text-warm-900 shadow-xs"
-                    : "border-warm-200 bg-white hover:bg-warm-50 text-warm-600"
+                    ? "border-[#2E4742] bg-[#2E4742]/10 font-medium text-[#202723] shadow-xs"
+                    : "border-[#DDDCD3] bg-white hover:bg-[#FAF9F5] text-[#202723]/70"
                 }`}
               >
-                <FileText className="w-4 h-4 mb-1 text-warm-500" />
+                <FileText className="w-4 h-4 mb-1 text-[#2E4742]" />
                 Link Existing Recipe
               </button>
 
@@ -509,11 +509,11 @@ export function UploadForm({
                 onClick={() => setRecipeOption("draft")}
                 className={`p-3 rounded-xl border text-left text-xs transition-all ${
                   recipeOption === "draft"
-                    ? "border-terracotta-500 bg-terracotta-50/50 font-medium text-warm-900 shadow-xs"
-                    : "border-warm-200 bg-white hover:bg-warm-50 text-warm-600"
+                    ? "border-[#2E4742] bg-[#2E4742]/10 font-medium text-[#202723] shadow-xs"
+                    : "border-[#DDDCD3] bg-white hover:bg-[#FAF9F5] text-[#202723]/70"
                 }`}
               >
-                <Sparkles className="w-4 h-4 mb-1 text-terracotta-500" />
+                <Sparkles className="w-4 h-4 mb-1 text-[#2E4742]" />
                 Create Draft Recipe
               </button>
             </div>
@@ -634,7 +634,7 @@ export function UploadForm({
               </Button>
             ) : (
               <Button
-                variant="primary"
+                variant="forest"
                 size="lg"
                 className="w-full justify-center"
                 disabled={
@@ -660,10 +660,10 @@ export function UploadForm({
 
       {/* Right Column: Information & Pipeline Guide */}
       <div className="lg:col-span-5 space-y-6">
-        <Card className="p-6 bg-white">
+        <Card className="p-6 bg-white border border-[#DDDCD3]">
           <div className="flex items-center gap-2 mb-3">
-            <Sparkles className="w-4 h-4 text-terracotta-500" />
-            <h3 className="font-serif text-lg text-warm-900 font-medium">
+            <Sparkles className="w-4 h-4 text-[#2E4742]" />
+            <h3 className="font-display text-lg text-[#202723] font-bold">
               Cloudflare R2 Media Storage
             </h3>
           </div>
@@ -674,69 +674,69 @@ export function UploadForm({
           </p>
 
           <div className="space-y-4">
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-warm-50 border border-warm-200/60">
-              <div className="w-6 h-6 rounded-full bg-warm-200 text-warm-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-[#FAF9F5] border border-[#DDDCD3]">
+              <div className="w-6 h-6 rounded-full bg-[#2E4742]/10 text-[#2E4742] flex items-center justify-center font-bold font-mono text-xs shrink-0 mt-0.5">
                 1
               </div>
               <div className="space-y-0.5">
-                <p className="text-xs font-semibold text-warm-900">
+                <p className="text-xs font-semibold text-[#202723]">
                   Direct Presigned Upload
                 </p>
-                <p className="text-[11px] text-warm-500 leading-relaxed">
+                <p className="text-[11px] text-[#202723]/60 leading-relaxed font-sans">
                   Your browser uploads straight to Cloudflare R2 with a short-lived
                   bearer token, avoiding serverless timeout limits.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-warm-50 border border-warm-200/60">
-              <div className="w-6 h-6 rounded-full bg-warm-200 text-warm-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-[#FAF9F5] border border-[#DDDCD3]">
+              <div className="w-6 h-6 rounded-full bg-[#2E4742]/10 text-[#2E4742] flex items-center justify-center font-bold font-mono text-xs shrink-0 mt-0.5">
                 2
               </div>
               <div className="space-y-0.5">
-                <p className="text-xs font-semibold text-warm-900">
+                <p className="text-xs font-semibold text-[#202723]">
                   Independent Verification
                 </p>
-                <p className="text-[11px] text-warm-500 leading-relaxed">
+                <p className="text-[11px] text-[#202723]/60 leading-relaxed font-sans">
                   The server checks the object&apos;s presence and size using an S3 HEAD
                   request before marking the upload completed.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-warm-50 border border-warm-200/60">
-              <div className="w-6 h-6 rounded-full bg-warm-200 text-warm-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-[#FAF9F5] border border-[#DDDCD3]">
+              <div className="w-6 h-6 rounded-full bg-[#2E4742]/10 text-[#2E4742] flex items-center justify-center font-bold font-mono text-xs shrink-0 mt-0.5">
                 3
               </div>
               <div className="space-y-0.5">
-                <p className="text-xs font-semibold text-warm-900">
+                <p className="text-xs font-semibold text-[#202723]">
                   Authorized Playback
                 </p>
-                <p className="text-[11px] text-warm-500 leading-relaxed">
+                <p className="text-[11px] text-[#202723]/60 leading-relaxed font-sans">
                   Videos remain strictly private. Family members stream using
                   temporary 15-minute signed URLs.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-warm-50 border border-warm-200/60">
-              <div className="w-6 h-6 rounded-full bg-warm-200 text-warm-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-[#FAF9F5] border border-[#DDDCD3]">
+              <div className="w-6 h-6 rounded-full bg-[#2E4742]/10 text-[#2E4742] flex items-center justify-center font-bold font-mono text-xs shrink-0 mt-0.5">
                 4
               </div>
               <div className="space-y-0.5">
-                <p className="text-xs font-semibold text-warm-900">
-                  Future AI Timeline Extraction
+                <p className="text-xs font-semibold text-[#202723]">
+                  AI Timeline & Sensory Cues
                 </p>
-                <p className="text-[11px] text-warm-500 leading-relaxed">
-                  In future phases, background workers (FFmpeg, Faster-Whisper,
-                  Gemma 4) will extract audio and visual sensory cues.
+                <p className="text-[11px] text-[#202723]/60 leading-relaxed font-sans">
+                  Background workers (FFmpeg, Faster-Whisper, Gemma) extract audio
+                  transcripts and visual cues for human review.
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-warm-100 flex items-center gap-2 text-xs text-warm-500">
-            <Info className="w-4 h-4 text-warm-400 shrink-0" />
+          <div className="mt-6 pt-4 border-t border-[#DDDCD3] flex items-center gap-2 text-xs text-[#202723]/60 font-mono">
+            <Info className="w-4 h-4 text-[#2E4742] shrink-0" />
             <span>AI processing will be integrated in subsequent phases.</span>
           </div>
         </Card>

@@ -124,22 +124,22 @@ export function AppSidebar() {
   };
 
   return (
-    <aside className="w-64 border-r border-warm-200/80 bg-warm-50/80 shrink-0 flex flex-col justify-between h-screen sticky top-0 overflow-y-auto">
+    <aside className="w-64 border-r border-[#DDDCD3] bg-[#F2F2EB] shrink-0 flex flex-col justify-between h-screen sticky top-0 overflow-y-auto">
       <div>
         {/* Brand Header */}
-        <div className="h-20 px-6 flex items-center border-b border-warm-200/80">
+        <div className="h-20 px-6 flex items-center border-b border-[#DDDCD3]">
           <Link
             href="/"
             className="flex items-center gap-2.5 group focus:outline-none"
           >
-            <div className="w-9 h-9 rounded-xl bg-terracotta-500 text-white flex items-center justify-center shadow-xs transition-transform group-hover:scale-105">
+            <div className="w-9 h-9 rounded-xl bg-[#2E4742] text-[#F2F2EB] flex items-center justify-center shadow-xs transition-transform group-hover:scale-105">
               <UtensilsCrossed className="w-5 h-5" />
             </div>
             <div>
-              <span className="font-serif text-xl font-medium tracking-tight text-warm-900 block leading-none">
-                Simmory
+              <span className="font-display text-xl font-bold tracking-tight text-[#202723] block leading-none">
+                SIMMORY
               </span>
-              <span className="text-[10px] text-warm-500 font-sans tracking-wide block mt-1">
+              <span className="text-[10px] font-mono tracking-wider text-[#2E4742] block mt-1 uppercase">
                 Family Kitchen
               </span>
             </div>
@@ -147,17 +147,17 @@ export function AppSidebar() {
         </div>
 
         {/* Current Active Kitchen Context */}
-        <div className="p-4 mx-4 my-4 rounded-xl bg-white border border-warm-200/80 shadow-xs">
+        <div className="p-4 mx-4 my-4 rounded-xl bg-white border border-[#DDDCD3] shadow-xs">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-warm-500">
+            <span className="text-[11px] font-mono font-medium uppercase tracking-wider text-[#202723]/60">
               Active Archive
             </span>
-            <span className="w-2 h-2 rounded-full bg-sage-500" />
+            <span className="w-2 h-2 rounded-full bg-[#2E4742]" />
           </div>
-          <p className="font-serif text-sm font-medium text-warm-900 truncate">
+          <p className="font-display text-base font-bold text-[#202723] truncate">
             {currentUser?.name ? `${currentUser.name}'s Kitchen` : "Family Kitchen Space"}
           </p>
-          <p className="text-[11px] text-warm-500 truncate mt-0.5">
+          <p className="text-[11px] text-[#202723]/60 truncate mt-0.5">
             Private Archive
           </p>
         </div>
@@ -165,7 +165,7 @@ export function AppSidebar() {
         {/* Navigation Sections */}
         <div className="px-3 space-y-6">
           <div>
-            <div className="px-3 mb-2 text-[11px] font-semibold uppercase tracking-wider text-warm-400">
+            <div className="px-3 mb-2 text-[11px] font-mono font-medium uppercase tracking-wider text-[#202723]/50">
               Kitchen Core
             </div>
             <nav className="space-y-1">
@@ -179,8 +179,8 @@ export function AppSidebar() {
                     className={cn(
                       "flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group",
                       active
-                        ? "bg-terracotta-500 text-white shadow-xs font-semibold"
-                        : "text-warm-700 hover:text-warm-900 hover:bg-warm-200/70"
+                        ? "bg-[#2E4742] text-[#F2F2EB] shadow-xs font-semibold"
+                        : "text-[#202723]/80 hover:text-[#202723] hover:bg-[#DDDCD3]/40"
                     )}
                   >
                     <div className="flex items-center gap-3">
@@ -188,17 +188,17 @@ export function AppSidebar() {
                         className={cn(
                           "w-4 h-4 transition-colors",
                           active
-                            ? "text-white"
-                            : "text-warm-500 group-hover:text-warm-800"
+                            ? "text-[#F2F2EB]"
+                            : "text-[#202723]/60 group-hover:text-[#202723]"
                         )}
                       />
                       <span>{item.label}</span>
                     </div>
                     {item.badge && (
                       <Badge
-                        variant={active ? "outline" : "terracotta"}
+                        variant={active ? "outline" : "forest"}
                         size="sm"
-                        className={active ? "text-white border-white/40 text-[10px]" : "text-[10px]"}
+                        className={active ? "text-[#F2F2EB] border-white/40 text-[10px]" : "text-[10px]"}
                       >
                         {item.badge}
                       </Badge>
@@ -210,9 +210,9 @@ export function AppSidebar() {
           </div>
 
           <div>
-            <div className="px-3 mb-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-warm-400">
+            <div className="px-3 mb-2 flex items-center justify-between text-[11px] font-mono font-medium uppercase tracking-wider text-[#202723]/50">
               <span>Interactive Views</span>
-              <Sparkles className="w-3 h-3 text-terracotta-500" />
+              <Sparkles className="w-3 h-3 text-[#2E4742]" />
             </div>
             <nav className="space-y-1">
               {experienceNavItems.map((item) => {
@@ -225,8 +225,8 @@ export function AppSidebar() {
                     className={cn(
                       "flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group",
                       active
-                        ? "bg-terracotta-500 text-white shadow-xs font-semibold"
-                        : "text-warm-700 hover:text-warm-900 hover:bg-warm-200/70"
+                        ? "bg-[#2E4742] text-[#F2F2EB] shadow-xs font-semibold"
+                        : "text-[#202723]/80 hover:text-[#202723] hover:bg-[#DDDCD3]/40"
                     )}
                   >
                     <div className="flex items-center gap-3">
@@ -234,17 +234,17 @@ export function AppSidebar() {
                         className={cn(
                           "w-4 h-4 transition-colors",
                           active
-                            ? "text-white"
-                            : "text-warm-500 group-hover:text-warm-800"
+                            ? "text-[#F2F2EB]"
+                            : "text-[#202723]/60 group-hover:text-[#202723]"
                         )}
                       />
                       <span>{item.label}</span>
                     </div>
                     {item.badge && (
                       <Badge
-                        variant={active ? "outline" : "warm"}
+                        variant={active ? "outline" : "forest"}
                         size="sm"
-                        className={active ? "text-white border-white/40 text-[10px]" : "text-[10px]"}
+                        className={active ? "text-[#F2F2EB] border-white/40 text-[10px]" : "text-[10px]"}
                       >
                         {item.badge}
                       </Badge>
@@ -258,21 +258,21 @@ export function AppSidebar() {
       </div>
 
       {/* Sidebar Footer with Authenticated User & Logout */}
-      <div className="p-3 m-3 rounded-xl bg-warm-100/80 border border-warm-200/80 space-y-2">
+      <div className="p-3 m-3 rounded-xl bg-white border border-[#DDDCD3] space-y-2">
         {currentUser ? (
           <div className="flex items-center justify-between gap-2">
             <Link
               href="/settings"
               className="flex items-center gap-2.5 min-w-0 group hover:opacity-80 transition-opacity"
             >
-              <div className="w-8 h-8 rounded-full bg-terracotta-100 text-terracotta-700 flex items-center justify-center font-bold text-xs shrink-0">
+              <div className="w-8 h-8 rounded-full bg-[#2E4742]/10 text-[#2E4742] flex items-center justify-center font-bold text-xs shrink-0 font-display">
                 {currentUser.name.charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-semibold text-warm-900 truncate">
+                <p className="text-xs font-semibold text-[#202723] truncate">
                   {currentUser.name}
                 </p>
-                <p className="text-[10px] text-warm-500 truncate">
+                <p className="text-[10px] text-[#202723]/60 truncate font-mono">
                   {currentUser.email}
                 </p>
               </div>

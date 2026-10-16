@@ -405,11 +405,11 @@ export function CookAlongWorkspace({
   return (
     <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6 animate-in fade-in duration-200">
       {/* Top Bar Navigation */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-warm-200/80">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-[#DDDCD3]">
         <div className="flex items-center gap-3">
           <Link
             href={`/recipes/${recipe.id}`}
-            className="p-2 rounded-xl bg-warm-100 hover:bg-warm-200 text-warm-700 transition-colors"
+            className="p-2 rounded-xl bg-[#FAF9F5] border border-[#DDDCD3] hover:bg-[#DDDCD3]/40 text-[#202723] transition-colors"
             title="Return to recipe details"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -417,15 +417,15 @@ export function CookAlongWorkspace({
 
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono uppercase tracking-widest text-terracotta-700 font-semibold">
+              <span className="text-[11px] font-mono uppercase tracking-widest text-[#2E4742] font-medium">
                 Cook Along
               </span>
-              <span className="text-warm-300">•</span>
-              <span className="text-xs text-warm-500 font-medium">
+              <span className="text-[#DDDCD3]">•</span>
+              <span className="text-xs text-[#202723]/60 font-medium">
                 {recipe.kitchenName}
               </span>
             </div>
-            <h1 className="font-serif text-xl sm:text-2xl text-warm-900 font-semibold leading-tight">
+            <h1 className="font-display text-2xl sm:text-3xl text-[#202723] font-bold leading-tight">
               {recipe.title}
             </h1>
           </div>

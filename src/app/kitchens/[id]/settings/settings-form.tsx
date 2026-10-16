@@ -101,16 +101,16 @@ export function KitchenSettingsForm({
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-warm-200/80 shadow-sm p-6 sm:p-10 space-y-10">
-      <div className="flex items-center gap-3 pb-6 border-b border-warm-100">
-        <div className="w-12 h-12 rounded-2xl bg-warm-100 text-warm-700 flex items-center justify-center">
+    <div className="bg-white rounded-3xl border border-[#DDDCD3] shadow-sm p-6 sm:p-10 space-y-10">
+      <div className="flex items-center gap-3 pb-6 border-b border-[#DDDCD3]">
+        <div className="w-12 h-12 rounded-2xl bg-[#2E4742]/10 text-[#2E4742] flex items-center justify-center">
           <Settings className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="font-serif text-2xl font-semibold text-warm-900">
+          <h1 className="font-display text-2xl font-bold text-[#202723]">
             Kitchen Settings
           </h1>
-          <p className="text-xs text-warm-500 mt-0.5">
+          <p className="text-xs text-[#202723]/60 mt-0.5">
             Manage details and preferences for {kitchen.name}
           </p>
         </div>
@@ -118,10 +118,10 @@ export function KitchenSettingsForm({
 
       <form onSubmit={handleUpdate} className="space-y-6">
         <div>
-          <h2 className="font-serif text-lg font-medium text-warm-900 mb-1">
+          <h2 className="font-display text-lg font-bold text-[#202723] mb-1">
             General Information
           </h2>
-          <p className="text-xs text-warm-500">
+          <p className="text-xs text-[#202723]/60">
             Update the title and generational lore associated with this kitchen archive.
           </p>
         </div>
@@ -133,8 +133,8 @@ export function KitchenSettingsForm({
         )}
 
         {updateSuccess && (
-          <div className="p-3.5 text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <div className="p-3.5 text-xs text-[#2E4742] bg-[#2E4742]/10 border border-[#2E4742]/20 rounded-xl flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-[#2E4742] shrink-0" />
             Kitchen details updated successfully.
           </div>
         )}
@@ -151,11 +151,11 @@ export function KitchenSettingsForm({
         />
 
         <div className="space-y-1.5">
-          <label className="block text-xs font-semibold text-warm-800 uppercase tracking-wider">
+          <label className="block text-xs font-mono font-medium text-[#202723] uppercase tracking-wider">
             Description
           </label>
           <textarea
-            className="w-full px-4 py-3 rounded-xl text-sm border border-warm-200 bg-warm-50/30 text-warm-900 placeholder:text-warm-400 focus:outline-none focus:ring-2 focus:ring-terracotta-500/20 focus:border-terracotta-500 transition-colors resize-none h-28"
+            className="w-full px-4 py-3 rounded-xl text-sm border border-[#DDDCD3] bg-[#FAF9F5] text-[#202723] placeholder:text-[#202723]/40 focus:outline-none focus:ring-2 focus:ring-[#2E4742]/20 focus:border-[#2E4742] transition-colors resize-none h-28"
             value={description}
             onChange={(e) => {
               setDescription(e.target.value);
@@ -171,7 +171,7 @@ export function KitchenSettingsForm({
           <div className="flex justify-end pt-2">
             <Button
               type="submit"
-              variant="primary"
+              variant="forest"
               size="md"
               disabled={isUpdating || !name.trim()}
               leftIcon={

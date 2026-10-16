@@ -14,9 +14,9 @@ export function Card({
   return (
     <div
       className={cn(
-        "bg-white rounded-2xl border border-warm-200/80 shadow-[0_2px_8px_-2px_rgba(28,22,20,0.04)]",
+        "bg-[#FAF9F5] rounded-2xl border border-[#DDDCD3] shadow-[0_2px_12px_-4px_rgba(32,39,35,0.04)]",
         hoverEffect &&
-          "transition-all duration-200 hover:shadow-[0_8px_20px_-4px_rgba(28,22,20,0.08)] hover:-translate-y-0.5 hover:border-warm-300",
+          "transition-all duration-200 hover:shadow-[0_8px_24px_-6px_rgba(32,39,35,0.08)] hover:-translate-y-0.5 hover:border-[#202723]/30",
         className
       )}
       {...props}
@@ -49,7 +49,7 @@ export function CardTitle({
   return (
     <h3
       className={cn(
-        "font-serif text-xl font-medium tracking-tight text-warm-900",
+        "font-display text-xl sm:text-2xl font-bold tracking-tight text-[#202723]",
         className
       )}
       {...props}
@@ -66,7 +66,7 @@ export function CardDescription({
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={cn("text-sm text-warm-600 leading-relaxed", className)}
+      className={cn("text-sm text-[#525B56] leading-relaxed", className)}
       {...props}
     >
       {children}
@@ -94,7 +94,7 @@ export function CardFooter({
   return (
     <div
       className={cn(
-        "p-6 pt-0 border-t border-warm-100 flex items-center justify-between mt-auto",
+        "p-6 pt-0 border-t border-[#DDDCD3]/60 flex items-center justify-between mt-auto",
         className
       )}
       {...props}

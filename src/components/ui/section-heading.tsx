@@ -20,20 +20,20 @@ export function SectionHeading({
     <div
       className={cn(
         "space-y-3",
-        align === "center" ? "text-center mx-auto max-w-2xl" : "max-w-2xl",
+        align === "center" ? "text-center mx-auto max-w-3xl" : "max-w-3xl",
         className
       )}
     >
       {eyebrow && (
-        <span className="inline-block text-xs font-semibold uppercase tracking-widest text-terracotta-600 bg-terracotta-50 px-3 py-1 rounded-full border border-terracotta-200/60">
+        <span className="inline-flex items-center gap-2 font-mono text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-[#2E4742] bg-[#E3E9E8]/80 px-3 py-1 rounded-full border border-[#2E4742]/20">
           {eyebrow}
         </span>
       )}
-      <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-warm-900 tracking-tight leading-tight">
+      <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-[#202723] tracking-tight leading-[1.08]">
         {title}
       </h2>
       {description && (
-        <p className="text-base sm:text-lg text-warm-600 leading-relaxed font-sans">
+        <p className="text-base sm:text-lg text-[#525B56] leading-relaxed font-sans">
           {description}
         </p>
       )}

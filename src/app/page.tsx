@@ -1,181 +1,136 @@
 import React, { Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
-  Sparkles,
+  ArrowUpRight,
   Play,
-  Flame,
-  Heart,
+  Sparkles,
+  ShieldCheck,
+  Clock,
+  Utensils,
   Video,
   CheckCircle2,
   Users,
-  Compass,
-  ArrowRight,
-  BookOpen,
-  Eye,
-  Volume2,
-  ChefHat,
-  UtensilsCrossed,
+  Bookmark,
+  HelpCircle,
+  Flame,
 } from "lucide-react";
 import { AppHeader } from "@/components/navigation/app-header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { SectionHeading } from "@/components/ui/section-heading";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-warm-50 flex flex-col text-warm-900 selection:bg-terracotta-100 selection:text-terracotta-800">
+    <div className="min-h-screen bg-[#F2F2EB] flex flex-col text-[#202723] selection:bg-[#2E4742] selection:text-[#F2F2EB]">
       {/* Navigation */}
-      <Suspense fallback={<div className="h-16 sm:h-20 border-b border-warm-200/80 bg-warm-50/95" />}>
+      <Suspense fallback={<div className="h-18 sm:h-20 border-b border-[#DDDCD3] bg-[#F2F2EB]/95" />}>
         <AppHeader />
       </Suspense>
 
       <main className="flex-1 flex flex-col">
-        {/* HERO SECTION */}
-        <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-32 px-4 sm:px-6 lg:px-8 border-b border-warm-200/60 bg-linear-to-b from-warm-100/50 via-warm-50 to-warm-50">
+        {/* ========================================================================= */}
+        {/* HERO SECTION — WARM CREAM BACKGROUND, BOLD CONDENSED TYPOGRAPHY           */}
+        {/* ========================================================================= */}
+        <section className="relative pt-10 pb-20 sm:pt-16 sm:pb-28 px-4 sm:px-6 lg:px-8 border-b border-[#DDDCD3] bg-[#F2F2EB]">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-              {/* Left Column: Headlines & Call to Action */}
-              <div className="lg:col-span-7 space-y-6 sm:space-y-8 text-center lg:text-left">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-terracotta-50 border border-terracotta-200/80 text-terracotta-700 text-xs sm:text-sm font-medium">
-                  <Sparkles className="w-3.5 h-3.5 text-terracotta-500 shrink-0" />
-                  <span>Preserving family cooking heritage & unwritten wisdom</span>
-                </div>
+            {/* Top editorial eyebrow */}
+            <div className="flex items-center gap-3 mb-6">
+              <span className="font-mono text-xs uppercase tracking-widest text-[#2E4742] font-semibold bg-[#E3E9E8] px-3 py-1 rounded-full border border-[#2E4742]/20">
+                Simmory — Culinary Heritage Archive
+              </span>
+              <span className="h-px flex-1 bg-[#DDDCD3] hidden sm:block" />
+            </div>
 
-                <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-warm-900 tracking-tight leading-[1.12]">
-                  The way they made it,{" "}
-                  <span className="italic font-normal text-terracotta-600 block sm:inline">
-                    remembered.
-                  </span>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-12 items-center">
+              {/* Left Column: Bold Condensed Headline & Call to Action */}
+              <div className="lg:col-span-7 space-y-6 sm:space-y-8">
+                <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-[5.25rem] font-extrabold text-[#202723] tracking-tight leading-[0.98]">
+                  Some recipes deserve more than being written down.
                 </h1>
 
-                <p className="text-base sm:text-xl text-warm-700 leading-relaxed max-w-2xl font-sans mx-auto lg:mx-0">
-                  Many family recipes are never written down. They live in muscle
-                  memory, seasoned hands, and instinctual cues like &ldquo;until it smells
-                  right.&rdquo; Simmory preserves original cooking videos and turns them
-                  into interactive, step-by-step journeys you can recreate forever.
+                <p className="text-lg sm:text-xl text-[#525B56] leading-relaxed max-w-2xl font-sans">
+                  Preserve the voices, techniques, stories, and little details that make
+                  family cooking worth remembering. Simmory connects private cooking videos
+                  with human-verified instructions so traditional knowledge never disappears.
                 </p>
 
-                <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
-                  <Link href="/dashboard" className="w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+                  <Link href="/upload">
                     <Button
                       variant="primary"
                       size="lg"
-                      className="w-full sm:w-auto justify-center shadow-md hover:shadow-lg transition-shadow"
-                      rightIcon={<ArrowRight className="w-4 h-4" />}
+                      className="w-full sm:w-auto justify-center text-base px-7"
+                      rightIcon={<ArrowUpRight className="w-4 h-4" />}
                     >
-                      Enter Family Kitchen
+                      Start Preserving
                     </Button>
                   </Link>
-                  <Link href="/upload" className="w-full sm:w-auto">
+                  <Link href="#how-it-works">
                     <Button
                       variant="secondary"
                       size="lg"
-                      className="w-full sm:w-auto justify-center"
-                      leftIcon={<ChefHat className="w-4 h-4 text-terracotta-600" />}
+                      className="w-full sm:w-auto justify-center text-base"
                     >
-                      Preserve a Recipe
+                      See How It Works
                     </Button>
                   </Link>
                 </div>
 
-                {/* Trust / Emotional anchor pills */}
-                <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-y-2 gap-x-6 text-xs text-warm-600 font-medium">
-                  <div className="flex items-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4 text-sage-600" />
-                    <span>Always verified by the original cook</span>
+                {/* Editorial Metadata Pills */}
+                <div className="pt-4 flex flex-wrap items-center gap-y-2 gap-x-6 text-xs text-[#525B56] font-mono border-t border-[#DDDCD3]/60 pt-6">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#2E4742]" />
+                    <span>Private Family Archives</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <Video className="w-4 h-4 text-terracotta-500" />
-                    <span>Timestamp-linked video playback</span>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#F5B726]" />
+                    <span>Timestamped Video Evidence</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <Heart className="w-4 h-4 text-amber-700" />
-                    <span>Private family archives</span>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#8BB2DE]" />
+                    <span>Cook-Verified Memory</span>
                   </div>
                 </div>
               </div>
 
-              {/* Right Column: Interactive Product Demonstration Card */}
+              {/* Right Column: Editorial Food Photography with Floating Story Artifact */}
               <div className="lg:col-span-5 relative">
-                <div className="relative mx-auto max-w-md lg:max-w-none">
-                  {/* Decorative warm glow backdrop */}
-                  <div className="absolute -inset-2 bg-linear-to-tr from-terracotta-200/30 to-amber-200/30 rounded-3xl blur-xl -z-10" />
+                <div className="relative rounded-2xl overflow-hidden border border-[#DDDCD3] shadow-[0_8px_30px_rgb(0,0,0,0.06)] bg-[#FAF9F5]">
+                  <div className="relative aspect-4/3 w-full">
+                    <Image
+                      src="/images/hero-cooking-hands.jpg"
+                      alt="Hands kneading rustic bread dough on a wooden kitchen table"
+                      fill
+                      priority
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 42vw"
+                    />
+                  </div>
 
-                  {/* Recipe Showcase Card */}
-                  <div className="bg-white rounded-3xl border border-warm-200/90 shadow-xl overflow-hidden">
-                    {/* Video Demonstration Header */}
-                    <div className="relative aspect-video bg-warm-900 overflow-hidden flex items-center justify-center">
-                      <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-black/30" />
-
-                      {/* Video simulated capture frame */}
-                      <div className="z-10 text-center px-4">
-                        <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center mx-auto mb-2 text-white shadow-lg transition-transform hover:scale-110">
-                          <Play className="w-6 h-6 fill-white ml-0.5" />
-                        </div>
-                        <p className="text-xs text-white/90 font-medium font-sans">
-                          Original Cooking Footage
-                        </p>
-                        <p className="text-[11px] text-white/70">
-                          Timestamp 04:18 &bull; &ldquo;When the oil begins to glisten&rdquo;
-                        </p>
-                      </div>
-
-                      {/* Video Badges */}
-                      <div className="absolute top-3 left-3 z-10 flex gap-2">
-                        <span className="bg-black/60 backdrop-blur-md text-white text-[10px] font-medium px-2 py-0.5 rounded-md flex items-center gap-1">
-                          <Video className="w-3 h-3 text-terracotta-400" /> 18:42
+                  {/* Editorial caption badge overlay */}
+                  <div className="p-4 sm:p-5 bg-[#FAF9F5] border-t border-[#DDDCD3] flex items-center justify-between gap-4">
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-[11px] uppercase tracking-wider text-[#2E4742] font-semibold">
+                          [ VIDEO DEMONSTRATION ]
                         </span>
+                        <span className="text-[11px] text-[#7A857F]">• 18 min clip</span>
                       </div>
-                      <div className="absolute top-3 right-3 z-10">
-                        <Badge variant="sage" size="sm" className="bg-sage-600 text-white border-0">
-                          Cook Verified
-                        </Badge>
-                      </div>
+                      <p className="font-display text-base font-bold text-[#202723]">
+                        Nonna Rosa&apos;s Sunday Sourdough Focaccia
+                      </p>
+                      <p className="text-xs text-[#525B56] font-sans">
+                        &ldquo;Knead with the heel of the palm until it pushes back.&rdquo;
+                      </p>
                     </div>
 
-                    {/* Card Content & Cooking Cue Demonstration */}
-                    <div className="p-6 space-y-4">
-                      <div>
-                        <div className="flex items-center justify-between text-xs text-warm-500 mb-1">
-                          <span>Heirloom Dish</span>
-                          <span>The Garcia Kitchen</span>
-                        </div>
-                        <h2 className="font-serif text-2xl text-warm-900 font-medium">
-                          Grandmother Rosa&apos;s Braised Sofrito
-                        </h2>
-                      </div>
-
-                      {/* Sensory Cue Highlight Box */}
-                      <div className="bg-terracotta-50/80 border border-terracotta-200/80 rounded-2xl p-4 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-terracotta-700">
-                            <Flame className="w-3.5 h-3.5 text-terracotta-500" />
-                            Sensory Cooking Cue
-                          </span>
-                          <span className="text-[11px] font-mono text-terracotta-600 bg-white px-2 py-0.5 rounded-md border border-terracotta-200">
-                            @ 04:18
-                          </span>
-                        </div>
-                        <p className="font-serif text-sm text-warm-900 italic">
-                          &ldquo;Listen for the sizzle to soften. When the oil rises to the top and turns golden, add the crushed garlic.&rdquo;
-                        </p>
-                        <p className="text-xs text-warm-600 font-sans">
-                          &bull; Confirmed quantity: &ldquo;A palm-sized mound, about 4 cloves&rdquo;
-                        </p>
-                      </div>
-
-                      {/* Step Navigation Pill */}
-                      <div className="flex items-center justify-between pt-2 border-t border-warm-100 text-xs">
-                        <span className="text-warm-500">Step 3 of 7 in sequence</span>
-                        <Link
-                          href="/cook/demo"
-                          className="text-terracotta-600 hover:text-terracotta-700 font-medium hover:underline flex items-center gap-1"
-                        >
-                          Try Interactive Cook Along &rarr;
-                        </Link>
-                      </div>
-                    </div>
+                    <Link
+                      href="/dashboard"
+                      className="shrink-0 w-11 h-11 rounded-full bg-[#2E4742] text-[#F2F2EB] flex items-center justify-center hover:bg-[#233733] transition-colors shadow-xs"
+                      aria-label="View demo video"
+                    >
+                      <Play className="w-4 h-4 fill-current ml-0.5" />
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -183,396 +138,491 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* SECTION 2: THE PROBLEM WITH UNWRITTEN RECIPES */}
-        <section className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b border-warm-200/70 bg-warm-100/30">
+        {/* ========================================================================= */}
+        {/* THE PROBLEM SECTION — UNWRITTEN COOKING KNOWLEDGE                         */}
+        {/* ========================================================================= */}
+        <section className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b border-[#DDDCD3] bg-[#FAF9F5]">
           <div className="max-w-7xl mx-auto">
-            <SectionHeading
-              align="center"
-              eyebrow="The Missing Ingredient"
-              title="A pinch of this, a handful of that. Why standard recipe apps fail family cooking."
-              description="Traditional cooking wisdom lives in the hands and senses of the person at the stove. When instructions are reduced to rigid bullet points, the soul and accuracy are lost."
-            />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              {/* Left Column: Simmering Pot Culinary Photography */}
+              <div className="lg:col-span-5 order-2 lg:order-1">
+                <div className="relative rounded-2xl overflow-hidden border border-[#DDDCD3] shadow-[0_4px_20px_rgb(0,0,0,0.04)]">
+                  <div className="relative aspect-4/3 w-full">
+                    <Image
+                      src="/images/simmering-pot.jpg"
+                      alt="Cast iron Dutch oven simmering with rich tomato sauce, steam, and wooden spoon"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 40vw"
+                    />
+                  </div>
+                  <div className="p-4 bg-[#F2F2EB] border-t border-[#DDDCD3] flex items-center justify-between text-xs font-mono text-[#525B56]">
+                    <span>SENSORY CUE EVIDENCE</span>
+                    <span className="text-[#2E4742] font-semibold">Tasting Spoon Timestamp: 14:22</span>
+                  </div>
+                </div>
+              </div>
 
-            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Problem 1 */}
-              <Card className="p-7 space-y-4 bg-white">
-                <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-200/60">
-                  <Eye className="w-6 h-6" />
-                </div>
-                <h3 className="font-serif text-xl text-warm-900 font-medium">
-                  Visual Cues Over Timers
-                </h3>
-                <p className="text-sm text-warm-600 leading-relaxed font-sans">
-                  Grandparents rarely cook with a timer. They look for the exact shade of golden amber, the way the bubbles cluster, or the ring of fat around the pan.
-                </p>
-                <div className="p-3 bg-warm-50 rounded-xl text-xs text-warm-700 font-serif italic border border-warm-200/50">
-                  &ldquo;Cook it until it looks like a sunrise.&rdquo;
-                </div>
-              </Card>
+              {/* Right Column: Editorial Narrative & Unwritten Cues */}
+              <div className="lg:col-span-7 order-1 lg:order-2 space-y-6">
+                <span className="font-mono text-xs uppercase tracking-widest text-[#2E4742] font-semibold bg-[#E3E9E8] px-3 py-1 rounded-full border border-[#2E4742]/20">
+                  The Problem With Standard Recipes
+                </span>
 
-              {/* Problem 2 */}
-              <Card className="p-7 space-y-4 bg-white">
-                <div className="w-12 h-12 rounded-2xl bg-terracotta-50 text-terracotta-700 flex items-center justify-center border border-terracotta-200/60">
-                  <Volume2 className="w-6 h-6" />
-                </div>
-                <h3 className="font-serif text-xl text-warm-900 font-medium">
-                  Sensory Knowledge & Touch
-                </h3>
-                <p className="text-sm text-warm-600 leading-relaxed font-sans">
-                  The weight in the spoon, the resistance of the dough, the gentle hiss that signals the oil is ready—conventional recipe cards cannot capture tactile memory.
-                </p>
-                <div className="p-3 bg-warm-50 rounded-xl text-xs text-warm-700 font-serif italic border border-warm-200/50">
-                  &ldquo;Stir until your wrist feels the drag.&rdquo;
-                </div>
-              </Card>
+                <h2 className="font-display text-4xl sm:text-5xl font-extrabold text-[#202723] tracking-tight leading-[1.05]">
+                  The best recipes aren&apos;t always written down.
+                </h2>
 
-              {/* Problem 3 */}
-              <Card className="p-7 space-y-4 bg-white">
-                <div className="w-12 h-12 rounded-2xl bg-sage-50 text-sage-700 flex items-center justify-center border border-sage-200/60">
-                  <Heart className="w-6 h-6" />
-                </div>
-                <h3 className="font-serif text-xl text-warm-900 font-medium">
-                  Voice & Storytelling
-                </h3>
-                <p className="text-sm text-warm-600 leading-relaxed font-sans">
-                  Recipes carry family folklore, jokes made between stirs, and cultural roots from generations past. Simmory preserves the actual footage and authentic voices.
+                <p className="text-base sm:text-lg text-[#525B56] leading-relaxed font-sans">
+                  Ask a family cook how much salt they use, and they will tell you &ldquo;enough.&rdquo;
+                  Ask how long it bakes, and they will say &ldquo;until it turns chestnut golden.&rdquo;
+                  Standard recipe cards force these intuitive, tactile techniques into generic grams
+                  and minutes, losing the muscle memory and instincts that made the food sacred.
                 </p>
-                <div className="p-3 bg-warm-50 rounded-xl text-xs text-warm-700 font-serif italic border border-warm-200/50">
-                  &ldquo;My mother learned this during harvest season in 1962.&rdquo;
+
+                {/* Unwritten phrases showcase */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
+                  <div className="p-4 rounded-xl bg-[#F2F2EB] border border-[#DDDCD3] space-y-1.5">
+                    <span className="font-mono text-[10px] text-[#2E4742] uppercase tracking-wider block">
+                      [ SENSORY CUE 01 ]
+                    </span>
+                    <p className="font-display text-lg font-bold text-[#202723]">
+                      &ldquo;Add a little water.&rdquo;
+                    </p>
+                    <p className="text-xs text-[#525B56]">
+                      Until the dough feels like a soft earlobe, not sticky.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-[#F2F2EB] border border-[#DDDCD3] space-y-1.5">
+                    <span className="font-mono text-[10px] text-[#2E4742] uppercase tracking-wider block">
+                      [ SENSORY CUE 02 ]
+                    </span>
+                    <p className="font-display text-lg font-bold text-[#202723]">
+                      &ldquo;Stir until it feels right.&rdquo;
+                    </p>
+                    <p className="text-xs text-[#525B56]">
+                      When the wooden spoon leaves a clean trail on the pan floor.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-[#F2F2EB] border border-[#DDDCD3] space-y-1.5">
+                    <span className="font-mono text-[10px] text-[#2E4742] uppercase tracking-wider block">
+                      [ SENSORY CUE 03 ]
+                    </span>
+                    <p className="font-display text-lg font-bold text-[#202723]">
+                      &ldquo;Cook until the oil rises.&rdquo;
+                    </p>
+                    <p className="text-xs text-[#525B56]">
+                      Small red droplets pooling around the rim indicate flavor release.
+                    </p>
+                  </div>
                 </div>
-              </Card>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* SECTION 3: HOW SIMMORY WORKS */}
-        <section id="how-it-works" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b border-warm-200/70 bg-warm-50">
-          <div className="max-w-7xl mx-auto">
-            <SectionHeading
-              align="center"
-              eyebrow="The Workflow"
-              title="How Simmory preserves unwritten family recipes"
-              description="A thoughtful, human-first system that uses modern AI as an attentive assistant—never replacing the cook's confirmation."
-            />
+        {/* ========================================================================= */}
+        {/* HOW SIMMORY WORKS — 5-STEP EDITORIAL WORKFLOW SEQUENCE                    */}
+        {/* ========================================================================= */}
+        <section id="how-it-works" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b border-[#DDDCD3] bg-[#F2F2EB]">
+          <div className="max-w-7xl mx-auto space-y-16">
+            <div className="max-w-3xl space-y-3">
+              <span className="font-mono text-xs uppercase tracking-widest text-[#2E4742] font-semibold bg-[#E3E9E8] px-3 py-1 rounded-full border border-[#2E4742]/20">
+                The Preservation Workflow
+              </span>
+              <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold text-[#202723] tracking-tight leading-[1.02]">
+                Upload. Analyze. Review. Preserve. Cook Along.
+              </h2>
+              <p className="text-base sm:text-lg text-[#525B56] leading-relaxed font-sans">
+                A deliberate human-in-the-loop pipeline. AI proposes based on grounded video evidence,
+                while family members maintain complete editorial control over the final heirloom recipe.
+              </p>
+            </div>
 
-            <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* 5-Step Editorial Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Step 1 */}
-              <div className="p-6 rounded-2xl bg-white border border-warm-200/80 shadow-xs flex flex-col justify-between">
-                <div className="space-y-3">
-                  <span className="w-8 h-8 rounded-full bg-warm-100 text-warm-800 text-xs font-serif font-bold flex items-center justify-center border border-warm-200">
-                    1
+              <div className="p-6 rounded-2xl bg-[#FAF9F5] border border-[#DDDCD3] space-y-4 hover:border-[#202723]/30 transition-colors">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-bold text-[#2E4742] bg-[#E3E9E8] px-2.5 py-1 rounded-md">
+                    01 / UPLOAD
                   </span>
-                  <h3 className="font-serif text-lg text-warm-900 font-medium">
-                    Upload Cooking Video
-                  </h3>
-                  <p className="text-xs sm:text-sm text-warm-600 leading-relaxed font-sans">
-                    Record your elder or loved one cooking their signature meal. Even unedited, handheld phone videos work perfectly.
-                  </p>
+                  <Video className="w-5 h-5 text-[#2E4742]" />
                 </div>
-                <div className="mt-6 pt-4 border-t border-warm-100 text-[11px] text-warm-500 font-medium">
-                  Raw video preserved in private cloud storage
-                </div>
+                <h3 className="font-display text-2xl font-bold text-[#202723]">
+                  Direct Media Capture
+                </h3>
+                <p className="text-sm text-[#525B56] leading-relaxed">
+                  Record on any smartphone in your kitchen. Upload directly to private storage
+                  without compression loss. Automated FFprobe verifies codec, duration, and container integrity.
+                </p>
               </div>
 
               {/* Step 2 */}
-              <div className="p-6 rounded-2xl bg-white border border-warm-200/80 shadow-xs flex flex-col justify-between">
-                <div className="space-y-3">
-                  <span className="w-8 h-8 rounded-full bg-terracotta-100 text-terracotta-700 text-xs font-serif font-bold flex items-center justify-center border border-terracotta-200">
-                    2
+              <div className="p-6 rounded-2xl bg-[#FAF9F5] border border-[#DDDCD3] space-y-4 hover:border-[#202723]/30 transition-colors">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-bold text-[#2E4742] bg-[#E3E9E8] px-2.5 py-1 rounded-md">
+                    02 / ANALYZE
                   </span>
-                  <h3 className="font-serif text-lg text-warm-900 font-medium">
-                    AI Proposes Timeline
-                  </h3>
-                  <p className="text-xs sm:text-sm text-warm-600 leading-relaxed font-sans">
-                    Faster-Whisper transcribes spoken instructions while Gemma 4 inspects video frames to detect candidate cooking actions and sensory cues.
-                  </p>
+                  <Sparkles className="w-5 h-5 text-[#F5B726]" />
                 </div>
-                <div className="mt-6 pt-4 border-t border-warm-100 text-[11px] text-terracotta-600 font-medium">
-                  Generates an evidence-backed candidate draft
-                </div>
+                <h3 className="font-display text-2xl font-bold text-[#202723]">
+                  Local AI Extraction
+                </h3>
+                <p className="text-sm text-[#525B56] leading-relaxed">
+                  Faster-Whisper transcribes speech with audio silence detection. Gemma 4 examines
+                  sampled video frames to reconstruct timeline steps without fabricating dialogue.
+                </p>
               </div>
 
               {/* Step 3 */}
-              <div className="p-6 rounded-2xl bg-white border border-warm-200/80 shadow-xs flex flex-col justify-between ring-2 ring-sage-500/20">
-                <div className="space-y-3">
-                  <span className="w-8 h-8 rounded-full bg-sage-100 text-sage-800 text-xs font-serif font-bold flex items-center justify-center border border-sage-200">
-                    3
+              <div className="p-6 rounded-2xl bg-[#FAF9F5] border border-[#DDDCD3] space-y-4 hover:border-[#202723]/30 transition-colors">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-bold text-[#2E4742] bg-[#E3E9E8] px-2.5 py-1 rounded-md">
+                    03 / REVIEW
                   </span>
-                  <h3 className="font-serif text-lg text-warm-900 font-medium">
-                    Cook Reviews & Clarifies
-                  </h3>
-                  <p className="text-xs sm:text-sm text-warm-600 leading-relaxed font-sans">
-                    Crucial human step: the cook or family reviews the candidate draft, fills in missing measurements, and confirms the real secrets.
-                  </p>
+                  <HelpCircle className="w-5 h-5 text-[#8BB2DE]" />
                 </div>
-                <div className="mt-6 pt-4 border-t border-warm-100 text-[11px] text-sage-700 font-medium">
-                  Verified by Cook verification seal
-                </div>
+                <h3 className="font-display text-2xl font-bold text-[#202723]">
+                  Human Clarification
+                </h3>
+                <p className="text-sm text-[#525B56] leading-relaxed">
+                  Review proposed events side-by-side with original video timestamps. Answer
+                  clarification questions for unmeasured pinches and approve each step.
+                </p>
               </div>
 
               {/* Step 4 */}
-              <div className="p-6 rounded-2xl bg-white border border-warm-200/80 shadow-xs flex flex-col justify-between">
-                <div className="space-y-3">
-                  <span className="w-8 h-8 rounded-full bg-warm-100 text-warm-800 text-xs font-serif font-bold flex items-center justify-center border border-warm-200">
-                    4
+              <div className="p-6 rounded-2xl bg-[#FAF9F5] border border-[#DDDCD3] space-y-4 hover:border-[#202723]/30 transition-colors">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-bold text-[#2E4742] bg-[#E3E9E8] px-2.5 py-1 rounded-md">
+                    04 / PRESERVE
                   </span>
-                  <h3 className="font-serif text-lg text-warm-900 font-medium">
-                    Interactive Cook Along
-                  </h3>
-                  <p className="text-xs sm:text-sm text-warm-600 leading-relaxed font-sans">
-                    Anyone in the family can recreate the dish with step-by-step guidance that jumps directly to the exact moment in the video.
-                  </p>
+                  <Bookmark className="w-5 h-5 text-[#2E4742]" />
                 </div>
-                <div className="mt-6 pt-4 border-t border-warm-100 text-[11px] text-warm-500 font-medium">
-                  Synchronized visual guidance at every step
+                <h3 className="font-display text-2xl font-bold text-[#202723]">
+                  Family Heirloom Archive
+                </h3>
+                <p className="text-sm text-[#525B56] leading-relaxed">
+                  Save to your private Family Kitchen. Recipes retain original cook attribution,
+                  origin lore, family memories, and verified timestamp markers.
+                </p>
+              </div>
+
+              {/* Step 5 */}
+              <div className="p-6 rounded-2xl bg-[#FAF9F5] border border-[#DDDCD3] space-y-4 hover:border-[#202723]/30 transition-colors md:col-span-2 lg:col-span-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-bold text-[#2E4742] bg-[#E3E9E8] px-2.5 py-1 rounded-md">
+                    05 / COOK ALONG
+                  </span>
+                  <Utensils className="w-5 h-5 text-[#2E4742]" />
                 </div>
+                <h3 className="font-display text-2xl font-bold text-[#202723]">
+                  Synchronized Kitchen Guidance
+                </h3>
+                <p className="text-sm text-[#525B56] leading-relaxed">
+                  Cook in real time on mobile or tablet. Tap any step to jump the video directly
+                  to that exact demonstration. Track ingredients, run contextual timers, and
+                  recreate the dish with certainty.
+                </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* SECTION 4: THE FAMILY KITCHEN */}
-        <section id="family-kitchen" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b border-warm-200/70 bg-warm-100/40">
+        {/* ========================================================================= */}
+        {/* FAMILY KITCHEN SECTION — CULINARY HERITAGE & STORIES                      */}
+        {/* ========================================================================= */}
+        <section id="family-kitchen" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b border-[#DDDCD3] bg-[#FAF9F5]">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              {/* Left Column: Story & Family Kitchen Features */}
               <div className="lg:col-span-6 space-y-6">
-                <SectionHeading
-                  eyebrow="The Family Kitchen"
-                  title="A private sanctuary for your family's culinary memories"
-                  description="Keep recipes organized by family branches, celebrate the individuals who created them, and ensure your ancestral flavors are never lost to time."
-                />
+                <span className="font-mono text-xs uppercase tracking-widest text-[#2E4742] font-semibold bg-[#E3E9E8] px-3 py-1 rounded-full border border-[#2E4742]/20">
+                  Private Heritage Sanctuary
+                </span>
 
-                <div className="space-y-4 pt-2">
-                  <div className="flex gap-4 items-start">
-                    <div className="w-9 h-9 rounded-xl bg-terracotta-100 text-terracotta-700 flex items-center justify-center shrink-0 mt-0.5">
-                      <Users className="w-4 h-4" />
-                    </div>
+                <h2 className="font-display text-4xl sm:text-5xl font-extrabold text-[#202723] tracking-tight leading-[1.05]">
+                  Every family has a kitchen full of stories.
+                </h2>
+
+                <p className="text-base sm:text-lg text-[#525B56] leading-relaxed font-sans">
+                  Simmory creates private spaces for extended families to gather their
+                  cooking footage, handwritten recipe traditions, and culinary memories.
+                  Only authorized family members can access recipes and watch demonstrations.
+                </p>
+
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-start gap-3 p-3.5 rounded-xl bg-[#F2F2EB] border border-[#DDDCD3]">
+                    <ShieldCheck className="w-5 h-5 text-[#2E4742] shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="font-serif text-base text-warm-900 font-medium">
-                        Personal Cook Attribution
-                      </h4>
-                      <p className="text-sm text-warm-600 font-sans mt-0.5">
-                        Attribute every dish to its true author—&ldquo;Aunt Teresa&apos;s Tamales&rdquo; or &ldquo;Nonno&apos;s Sunday Ragu&rdquo;—preserving their portrait and legacy.
+                      <p className="font-display text-base font-bold text-[#202723]">
+                        Original Cook Verification
+                      </p>
+                      <p className="text-xs text-[#525B56]">
+                        Preserves the clear distinction between an AI proposal, a family review, and a recipe confirmed by the original maker.
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex gap-4 items-start">
-                    <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 mt-0.5">
-                      <BookOpen className="w-4 h-4" />
-                    </div>
+                  <div className="flex items-start gap-3 p-3.5 rounded-xl bg-[#F2F2EB] border border-[#DDDCD3]">
+                    <Users className="w-5 h-5 text-[#2E4742] shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="font-serif text-base text-warm-900 font-medium">
-                        Stories & Cultural Heritage
-                      </h4>
-                      <p className="text-sm text-warm-600 font-sans mt-0.5">
-                        Capture the origins, festival traditions, handwritten notes, and background memories that make each dish meaningful.
+                      <p className="font-display text-base font-bold text-[#202723]">
+                        Role-Based Family Collaboration
                       </p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4 items-start">
-                    <div className="w-9 h-9 rounded-xl bg-sage-100 text-sage-800 flex items-center justify-center shrink-0 mt-0.5">
-                      <Compass className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h4 className="font-serif text-base text-warm-900 font-medium">
-                        Private by Default
-                      </h4>
-                      <p className="text-sm text-warm-600 font-sans mt-0.5">
-                        Your family recipes belong to your family. Controlled access keeps personal footage and secret ingredients completely private.
+                      <p className="text-xs text-[#525B56]">
+                        Owners invite family members as Editors or Viewers with strict server-side authorization.
                       </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="pt-2">
-                  <Link href="/kitchens">
-                    <Button variant="secondary" size="md">
-                      Explore Family Kitchens &rarr;
+                  <Link href="/kitchens/new">
+                    <Button variant="primary" size="md" rightIcon={<ArrowUpRight className="w-4 h-4" />}>
+                      Create Your Family Kitchen
                     </Button>
                   </Link>
                 </div>
               </div>
 
-              {/* Family Kitchen Visual Mock */}
+              {/* Right Column: Family Heritage Photography */}
               <div className="lg:col-span-6">
-                <Card className="p-6 sm:p-8 bg-white border border-warm-200/90 shadow-md space-y-6">
-                  <div className="flex items-center justify-between pb-4 border-b border-warm-100">
-                    <div>
-                      <span className="text-xs uppercase tracking-wider text-warm-500 font-medium">
-                        Collection Preview
-                      </span>
-                      <h3 className="font-serif text-xl text-warm-900 font-medium mt-0.5">
-                        The Morales Family Kitchen
-                      </h3>
-                    </div>
-                    <Badge variant="terracotta">14 Preserved Dishes</Badge>
+                <div className="relative rounded-2xl overflow-hidden border border-[#DDDCD3] shadow-[0_4px_20px_rgb(0,0,0,0.04)]">
+                  <div className="relative aspect-3/2 w-full">
+                    <Image
+                      src="/images/family-heritage.jpg"
+                      alt="Grandmother teaching grandchild to fold fresh pasta on wooden kitchen table"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                    />
                   </div>
-
-                  <div className="space-y-3">
-                    <div className="p-3.5 rounded-xl bg-warm-50 border border-warm-200/60 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-terracotta-100 text-terracotta-700 flex items-center justify-center font-serif font-bold text-sm">
-                          M
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm text-warm-900">
-                            Mole Poblano de la Abuela
-                          </p>
-                          <p className="text-xs text-warm-500">
-                            Cooked by Abuela Maria &bull; 9 video cues
-                          </p>
-                        </div>
-                      </div>
-                      <Badge variant="sage" size="sm">
-                        Verified
-                      </Badge>
-                    </div>
-
-                    <div className="p-3.5 rounded-xl bg-warm-50 border border-warm-200/60 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center font-serif font-bold text-sm">
-                          P
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm text-warm-900">
-                            Pastel de Tres Leches Tradicional
-                          </p>
-                          <p className="text-xs text-warm-500">
-                            Cooked by Tía Carmen &bull; 5 video cues
-                          </p>
-                        </div>
-                      </div>
-                      <Badge variant="sage" size="sm">
-                        Verified
-                      </Badge>
-                    </div>
-
-                    <div className="p-3.5 rounded-xl bg-warm-50 border border-warm-200/60 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-warm-200 text-warm-800 flex items-center justify-center font-serif font-bold text-sm">
-                          C
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm text-warm-900">
-                            Caldo de Pollo Curativo
-                          </p>
-                          <p className="text-xs text-warm-500">
-                            Recorded Dec 2025 &bull; Awaiting cook review
-                          </p>
-                        </div>
-                      </div>
-                      <Badge variant="saffron" size="sm">
-                        In Review
-                      </Badge>
-                    </div>
+                  <div className="p-4 bg-[#F2F2EB] border-t border-[#DDDCD3] flex items-center justify-between text-xs font-mono text-[#525B56]">
+                    <span>HEIRLOOM TRADITION</span>
+                    <span className="text-[#2E4742] font-semibold">Generational Knowledge</span>
                   </div>
-
-                  <p className="text-xs text-warm-500 italic text-center font-serif pt-1">
-                    &ldquo;Food is our family&apos;s oldest language.&rdquo;
-                  </p>
-                </Card>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* SECTION 5: INTERACTIVE COOK ALONG */}
-        <section id="cook-along" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b border-warm-200/70 bg-warm-50">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
-              <span className="text-xs font-semibold uppercase tracking-widest text-terracotta-600 bg-terracotta-50 px-3 py-1 rounded-full border border-terracotta-200/60">
-                The Re-creation Experience
+        {/* ========================================================================= */}
+        {/* AI ANALYSIS SECTION — EVIDENCE-GROUNDED RECONSTRUCTION                    */}
+        {/* ========================================================================= */}
+        <section id="ai-analysis" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b border-[#DDDCD3] bg-[#F2F2EB]">
+          <div className="max-w-7xl mx-auto space-y-12">
+            <div className="max-w-3xl space-y-3">
+              <span className="font-mono text-xs uppercase tracking-widest text-[#2E4742] font-semibold bg-[#E3E9E8] px-3 py-1 rounded-full border border-[#2E4742]/20">
+                Ethical Grounded Intelligence
               </span>
-              <h2 className="font-serif text-3xl sm:text-4xl text-warm-900 font-medium">
-                Cook right beside the original demonstration
+              <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold text-[#202723] tracking-tight leading-[1.02]">
+                Technology finds the moments. People preserve the meaning.
               </h2>
-              <p className="text-base sm:text-lg text-warm-600 font-sans leading-relaxed">
-                Step-by-step guidance that feels like standing in the kitchen beside them. Tap any instruction to jump directly to the exact moment in the video.
+              <p className="text-base sm:text-lg text-[#525B56] leading-relaxed font-sans">
+                Simmory does not invent ingredients or replace grandma&apos;s wisdom with generic AI text.
+                Every proposed action links to verifiable video frames and acoustic evidence.
               </p>
             </div>
 
-            {/* Cook along interactive feature pillars */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="p-6 rounded-2xl bg-white border border-warm-200/80 shadow-xs space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-terracotta-100 text-terracotta-700 flex items-center justify-center">
-                  <Play className="w-5 h-5 fill-terracotta-600" />
-                </div>
-                <h3 className="font-serif text-lg text-warm-900 font-medium">
-                  Synchronized Video Jumps
-                </h3>
-                <p className="text-xs sm:text-sm text-warm-600 leading-relaxed font-sans">
-                  No more scrubbing through a 30-minute video with messy hands. Each step has an instant jump button that plays the specific technique.
-                </p>
-              </div>
+            {/* Product UI Demonstration Card */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-[#FAF9F5] border border-[#DDDCD3] shadow-xs">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                {/* Left: Interactive Review Event Sample */}
+                <div className="lg:col-span-7 space-y-4">
+                  <div className="flex items-center justify-between border-b border-[#DDDCD3] pb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-[#2E4742]">
+                        EVENT #03
+                      </span>
+                      <span className="text-xs text-[#7A857F] font-mono">
+                        [ 04:15 – 05:40 ]
+                      </span>
+                    </div>
+                    <Badge variant="ochre" size="sm">
+                      Question for Cook
+                    </Badge>
+                  </div>
 
-              <div className="p-6 rounded-2xl bg-white border border-warm-200/80 shadow-xs space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-sage-100 text-sage-800 flex items-center justify-center">
-                  <Flame className="w-5 h-5" />
-                </div>
-                <h3 className="font-serif text-lg text-warm-900 font-medium">
-                  Sensory Cue Detection
-                </h3>
-                <p className="text-xs sm:text-sm text-warm-600 leading-relaxed font-sans">
-                  Learn to identify sensory milestones: &ldquo;when the bubbles become lazy,&rdquo; &ldquo;when the aroma fills the hallway,&rdquo; or &ldquo;when the sauce coats the back of a spoon.&rdquo;
-                </p>
-              </div>
+                  <h3 className="font-display text-2xl font-bold text-[#202723]">
+                    Fold dough into thirds and let rest under warm damp towel
+                  </h3>
 
-              <div className="p-6 rounded-2xl bg-white border border-warm-200/80 shadow-xs space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center">
-                  <CheckCircle2 className="w-5 h-5" />
-                </div>
-                <h3 className="font-serif text-lg text-warm-900 font-medium">
-                  Confirmed Measurements
-                </h3>
-                <p className="text-xs sm:text-sm text-warm-600 leading-relaxed font-sans">
-                  The cook translates their intuitive gestures (&ldquo;a glass of milk,&rdquo; &ldquo;a pinch&rdquo;) into reliable guidance confirmed during review.
-                </p>
-              </div>
-            </div>
+                  <p className="text-sm text-[#525B56]">
+                    Whisper transcribed spoken cue: &ldquo;Don&apos;t rush the rest—let the gluten relax.&rdquo;
+                    Gemma vision detected 4 distinct folding gestures at 04:32, 04:48, 05:02, and 05:25.
+                  </p>
 
-            <div className="mt-12 text-center">
-              <Link href="/cook/demo">
-                <Button variant="outline" size="lg">
-                  Preview Interactive Cook Along View &rarr;
-                </Button>
-              </Link>
+                  {/* Clarification prompt card */}
+                  <div className="p-4 rounded-xl bg-[#F2F2EB] border border-[#DDDCD3] space-y-2 text-xs">
+                    <span className="font-mono font-semibold text-[#8C6207] uppercase tracking-wider block">
+                      AI Observation Question
+                    </span>
+                    <p className="text-[#202723] font-medium">
+                      &ldquo;The bowl of liquid added at 04:20 looked milky. Was it buttermilk or warm water?&rdquo;
+                    </p>
+                    <div className="p-2.5 rounded-lg bg-white border border-[#DDDCD3] font-sans text-[#202723] flex items-center justify-between">
+                      <span>Family clarification: <strong>Warm whey from yesterday&apos;s ricotta</strong></span>
+                      <CheckCircle2 className="w-4 h-4 text-[#2E4742]" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right: Architectural Principles */}
+                <div className="lg:col-span-5 space-y-4 border-t lg:border-t-0 lg:border-l border-[#DDDCD3] pt-6 lg:pt-0 lg:pl-8">
+                  <h4 className="font-display text-lg font-bold text-[#202723]">
+                    Our 4 Non-Negotiable Rules
+                  </h4>
+                  <ul className="space-y-3 text-xs text-[#525B56]">
+                    <li className="flex items-start gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#2E4742] mt-1.5 shrink-0" />
+                      <span><strong>No hallucinated dialogue:</strong> When demonstration footage is silent, Whisper logs acoustic silence rather than inventing speech.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#2E4742] mt-1.5 shrink-0" />
+                      <span><strong>All evidence timestamped:</strong> Every step links directly to start and end seconds in the raw video.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#2E4742] mt-1.5 shrink-0" />
+                      <span><strong>Human editorial authority:</strong> AI only proposes. Nothing becomes an heirloom recipe until a family member approves it.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#2E4742] mt-1.5 shrink-0" />
+                      <span><strong>Local privacy first:</strong> Inference runs locally through Faster-Whisper and Gemma 4 via Ollama.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* SECTION 6: FINAL CALL TO ACTION */}
-        <section className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 bg-warm-900 text-warm-50 relative overflow-hidden">
-          {/* Subtle textured glow */}
-          <div className="absolute top-0 right-1/4 w-96 h-96 bg-terracotta-600/20 rounded-full blur-3xl pointer-events-none" />
+        {/* ========================================================================= */}
+        {/* INTERACTIVE COOK ALONG SECTION — REAL KITCHEN USABILITY                   */}
+        {/* ========================================================================= */}
+        <section id="cook-along" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b border-[#DDDCD3] bg-[#FAF9F5]">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              {/* Left Column: Cook Along Countertop Photography */}
+              <div className="lg:col-span-6">
+                <div className="relative rounded-2xl overflow-hidden border border-[#DDDCD3] shadow-[0_4px_20px_rgb(0,0,0,0.04)]">
+                  <div className="relative aspect-16/9 w-full">
+                    <Image
+                      src="/images/cook-along-kitchen.jpg"
+                      alt="Modern kitchen counter with iPad displaying cooking step next to garlic and skillet"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                    />
+                  </div>
+                  <div className="p-4 bg-[#F2F2EB] border-t border-[#DDDCD3] flex items-center justify-between text-xs font-mono text-[#525B56]">
+                    <span>ACTIVE COOKING EXPERIENCE</span>
+                    <span className="text-[#2E4742] font-semibold">Synced Step Video</span>
+                  </div>
+                </div>
+              </div>
 
-          <div className="max-w-4xl mx-auto text-center space-y-8 relative z-10">
-            <h2 className="font-serif text-3xl sm:text-5xl text-cream-50 font-normal tracking-tight leading-tight">
-              Don&apos;t let the secret ingredient be forgotten.
+              {/* Right Column: Cook Along Feature Highlights */}
+              <div className="lg:col-span-6 space-y-6">
+                <span className="font-mono text-xs uppercase tracking-widest text-[#2E4742] font-semibold bg-[#E3E9E8] px-3 py-1 rounded-full border border-[#2E4742]/20">
+                  Kitchen-Tested Experience
+                </span>
+
+                <h2 className="font-display text-4xl sm:text-5xl font-extrabold text-[#202723] tracking-tight leading-[1.05]">
+                  Cook it the way they did.
+                </h2>
+
+                <p className="text-base sm:text-lg text-[#525B56] leading-relaxed font-sans">
+                  The Interactive Cook Along experience is designed for someone actually
+                  standing at a kitchen counter with flour on their hands.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
+                  <div className="p-3.5 rounded-xl bg-[#F2F2EB] border border-[#DDDCD3] space-y-1">
+                    <Clock className="w-4 h-4 text-[#2E4742]" />
+                    <p className="font-display text-sm font-bold text-[#202723]">Contextual Timers</p>
+                    <p className="text-xs text-[#525B56]">
+                      Numeric minutes auto-extracted from instructions with one-click countdowns.
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-[#F2F2EB] border border-[#DDDCD3] space-y-1">
+                    <Play className="w-4 h-4 text-[#2E4742]" />
+                    <p className="font-display text-sm font-bold text-[#202723]">One-Tap Video Seeking</p>
+                    <p className="text-xs text-[#525B56]">
+                      Jump the original video directly to the exact demonstration of that step.
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-[#F2F2EB] border border-[#DDDCD3] space-y-1">
+                    <Utensils className="w-4 h-4 text-[#2E4742]" />
+                    <p className="font-display text-sm font-bold text-[#202723]">Mise en Place</p>
+                    <p className="text-xs text-[#525B56]">
+                      Pre-cooking ingredient checklists saved across devices as you prep.
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-[#F2F2EB] border border-[#DDDCD3] space-y-1">
+                    <Flame className="w-4 h-4 text-[#2E4742]" />
+                    <p className="font-display text-sm font-bold text-[#202723]">Sensory Cues</p>
+                    <p className="text-xs text-[#525B56]">
+                      Tactile guidance on sound, aroma, and color rather than strict seconds.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <Link href="/dashboard">
+                    <Button variant="primary" size="md" rightIcon={<ArrowUpRight className="w-4 h-4" />}>
+                      Try the Cook Along Demo
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* CLOSING CALL TO ACTION SECTION — WARM CREAM PAPER COMPOSITION             */}
+        {/* ========================================================================= */}
+        <section className="py-24 sm:py-32 px-4 sm:px-6 lg:px-8 border-b border-[#DDDCD3] bg-[#F2F2EB] text-center">
+          <div className="max-w-3xl mx-auto space-y-6">
+            <span className="font-mono text-xs uppercase tracking-widest text-[#2E4742] font-semibold bg-[#E3E9E8] px-3 py-1 rounded-full border border-[#2E4742]/20">
+              Start Your Archive
+            </span>
+
+            <h2 className="font-display text-5xl sm:text-6xl md:text-7xl font-extrabold text-[#202723] tracking-tight leading-[0.98]">
+              Keep the recipe. Keep the memory.
             </h2>
-            <p className="text-base sm:text-xl text-warm-300 max-w-2xl mx-auto font-sans leading-relaxed">
-              Start preserving the unwritten dishes, distinctive techniques, and cherished voices of the people who cook with love for your family.
+
+            <p className="text-base sm:text-xl text-[#525B56] leading-relaxed max-w-xl mx-auto font-sans">
+              Don&apos;t let another family cooking demonstration get lost on a hard drive.
+              Start your private archive today.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-              <Link href="/dashboard" className="w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
+              <Link href="/register" className="w-full sm:w-auto">
                 <Button
                   variant="primary"
                   size="lg"
-                  className="w-full sm:w-auto bg-terracotta-500 hover:bg-terracotta-600 text-white px-8"
-                  rightIcon={<ArrowRight className="w-4 h-4" />}
+                  className="w-full sm:w-auto justify-center text-base px-8"
+                  rightIcon={<ArrowUpRight className="w-4 h-4" />}
                 >
-                  Get Started With Simmory
+                  Create Free Account
                 </Button>
               </Link>
-              <Link href="/upload" className="w-full sm:w-auto">
+              <Link href="/dashboard" className="w-full sm:w-auto">
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size="lg"
-                  className="w-full sm:w-auto text-warm-200 border-warm-700 hover:border-warm-500 hover:text-white hover:bg-warm-800"
+                  className="w-full sm:w-auto justify-center text-base px-8"
                 >
-                  Preserve a Cooking Video
+                  Explore Dashboard
                 </Button>
               </Link>
             </div>
@@ -580,97 +630,36 @@ export default function LandingPage() {
         </section>
       </main>
 
-      {/* FOOTER */}
-      <footer className="border-t border-warm-200/80 bg-warm-100/50 py-12 px-4 sm:px-6 lg:px-8 text-warm-600 font-sans">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="space-y-3 md:col-span-1">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-terracotta-500 text-white flex items-center justify-center">
-                <UtensilsCrossed className="w-3.5 h-3.5" />
-              </div>
-              <span className="font-serif text-xl text-warm-900 font-medium">
-                Simmory
-              </span>
-            </div>
-            <p className="text-xs text-warm-600 leading-relaxed">
-              The way they made it, remembered. Preserving culinary heritage through video and human confirmation.
-            </p>
-          </div>
-
-          <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-warm-800 mb-3">
-              Experience
-            </h4>
-            <ul className="space-y-2 text-xs">
-              <li>
-                <Link href="/#how-it-works" className="hover:text-terracotta-600 transition-colors">
-                  How It Works
-                </Link>
-              </li>
-              <li>
-                <Link href="/#family-kitchen" className="hover:text-terracotta-600 transition-colors">
-                  Family Kitchen
-                </Link>
-              </li>
-              <li>
-                <Link href="/#cook-along" className="hover:text-terracotta-600 transition-colors">
-                  Interactive Cook Along
-                </Link>
-              </li>
-              <li>
-                <Link href="/cook/demo" className="hover:text-terracotta-600 transition-colors">
-                  Step Sync Player Demo
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-warm-800 mb-3">
-              Application
-            </h4>
-            <ul className="space-y-2 text-xs">
-              <li>
-                <Link href="/dashboard" className="hover:text-terracotta-600 transition-colors">
-                  Kitchen Overview
-                </Link>
-              </li>
-              <li>
-                <Link href="/kitchens" className="hover:text-terracotta-600 transition-colors">
-                  Collections
-                </Link>
-              </li>
-              <li>
-                <Link href="/recipes" className="hover:text-terracotta-600 transition-colors">
-                  Saved Recipes
-                </Link>
-              </li>
-              <li>
-                <Link href="/upload" className="hover:text-terracotta-600 transition-colors">
-                  Preserve Recipe (Upload)
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-warm-800 mb-3">
-              Architecture & Trust
-            </h4>
-            <p className="text-xs text-warm-500 leading-relaxed mb-2">
-              Phase 1 Application Foundation. AI models (Faster-Whisper & Gemma 4) assist transcription and cue proposals without replacing human review.
-            </p>
-            <span className="inline-block text-[11px] text-warm-600 bg-warm-200/60 px-2 py-0.5 rounded-md">
-              v0.1.0 &bull; App Router &bull; React 19
+      {/* ========================================================================= */}
+      {/* REFINED EDITORIAL FOOTER                                                  */}
+      {/* ========================================================================= */}
+      <footer className="bg-[#FAF9F5] border-t border-[#DDDCD3] py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-[#525B56]">
+          <div className="flex items-center gap-3">
+            <span className="font-display text-xl font-bold tracking-tight text-[#202723]">
+              SIMMORY
             </span>
+            <span className="text-[#DDDCD3]">•</span>
+            <span className="font-mono text-[11px]">The way they made it, remembered.</span>
           </div>
-        </div>
 
-        <div className="max-w-7xl mx-auto pt-8 mt-8 border-t border-warm-200/60 flex flex-col sm:flex-row items-center justify-between text-xs text-warm-500 gap-4">
-          <p>&copy; 2026 Simmory. All rights reserved.</p>
-          <p className="italic font-serif text-warm-600">
-            Dedicated to the cooks in every family whose hands taught ours.
-          </p>
+          <div className="flex flex-wrap items-center gap-6 font-medium">
+            <Link href="/#how-it-works" className="hover:text-[#2E4742] transition-colors">
+              How It Works
+            </Link>
+            <Link href="/#family-kitchen" className="hover:text-[#2E4742] transition-colors">
+              Family Kitchen
+            </Link>
+            <Link href="/#cook-along" className="hover:text-[#2E4742] transition-colors">
+              Cook Along
+            </Link>
+            <Link href="/login" className="hover:text-[#2E4742] transition-colors">
+              Sign In
+            </Link>
+            <Link href="/register" className="hover:text-[#2E4742] transition-colors">
+              Register
+            </Link>
+          </div>
         </div>
       </footer>
     </div>

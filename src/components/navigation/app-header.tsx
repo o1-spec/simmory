@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UtensilsCrossed, Menu, X, Sparkles, ChefHat } from "lucide-react";
+import { UtensilsCrossed, Menu, X, ChefHat, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function AppHeader() {
@@ -15,27 +15,27 @@ export function AppHeader() {
   const publicNavLinks = [
     { label: "How It Works", href: "/#how-it-works" },
     { label: "Family Kitchen", href: "/#family-kitchen" },
+    { label: "AI Analysis", href: "/#ai-analysis" },
     { label: "Cook Along", href: "/#cook-along" },
-    { label: "App Preview", href: "/dashboard" },
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-warm-200/80 bg-warm-50/95 backdrop-blur-md transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+    <header className="sticky top-0 z-40 w-full border-b border-[#DDDCD3] bg-[#F2F2EB]/95 backdrop-blur-md transition-all">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between">
         {/* Simmory Wordmark */}
         <Link
           href="/"
-          className="flex items-center gap-2.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-terracotta-500 rounded-lg p-1"
+          className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2E4742] rounded-lg p-1"
         >
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-terracotta-500 text-white flex items-center justify-center shadow-xs transition-transform duration-200 group-hover:scale-105">
-            <UtensilsCrossed className="w-5 h-5" />
+          <div className="w-10 h-10 rounded-xl bg-[#2E4742] text-[#F2F2EB] flex items-center justify-center shadow-xs transition-transform duration-200 group-hover:scale-105">
+            <UtensilsCrossed className="w-5 h-5 text-[#F2F2EB]" />
           </div>
           <div className="flex flex-col">
-            <span className="font-serif text-xl sm:text-2xl font-normal tracking-tight text-warm-900 leading-none">
-              Simmory
+            <span className="font-display text-2xl font-bold tracking-tight text-[#202723] leading-none">
+              SIMMORY
             </span>
-            <span className="text-[10px] sm:text-[11px] text-warm-500 font-sans tracking-wide leading-tight mt-0.5">
-              The way they made it
+            <span className="text-[10px] text-[#525B56] font-mono uppercase tracking-wider leading-tight mt-0.5">
+              Family Culinary Archive
             </span>
           </div>
         </Link>
@@ -47,7 +47,7 @@ export function AppHeader() {
               <Link
                 key={link.label}
                 href={link.href}
-                className="text-sm font-medium text-warm-700 hover:text-terracotta-600 transition-colors"
+                className="text-sm font-medium text-[#525B56] hover:text-[#2E4742] transition-colors"
               >
                 {link.label}
               </Link>
@@ -59,7 +59,7 @@ export function AppHeader() {
         <div className="hidden sm:flex items-center gap-3">
           <Link
             href="/login"
-            className="text-sm font-medium text-warm-700 hover:text-terracotta-600 transition-colors px-2 py-1"
+            className="text-sm font-medium text-[#525B56] hover:text-[#202723] transition-colors px-3 py-1.5"
           >
             Sign In
           </Link>
@@ -67,7 +67,7 @@ export function AppHeader() {
             <Button
               variant="outline"
               size="sm"
-              leftIcon={<ChefHat className="w-3.5 h-3.5 text-terracotta-600" />}
+              leftIcon={<ChefHat className="w-3.5 h-3.5 text-[#2E4742]" />}
             >
               Preserve Recipe
             </Button>
@@ -76,7 +76,7 @@ export function AppHeader() {
             <Button
               variant="primary"
               size="sm"
-              rightIcon={<Sparkles className="w-3.5 h-3.5" />}
+              rightIcon={<ArrowUpRight className="w-3.5 h-3.5" />}
             >
               Enter Kitchen
             </Button>
@@ -88,7 +88,7 @@ export function AppHeader() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-lg text-warm-700 hover:text-warm-900 hover:bg-warm-200/60 transition-colors focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+            className="p-2 rounded-lg text-[#202723] hover:bg-[#DDDCD3]/50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#2E4742]"
             aria-expanded={mobileMenuOpen}
             aria-label="Toggle navigation menu"
           >
@@ -101,48 +101,43 @@ export function AppHeader() {
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Navigation Dropdown */}
       {mobileMenuOpen && (
-        <div className="sm:hidden border-b border-warm-200 bg-warm-50 px-4 pt-3 pb-6 space-y-3 shadow-lg animate-in fade-in duration-150">
-          <nav className="flex flex-col space-y-2">
-            {publicNavLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 text-sm font-medium text-warm-800 hover:bg-warm-100 rounded-lg transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <div className="pt-2 border-t border-warm-200 flex flex-col gap-2">
-              <Link
-                href="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-2 text-sm font-medium text-warm-700 hover:text-terracotta-600"
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/upload"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full"
-              >
-                <Button variant="outline" size="md" className="w-full justify-center">
-                  Preserve Recipe
-                </Button>
-              </Link>
-              <Link
-                href="/dashboard"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full"
-              >
-                <Button variant="primary" size="md" className="w-full justify-center">
-                  Enter Kitchen
-                </Button>
-              </Link>
+        <div className="sm:hidden border-b border-[#DDDCD3] bg-[#FAF9F5] px-4 pt-3 pb-6 space-y-3 animate-in fade-in slide-in-from-top-2 duration-150">
+          {isLanding && (
+            <div className="space-y-1 pb-3 border-b border-[#DDDCD3]/60">
+              {publicNavLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 rounded-lg text-sm font-medium text-[#525B56] hover:text-[#2E4742] hover:bg-[#EAE9E1]/60"
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
-          </nav>
+          )}
+
+          <div className="flex flex-col gap-2 pt-1">
+            <Link
+              href="/login"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-center py-2 text-sm font-medium text-[#525B56] hover:text-[#202723]"
+            >
+              Sign In to Your Account
+            </Link>
+            <Link href="/upload" onClick={() => setMobileMenuOpen(false)}>
+              <Button variant="outline" className="w-full justify-center" size="md">
+                Preserve a Recipe
+              </Button>
+            </Link>
+            <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+              <Button variant="primary" className="w-full justify-center" size="md">
+                Enter Family Kitchen
+              </Button>
+            </Link>
+          </div>
         </div>
       )}
     </header>

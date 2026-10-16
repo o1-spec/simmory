@@ -66,16 +66,16 @@ async function ReviewContent({ params }: ReviewPageProps) {
         <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto shadow-xs">
           <Clock className="w-6 h-6" />
         </div>
-        <h2 className="font-serif text-2xl text-warm-900 font-medium">
+        <h2 className="font-display text-2xl sm:text-3xl text-[#202723] font-bold">
           AI Analysis Required Before Review
         </h2>
-        <p className="text-sm text-warm-600 leading-relaxed font-sans max-w-md mx-auto">
+        <p className="text-sm text-[#202723]/70 leading-relaxed font-sans max-w-md mx-auto">
           {errorMessage ||
             "This video does not have a completed AI analysis yet. Once audio extraction, visual observation, and timeline generation finish, human review will become available here."}
         </p>
         <div className="pt-2 flex items-center justify-center gap-3">
           <Link href={`/videos/${id}`}>
-            <Button variant="primary" size="md">
+            <Button variant="forest" size="md">
               Go to Video Analysis
             </Button>
           </Link>

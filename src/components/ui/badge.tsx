@@ -2,7 +2,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: "warm" | "terracotta" | "sage" | "saffron" | "outline";
+  variant?: "warm" | "forest" | "sky" | "ochre" | "saffron" | "coral" | "terracotta" | "sage" | "outline";
   size?: "sm" | "md";
 }
 
@@ -17,11 +17,15 @@ export function Badge({
     "inline-flex items-center font-medium rounded-full tracking-wide";
 
   const variantStyles = {
-    warm: "bg-warm-200/80 text-warm-800 border border-warm-300/60",
-    terracotta: "bg-terracotta-100 text-terracotta-800 border border-terracotta-200",
-    sage: "bg-sage-100 text-sage-700 border border-sage-200",
-    saffron: "bg-saffron-100 text-amber-800 border border-saffron-200",
-    outline: "bg-transparent text-warm-700 border border-warm-300",
+    warm: "bg-[#EAE9E1] text-[#202723] border border-[#DDDCD3]",
+    forest: "bg-[#2E4742] text-[#F2F2EB] border border-[#2E4742]",
+    sky: "bg-[#EDF3FA] text-[#2F5278] border border-[#8BB2DE]/40",
+    ochre: "bg-[#FEF8EC] text-[#8C6207] border border-[#F5B726]/40",
+    saffron: "bg-[#FEF8EC] text-[#8C6207] border border-[#F5B726]/40",
+    coral: "bg-[#FDF2F1] text-[#9E3935] border border-[#E97B77]/40",
+    terracotta: "bg-[#E3E9E8] text-[#2E4742] border border-[#2E4742]/30",
+    sage: "bg-[#EDF3FA] text-[#2F5278] border border-[#8BB2DE]/40",
+    outline: "bg-transparent text-[#525B56] border border-[#DDDCD3]",
   };
 
   const sizeStyles = {

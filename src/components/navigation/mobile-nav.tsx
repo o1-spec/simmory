@@ -45,27 +45,27 @@ export function MobileNav() {
   };
 
   return (
-    <div className="lg:hidden sticky top-0 z-40 bg-warm-50/95 backdrop-blur-md border-b border-warm-200/80 px-4 h-16 flex items-center justify-between">
+    <div className="lg:hidden sticky top-0 z-40 bg-[#F2F2EB]/95 backdrop-blur-md border-b border-[#DDDCD3] px-4 h-16 flex items-center justify-between">
       <Link href="/dashboard" className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg bg-terracotta-500 text-white flex items-center justify-center">
+        <div className="w-8 h-8 rounded-lg bg-[#2E4742] text-[#F2F2EB] flex items-center justify-center">
           <UtensilsCrossed className="w-4 h-4" />
         </div>
-        <span className="font-serif text-lg font-medium text-warm-900">
-          Simmory
+        <span className="font-display text-lg font-bold tracking-tight text-[#202723]">
+          SIMMORY
         </span>
       </Link>
 
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 text-warm-700 hover:text-warm-900 rounded-lg hover:bg-warm-100 transition-colors"
+        className="p-2 text-[#202723]/80 hover:text-[#202723] rounded-lg hover:bg-[#DDDCD3]/40 transition-colors"
         aria-label="Toggle navigation drawer"
       >
         {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
       </button>
 
       {isOpen && (
-        <div className="absolute top-16 left-0 right-0 bg-warm-50 border-b border-warm-200 p-4 shadow-xl animate-in slide-in-from-top-2 duration-150">
+        <div className="absolute top-16 left-0 right-0 bg-[#F2F2EB] border-b border-[#DDDCD3] p-4 shadow-xl animate-in slide-in-from-top-2 duration-150">
           <nav className="space-y-1">
             {links.map((link) => {
               const active =
@@ -80,8 +80,8 @@ export function MobileNav() {
                   className={cn(
                     "flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium transition-colors",
                     active
-                      ? "bg-terracotta-500 text-white font-semibold"
-                      : "text-warm-700 hover:bg-warm-100 hover:text-warm-900"
+                      ? "bg-[#2E4742] text-[#F2F2EB] font-semibold"
+                      : "text-[#202723]/80 hover:bg-[#DDDCD3]/40 hover:text-[#202723]"
                   )}
                 >
                   <Icon className="w-4 h-4" />
@@ -90,7 +90,7 @@ export function MobileNav() {
               );
             })}
 
-            <div className="pt-2 border-t border-warm-200 mt-2">
+            <div className="pt-2 border-t border-[#DDDCD3] mt-2">
               <button
                 type="button"
                 onClick={handleLogout}
