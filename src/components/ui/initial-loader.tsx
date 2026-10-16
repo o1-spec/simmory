@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useSyncExternalStore } from "react";
 
 export interface InitialLoaderProps {
   fullscreen?: boolean;
@@ -133,19 +133,32 @@ export function InitialLoader({
   );
 }
 
+const emptySubscribe = () => () => {};
+
+function getClientSessionLoaded(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return sessionStorage.getItem("simmory_app_loaded") === "true";
+  } catch {
+    return false;
+  }
+}
+
+function getServerSessionLoaded(): boolean {
+  return false;
+}
+
 export function InitialAppLoader() {
-  const [isLoaded, setIsLoaded] = useState(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return sessionStorage.getItem("simmory_app_loaded") === "true";
-    } catch {
-      return false;
-    }
-  });
+  const hasLoadedInSession = useSyncExternalStore(
+    emptySubscribe,
+    getClientSessionLoaded,
+    getServerSessionLoaded
+  );
   const [isFadingOut, setIsFadingOut] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
-    if (isLoaded) return;
+    if (hasLoadedInSession) return;
 
     const handleReady = () => {
       setIsFadingOut(true);
@@ -155,7 +168,7 @@ export function InitialAppLoader() {
         // Continue gracefully
       }
       const timer = window.setTimeout(() => {
-        setIsLoaded(true);
+        setIsDismissed(true);
       }, 350);
       return () => window.clearTimeout(timer);
     };
@@ -167,9 +180,9 @@ export function InitialAppLoader() {
       window.addEventListener("load", handleReady, { once: true });
       return () => window.removeEventListener("load", handleReady);
     }
-  }, [isLoaded]);
+  }, [hasLoadedInSession]);
 
-  if (isLoaded) return null;
+  if (hasLoadedInSession || isDismissed) return null;
 
   return (
     <div
