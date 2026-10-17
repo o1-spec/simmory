@@ -330,7 +330,7 @@ export function AuthDecorations({ page = "login" }: AuthDecorationsProps) {
       {/* =================================================================== */}
       <div
         ref={noteRef}
-        className="absolute bottom-8 right-6 md:bottom-10 md:right-10 lg:bottom-12 lg:right-16 xl:right-24 max-w-[210px] text-right opacity-0 hidden lg:block"
+        className="absolute bottom-8 right-6 md:bottom-10 md:right-10 lg:bottom-12 lg:right-16 xl:right-24 max-w-52.5 text-right opacity-0 hidden lg:block"
       >
         <span className="font-mono text-[10px] uppercase tracking-widest text-[#2E4742]/60 block mb-1">
           {page === "login" ? "[ KITCHEN FOLIO № 14 ]" : "[ SACRED HERITAGE ]"}

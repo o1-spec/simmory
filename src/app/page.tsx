@@ -50,7 +50,7 @@ export default function LandingPage() {
       </main>
 
       {/* Editorial Footer */}
-      <footer className="border-t border-[#DDDCD3] bg-[#FAF9F5] py-16 px-4 sm:px-6 lg:px-8 text-[#525B56]">
+      <footer className="border-t border-[#DDDCD3] bg-cream-card py-16 px-4 sm:px-6 lg:px-8 text-[#525B56]">
         <div className="max-w-7xl mx-auto space-y-12">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12">
             {/* Brand Column */}
@@ -73,7 +73,7 @@ export default function LandingPage() {
                 and kitchen memories for generations to come.
               </p>
               <div className="flex items-center gap-2 text-xs font-mono text-[#7A857F]">
-                <Heart className="w-3.5 h-3.5 text-[#E97B77]" />
+                <Heart className="w-3.5 h-3.5 text-accent-coral" />
                 <span>The way they made it, remembered.</span>
               </div>
             </div>
