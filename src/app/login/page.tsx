@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth/get-user";
 import { LoginForm } from "@/components/auth/login-form";
 import { Card } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { AuthDecorations } from "@/components/auth/auth-decorations";
 
 export const metadata = {
   title: "Sign In — Simmory",
@@ -19,8 +20,12 @@ async function LoginContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F2F2EB] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 text-[#202723]">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center mb-6">
+    <div className="relative min-h-screen bg-[#F2F2EB] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 text-[#202723] overflow-hidden">
+      {/* Culinary Decorative Ingredients in the empty margins */}
+      <AuthDecorations page="login" />
+
+      {/* Main Centered Auth Form */}
+      <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md text-center mb-6">
         <Link
           href="/"
           className="inline-flex items-center gap-2.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2E4742] rounded-xl p-1"
@@ -46,7 +51,7 @@ async function LoginContent() {
         </p>
       </div>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md">
         <Card className="p-6 sm:p-8 bg-white border border-[#DDDCD3] shadow-sm">
           <Suspense fallback={<LoadingSpinner label="Loading form..." />}>
             <LoginForm />
