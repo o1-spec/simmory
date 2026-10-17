@@ -621,7 +621,7 @@ export function UploadForm({
           )}
 
           {/* Action Button */}
-          <div className="mt-6 pt-6 border-t border-warm-100 flex items-center justify-between gap-4">
+          <div className="mt-6 pt-6 border-t border-warm-100">
             {status === "error" ? (
               <Button
                 variant="primary"
@@ -633,26 +633,35 @@ export function UploadForm({
                 Retry Upload
               </Button>
             ) : (
-              <Button
-                variant="forest"
-                size="lg"
-                className="w-full justify-center"
-                disabled={
-                  !selectedFile ||
-                  !selectedKitchenId ||
-                  !storageConfigured ||
-                  status === "uploading" ||
-                  status === "verifying" ||
-                  status === "initiating"
-                }
-                onClick={startUpload}
-              >
-                {status === "uploading"
-                  ? `Uploading (${progress}%)...`
-                  : status === "verifying"
-                  ? "Verifying Integrity..."
-                  : "Upload Video to Family Kitchen"}
-              </Button>
+              <>
+                <Button
+                  variant="forest"
+                  size="lg"
+                  className="w-full justify-center"
+                  disabled={
+                    !selectedFile ||
+                    !selectedKitchenId ||
+                    !storageConfigured ||
+                    status === "uploading" ||
+                    status === "verifying" ||
+                    status === "initiating"
+                  }
+                  onClick={startUpload}
+                >
+                  {!storageConfigured
+                    ? "Storage Setup Required (Add R2 to .env)"
+                    : status === "uploading"
+                    ? `Uploading (${progress}%)...`
+                    : status === "verifying"
+                    ? "Verifying Integrity..."
+                    : "Upload Video to Family Kitchen"}
+                </Button>
+                {!storageConfigured && (
+                  <p className="mt-2 text-center text-xs text-amber-800 font-medium">
+                    Upload is disabled until Cloudflare R2 credentials are configured in your <code className="px-1.5 py-0.5 rounded bg-amber-100 font-mono text-[11px]">.env</code> file.
+                  </p>
+                )}
+              </>
             )}
           </div>
         </Card>

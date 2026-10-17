@@ -130,42 +130,57 @@ export class AIServiceClient {
       throw new Error(`Video file does not exist at path: ${resolvedPath}`);
     }
 
-    const url = `${this.baseUrl}/api/analyze/path`;
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
+    const http = await import("node:http");
+    const urlObj = new URL(`${this.baseUrl}/api/analyze/path`);
+    const postData = JSON.stringify({ video_path: resolvedPath });
 
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Simmory-Internal-Key": this.internalKey,
+    return new Promise<AIAnalysisResponseData>((resolve, reject) => {
+      const req = http.request(
+        {
+          hostname: urlObj.hostname,
+          port: urlObj.port,
+          path: urlObj.pathname,
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Content-Length": Buffer.byteLength(postData),
+            "X-Simmory-Internal-Key": this.internalKey,
+          },
+          timeout: this.timeoutMs,
         },
-        body: JSON.stringify({ video_path: resolvedPath }),
-        signal: controller.signal,
+        (res) => {
+          let body = "";
+          res.on("data", (chunk) => {
+            body += chunk;
+          });
+          res.on("end", () => {
+            if (res.statusCode && (res.statusCode < 200 || res.statusCode >= 300)) {
+              return reject(
+                new Error(`AI Service error (${res.statusCode}): ${body.slice(0, 500)}`)
+              );
+            }
+            try {
+              const data = JSON.parse(body) as AIAnalysisResponseData;
+              resolve(data);
+            } catch (parseErr) {
+              reject(new Error(`Failed to parse AI response: ${parseErr}`));
+            }
+          });
+        }
+      );
+
+      req.on("timeout", () => {
+        req.destroy();
+        reject(new Error(`AI processing timed out after ${this.timeoutMs / 1000}s`));
       });
 
-      if (!res.ok) {
-        let errorDetail = `HTTP ${res.status}`;
-        try {
-          const errJson = await res.json();
-          if (errJson.detail) errorDetail = errJson.detail;
-        } catch {
-          // ignore parsing error
-        }
-        throw new Error(`AI Service error (${res.status}): ${errorDetail}`);
-      }
+      req.on("error", (err) => {
+        reject(err);
+      });
 
-      const data = (await res.json()) as AIAnalysisResponseData;
-      return data;
-    } catch (err: unknown) {
-      if (err instanceof Error && err.name === "AbortError") {
-        throw new Error(`AI processing timed out after ${this.timeoutMs / 1000}s`);
-      }
-      throw err;
-    } finally {
-      clearTimeout(timeout);
-    }
+      req.write(postData);
+      req.end();
+    });
   }
 }
 

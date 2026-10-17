@@ -17,9 +17,9 @@ export function createAiAnalysisWorker(concurrency = 1): Worker<AiAnalysisJobPay
     {
       connection,
       concurrency,
-      lockDuration: 180000,
+      lockDuration: 1200000,
       stalledInterval: 60000,
-      maxStalledCount: 2,
+      maxStalledCount: 3,
     }
   );
 
