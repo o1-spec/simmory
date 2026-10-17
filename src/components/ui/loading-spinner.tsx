@@ -24,7 +24,7 @@ export function LoadingSpinner({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-3 p-6 text-warm-600",
+        "flex-1 min-h-[45vh] sm:min-h-[55vh] flex flex-col items-center justify-center gap-3 p-6 text-warm-600",
         className
       )}
       role="status"

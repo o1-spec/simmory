@@ -23,7 +23,7 @@ export function InitialLoader({
   }, [isReady, onDismiss]);
 
   const containerClasses = fullscreen
-    ? `fixed inset-0 z-[9999] bg-[#F2F2EB] flex flex-col items-center justify-center min-h-screen w-full transition-opacity duration-350 ease-out select-none ${
+    ? `fixed inset-0 z-[9999] bg-[#F2F2EB] flex flex-col items-center justify-center w-screen h-screen min-h-dvh transition-opacity duration-350 ease-out select-none ${
         isReady ? "opacity-0 pointer-events-none" : "opacity-100"
       }`
     : `flex flex-col items-center justify-center py-16 w-full select-none transition-opacity duration-350 ease-out ${
@@ -37,12 +37,12 @@ export function InitialLoader({
       aria-live="polite"
       aria-label="Loading Simmory"
     >
-      <div className="flex flex-col items-center justify-center max-w-sm px-6 text-center">
+      <div className="flex flex-col items-center justify-center max-w-sm px-6 text-center m-auto">
         {/* Chef's Hat SVG Illustration with Settling Movement */}
         <div className="simmory-hat-settle relative flex items-center justify-center">
           <svg
-            viewBox="0 0 120 110"
-            className="w-24 h-22 sm:w-28 sm:h-26 text-[#2E4742]"
+            viewBox="0 0 120 100"
+            className="w-24 h-20 sm:w-28 sm:h-24 text-[#2E4742]"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
@@ -186,7 +186,7 @@ export function InitialAppLoader() {
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] pointer-events-auto transition-opacity duration-350 ease-out ${
+      className={`fixed inset-0 z-[9999] pointer-events-auto transition-opacity duration-350 ease-out flex items-center justify-center w-screen h-screen min-h-dvh bg-[#F2F2EB] ${
         isFadingOut ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
     >
