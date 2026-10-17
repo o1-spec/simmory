@@ -75,13 +75,17 @@ export function AppNavbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Close menus when pathname changes
+  // Close menus when pathname changes & sync active kitchen from route
   const [lastPathname, setLastPathname] = useState(pathname);
   if (pathname !== lastPathname) {
     setLastPathname(pathname);
     setKitchenMenuOpen(false);
     setUserMenuOpen(false);
     setMobileMenuOpen(false);
+    const routeKitchenId = pathname.match(/^\/kitchens\/([^\/]+)/)?.[1];
+    if (routeKitchenId && routeKitchenId !== "new") {
+      setActiveKitchenId(routeKitchenId);
+    }
   }
 
   // Fetch current user and accessible kitchens
@@ -108,10 +112,17 @@ export function AppNavbar() {
         if (kitchenData?.kitchens && Array.isArray(kitchenData.kitchens)) {
           setKitchens(kitchenData.kitchens);
           if (kitchenData.kitchens.length > 0) {
-            // Find existing saved kitchen or fallback to the first one
-            const matched = kitchenData.kitchens.find(
-              (k: KitchenItem) => k.id === savedKitchenId
-            );
+            // Check if current route specifies a kitchen first
+            const urlKitchenMatch = pathname.match(/^\/kitchens\/([^\/]+)/)?.[1];
+            const urlMatched =
+              urlKitchenMatch && urlKitchenMatch !== "new"
+                ? kitchenData.kitchens.find((k: KitchenItem) => k.id === urlKitchenMatch)
+                : null;
+
+            // Find route kitchen, existing saved kitchen, or fallback to the first one
+            const matched =
+              urlMatched ||
+              kitchenData.kitchens.find((k: KitchenItem) => k.id === savedKitchenId);
             const chosenId = matched ? matched.id : kitchenData.kitchens[0].id;
             setActiveKitchenId(chosenId);
             if (typeof window !== "undefined") {
@@ -127,7 +138,7 @@ export function AppNavbar() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [pathname]);
 
   const handleSelectKitchen = (kitchenId: string) => {
     const target = kitchens.find((k) => k.id === kitchenId);
@@ -142,6 +153,17 @@ export function AppNavbar() {
       localStorage.setItem("simmory_active_kitchen_id", kitchenId);
     }
     setKitchenMenuOpen(false);
+
+    // If viewing a kitchen details or settings page, navigate directly to the selected kitchen!
+    if (pathname.startsWith("/kitchens/") && pathname !== "/kitchens/new") {
+      router.push(`/kitchens/${kitchenId}`);
+    } else if (pathname === "/recipes") {
+      router.push(`/recipes?kitchenId=${kitchenId}`);
+    } else if (pathname === "/videos") {
+      router.push(`/videos?kitchenId=${kitchenId}`);
+    } else {
+      router.refresh();
+    }
   };
 
   const promptSignOut = () => {
@@ -166,7 +188,12 @@ export function AppNavbar() {
     }
   };
 
-  const activeKitchen = kitchens.find((k) => k.id === activeKitchenId) || kitchens[0];
+  const routeKitchenId = pathname.match(/^\/kitchens\/([^\/]+)/)?.[1];
+  const isSpecificKitchenRoute = routeKitchenId && routeKitchenId !== "new";
+  const activeKitchen =
+    (isSpecificKitchenRoute ? kitchens.find((k) => k.id === routeKitchenId) : null) ||
+    kitchens.find((k) => k.id === activeKitchenId) ||
+    kitchens[0];
 
   const navLinks = [
     { label: "Home", href: "/dashboard", icon: ChefHat },

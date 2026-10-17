@@ -6,6 +6,7 @@ import React, {
   useState,
   useCallback,
   useEffect,
+  useRef,
   ReactNode,
 } from "react";
 import {
@@ -162,28 +163,33 @@ function ToastMessage({
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const [progress, setProgress] = useState(100);
+  const duration = toast.duration ?? 4500;
+  const remainingRef = useRef(duration);
+  const onDismissRef = useRef(onDismiss);
 
   useEffect(() => {
-    if (!toast.duration || toast.duration <= 0) return;
+    onDismissRef.current = onDismiss;
+  }, [onDismiss]);
+
+  useEffect(() => {
+    if (!duration || duration <= 0) return;
 
     const intervalTime = 50;
-    const step = (intervalTime / toast.duration) * 100;
-
     const timer = setInterval(() => {
-      if (!isHovered) {
-        setProgress((prev) => {
-          if (prev <= step) {
-            clearInterval(timer);
-            onDismiss();
-            return 0;
-          }
-          return prev - step;
-        });
+      if (isHovered) return;
+
+      remainingRef.current = Math.max(0, remainingRef.current - intervalTime);
+      const remainingPct = Math.max(0, (remainingRef.current / duration) * 100);
+      setProgress(remainingPct);
+
+      if (remainingRef.current <= 0) {
+        clearInterval(timer);
+        onDismissRef.current();
       }
     }, intervalTime);
 
     return () => clearInterval(timer);
-  }, [toast.duration, isHovered, onDismiss]);
+  }, [duration, isHovered]);
 
   const typeConfig = {
     success: {
