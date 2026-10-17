@@ -207,15 +207,10 @@ export function ConfirmModal({
           </Button>
           <Button
             type="button"
-            variant={variant === "danger" ? "ghost" : "forest"}
+            variant={variant === "danger" ? "danger" : "forest"}
             onClick={onConfirm}
             isLoading={isLoading}
-            className={cn(
-              "font-medium",
-              variant === "danger"
-                ? "bg-[#E97B77] hover:bg-[#D46763] text-white border-transparent"
-                : "bg-[#2E4742] text-[#F2F2EB]"
-            )}
+            className="font-semibold px-5"
           >
             {confirmLabel}
           </Button>
