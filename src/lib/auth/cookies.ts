@@ -25,32 +25,41 @@ export async function setAuthCookies(
   accessToken: string,
   rawRefreshToken: string
 ): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.set(
-    ACCESS_COOKIE_NAME,
-    accessToken,
-    getCookieOptions(ACCESS_TOKEN_MAX_AGE)
-  );
-  cookieStore.set(
-    REFRESH_COOKIE_NAME,
-    rawRefreshToken,
-    getCookieOptions(REFRESH_TOKEN_MAX_AGE)
-  );
+  try {
+    const cookieStore = await cookies();
+    cookieStore.set(
+      ACCESS_COOKIE_NAME,
+      accessToken,
+      getCookieOptions(ACCESS_TOKEN_MAX_AGE)
+    );
+    cookieStore.set(
+      REFRESH_COOKIE_NAME,
+      rawRefreshToken,
+      getCookieOptions(REFRESH_TOKEN_MAX_AGE)
+    );
+  } catch {
+    // Next.js throws an error if cookieStore.set() is called in a Server Component.
+    // Catching this prevents crashes in read-only rendering contexts.
+  }
 }
 
 /**
  * Clears access and refresh cookies
  */
 export async function clearAuthCookies(): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.set(ACCESS_COOKIE_NAME, "", {
-    ...getCookieOptions(0),
-    maxAge: 0,
-  });
-  cookieStore.set(REFRESH_COOKIE_NAME, "", {
-    ...getCookieOptions(0),
-    maxAge: 0,
-  });
+  try {
+    const cookieStore = await cookies();
+    cookieStore.set(ACCESS_COOKIE_NAME, "", {
+      ...getCookieOptions(0),
+      maxAge: 0,
+    });
+    cookieStore.set(REFRESH_COOKIE_NAME, "", {
+      ...getCookieOptions(0),
+      maxAge: 0,
+    });
+  } catch {
+    // Gracefully handle in read-only contexts
+  }
 }
 
 /**

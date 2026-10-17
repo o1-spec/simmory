@@ -2,13 +2,11 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { NextRequest } from "next/server";
 import { db } from "@/lib/db";
-import { verifyAccessToken } from "./jwt";
+import { verifyAccessToken, hashToken } from "./jwt";
 import {
   ACCESS_COOKIE_NAME,
   REFRESH_COOKIE_NAME,
-  setAuthCookies,
 } from "./cookies";
-import { rotateRefreshToken } from "./session";
 import { sanitizeRedirectUrl } from "./redirect";
 
 export interface SafeUser {
@@ -27,7 +25,7 @@ export interface UserSession {
 
 /**
  * Returns the currently authenticated user session, or null if unauthenticated.
- * Transparently rotates valid refresh tokens when the access token has expired.
+ * Safe to call in both Server Components (read-only) and Route Handlers.
  */
 export async function getCurrentUser(
   request?: NextRequest | Request
@@ -91,14 +89,20 @@ export async function getCurrentUser(
   }
 
   // 2. Check refresh token if access token missing or expired
+  // Validates the session in database without calling cookieStore.set() during Server Component rendering
   if (refreshToken) {
-    const rotated = await rotateRefreshToken(refreshToken);
-    if (rotated) {
-      // Set new cookies
-      await setAuthCookies(rotated.accessToken, rotated.rawRefreshToken);
+    const tokenHash = hashToken(refreshToken);
+    const existingSession = await db.refreshSession.findUnique({
+      where: { tokenHash },
+    });
 
+    if (
+      existingSession &&
+      existingSession.revokedAt === null &&
+      existingSession.expiresAt.getTime() > Date.now()
+    ) {
       const user = await db.user.findUnique({
-        where: { id: rotated.userId },
+        where: { id: existingSession.userId },
         select: {
           id: true,
           name: true,
@@ -110,7 +114,7 @@ export async function getCurrentUser(
       });
 
       if (user) {
-        return { user, sessionId: rotated.sessionId };
+        return { user, sessionId: existingSession.id };
       }
     }
   }
