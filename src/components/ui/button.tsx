@@ -56,27 +56,40 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {isLoading ? (
-          <svg
-            className="animate-spin h-4 w-4 text-current"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-            ></path>
-          </svg>
+          <span className="inline-flex items-center gap-1.5 shrink-0" aria-hidden="true">
+            <svg
+              viewBox="0 0 120 100"
+              className="w-4 h-4 shrink-0"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M 59 19 C 59.5 15, 61 13, 62 10"
+                stroke="#F5B726"
+                strokeWidth="4"
+                strokeLinecap="round"
+              />
+              <path
+                d="M 36 65 C 23 60, 23 43, 38 37 C 43 35, 48 39, 51 42 C 54 29, 66 29, 69 42 C 72 39, 77 35, 82 37 C 97 43, 97 60, 84 65"
+                stroke="currentColor"
+                strokeWidth="3.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M 37 65 L 37 80 C 37 84, 45 88, 60 88 C 75 88, 83 84, 83 80 L 83 65 Z"
+                stroke="currentColor"
+                strokeWidth="3.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span className="flex items-center gap-0.5">
+              <span className="w-1 h-1 rounded-full bg-current/60 animate-pulse" />
+              <span className="w-1 h-1 rounded-full bg-[#F5B726] animate-pulse [animation-delay:200ms]" />
+              <span className="w-1 h-1 rounded-full bg-current/60 animate-pulse [animation-delay:400ms]" />
+            </span>
+          </span>
         ) : (
           leftIcon && <span className="shrink-0">{leftIcon}</span>
         )}
