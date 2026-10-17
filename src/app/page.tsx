@@ -9,11 +9,15 @@ import { FamilyKitchenShowcase } from "@/components/landing/family-kitchen-showc
 import { RecipeLibraryShowcase } from "@/components/landing/recipe-library-showcase";
 import { CookAlongShowcase } from "@/components/landing/cook-along-showcase";
 import { CinematicCta } from "@/components/landing/cinematic-cta";
+import { SimmoryIntro } from "@/components/branding/simmory-intro";
 import { Heart, UtensilsCrossed } from "lucide-react";
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#F2F2EB] flex flex-col text-[#202723] selection:bg-[#2E4742] selection:text-[#F2F2EB]">
+      {/* Cinematic Brand Introduction (Plays on first session visit) */}
+      <SimmoryIntro />
+
       {/* Navigation */}
       <Suspense fallback={<div className="h-18 sm:h-20 border-b border-[#DDDCD3] bg-[#F2F2EB]/95" />}>
         <AppHeader />
