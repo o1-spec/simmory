@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { ConfirmModal } from "@/components/ui/modal";
+import { toast } from "@/components/ui/toast";
 
 interface KitchenItem {
   id: string;
@@ -50,6 +52,9 @@ export function AppNavbar() {
   const [kitchenMenuOpen, setKitchenMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const [signOutModalOpen, setSignOutModalOpen] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   const kitchenMenuRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -124,6 +129,13 @@ export function AppNavbar() {
   }, []);
 
   const handleSelectKitchen = (kitchenId: string) => {
+    const target = kitchens.find((k) => k.id === kitchenId);
+    if (target && target.id !== activeKitchenId) {
+      toast.success(
+        `Switched to ${target.name}`,
+        "Active family kitchen archive updated."
+      );
+    }
     setActiveKitchenId(kitchenId);
     if (typeof window !== "undefined") {
       localStorage.setItem("simmory_active_kitchen_id", kitchenId);
@@ -131,13 +143,25 @@ export function AppNavbar() {
     setKitchenMenuOpen(false);
   };
 
-  const handleLogout = async () => {
+  const promptSignOut = () => {
+    setUserMenuOpen(false);
+    setMobileMenuOpen(false);
+    setSignOutModalOpen(true);
+  };
+
+  const handleConfirmLogout = async () => {
+    setIsSigningOut(true);
     try {
       await fetch("/api/auth/logout", { method: "POST" });
+      toast.success("Signed out successfully", "Until next time in the kitchen!");
       router.push("/login");
       router.refresh();
     } catch {
+      toast.error("Sign out error", "Redirecting to login...");
       router.push("/login");
+    } finally {
+      setIsSigningOut(false);
+      setSignOutModalOpen(false);
     }
   };
 
@@ -379,7 +403,7 @@ export function AppNavbar() {
                   <div className="pt-1.5 border-t border-[#DDDCD3]/60 mt-1">
                     <button
                       type="button"
-                      onClick={handleLogout}
+                      onClick={promptSignOut}
                       className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-[#9A2C2C] hover:bg-[#FDF2F2] transition-colors font-medium cursor-pointer"
                     >
                       <LogOut className="w-3.5 h-3.5" />
@@ -479,8 +503,8 @@ export function AppNavbar() {
               </span>
               <button
                 type="button"
-                onClick={handleLogout}
-                className="text-xs text-[#9A2C2C] hover:underline font-semibold flex items-center gap-1.5"
+                onClick={promptSignOut}
+                className="text-xs text-[#9A2C2C] hover:underline font-semibold flex items-center gap-1.5 cursor-pointer"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 Sign Out
@@ -557,6 +581,22 @@ export function AppNavbar() {
           <span>Videos</span>
         </Link>
       </div>
+
+      {/* =================================================================== */}
+      {/* SIGN OUT CONFIRMATION MODAL                                         */}
+      {/* =================================================================== */}
+      <ConfirmModal
+        isOpen={signOutModalOpen}
+        onClose={() => setSignOutModalOpen(false)}
+        onConfirm={handleConfirmLogout}
+        title="Leaving the kitchen?"
+        description="You will be signed out of your Simmory account on this device. Your family recipes, cooking memories, and active archives remain securely preserved."
+        confirmLabel="Sign Out"
+        cancelLabel="Stay in Kitchen"
+        variant="danger"
+        isLoading={isSigningOut}
+        icon={<LogOut className="w-5 h-5 text-[#E97B77]" />}
+      />
     </>
   );
 }

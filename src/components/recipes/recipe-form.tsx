@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/toast";
 
 export interface KitchenOption {
   id: string;
@@ -232,10 +233,18 @@ export function RecipeForm({
       }
 
       const recipeId = isEditing ? initialData?.id : data.recipe?.id;
+      toast.success(
+        isEditing ? "Recipe updated" : "Recipe preserved",
+        isEditing
+          ? `Changes to "${title}" were safely saved.`
+          : `"${title}" has been added to your family cookbook.`
+      );
       router.push(`/recipes/${recipeId}`);
       router.refresh();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to save recipe");
+      const errMsg = err instanceof Error ? err.message : "Failed to save recipe";
+      setError(errMsg);
+      toast.error("Could not save recipe", errMsg);
       setIsSubmitting(false);
     }
   };

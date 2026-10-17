@@ -15,6 +15,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { ConfirmModal } from "@/components/ui/modal";
+import { toast } from "@/components/ui/toast";
 import type { SafeUser } from "@/lib/auth/get-user";
 
 export interface SettingsFormProps {
@@ -42,6 +44,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
 
   // Logout state
   const [logoutLoading, setLogoutLoading] = useState(false);
+  const [signOutModalOpen, setSignOutModalOpen] = useState(false);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,13 +62,19 @@ export function SettingsForm({ user }: SettingsFormProps) {
       const data = await res.json();
 
       if (!res.ok) {
-        setProfileError(data.error || "Failed to update profile");
+        const errorMsg = data.error || "Failed to update profile";
+        setProfileError(errorMsg);
+        toast.error("Could not update profile", errorMsg);
       } else {
-        setProfileSuccess("Display name updated successfully.");
+        const successMsg = "Display name updated successfully.";
+        setProfileSuccess(successMsg);
+        toast.success("Profile updated", "Your display name has been saved across all kitchens.");
         router.refresh();
       }
     } catch {
-      setProfileError("Network error. Please try again.");
+      const networkError = "Network error. Please try again.";
+      setProfileError(networkError);
+      toast.error("Network issue", networkError);
     } finally {
       setProfileLoading(false);
     }
@@ -77,12 +86,16 @@ export function SettingsForm({ user }: SettingsFormProps) {
     setPasswordSuccess(null);
 
     if (newPassword !== confirmNewPassword) {
-      setPasswordError("New passwords do not match.");
+      const mismatch = "New passwords do not match.";
+      setPasswordError(mismatch);
+      toast.warning("Password mismatch", mismatch);
       return;
     }
 
     if (newPassword.length < 8) {
-      setPasswordError("New password must be at least 8 characters.");
+      const shortErr = "New password must be at least 8 characters.";
+      setPasswordError(shortErr);
+      toast.warning("Password too short", shortErr);
       return;
     }
 
@@ -102,17 +115,22 @@ export function SettingsForm({ user }: SettingsFormProps) {
       const data = await res.json();
 
       if (!res.ok) {
-        setPasswordError(data.error || "Failed to update password");
+        const passErr = data.error || "Failed to update password";
+        setPasswordError(passErr);
+        toast.error("Password update failed", passErr);
       } else {
-        setPasswordSuccess(
-          "Password updated successfully. Other active sessions were signed out."
-        );
+        const passSuccess =
+          "Password updated successfully. Other active sessions were signed out.";
+        setPasswordSuccess(passSuccess);
+        toast.success("Password updated", "Your credentials have been securely updated.");
         setCurrentPassword("");
         setNewPassword("");
         setConfirmNewPassword("");
       }
     } catch {
-      setPasswordError("Network error. Please try again.");
+      const netErr = "Network error. Please try again.";
+      setPasswordError(netErr);
+      toast.error("Network issue", netErr);
     } finally {
       setPasswordLoading(false);
     }
@@ -124,10 +142,15 @@ export function SettingsForm({ user }: SettingsFormProps) {
       await fetch("/api/auth/logout", {
         method: "POST",
       });
+      toast.success("Signed out successfully", "Until next time in the kitchen!");
       router.push("/login");
       router.refresh();
     } catch {
+      toast.error("Sign out error", "Redirecting to login...");
       router.push("/login");
+    } finally {
+      setLogoutLoading(false);
+      setSignOutModalOpen(false);
     }
   };
 
@@ -310,15 +333,28 @@ export function SettingsForm({ user }: SettingsFormProps) {
             type="button"
             variant="ghost"
             size="md"
-            onClick={handleLogout}
+            onClick={() => setSignOutModalOpen(true)}
             isLoading={logoutLoading}
-            className="text-red-700 hover:text-red-800 hover:bg-red-50 border border-red-200/80"
+            className="text-red-700 hover:text-red-800 hover:bg-red-50 border border-red-200/80 cursor-pointer"
             leftIcon={<LogOut className="w-4 h-4" />}
           >
             Sign Out
           </Button>
         </div>
       </Card>
+
+      <ConfirmModal
+        isOpen={signOutModalOpen}
+        onClose={() => setSignOutModalOpen(false)}
+        onConfirm={handleLogout}
+        title="Leaving the kitchen?"
+        description="You will be signed out of your Simmory account on this device. Your family recipes, cooking memories, and active archives remain securely preserved."
+        confirmLabel="Sign Out"
+        cancelLabel="Stay in Kitchen"
+        variant="danger"
+        isLoading={logoutLoading}
+        icon={<LogOut className="w-5 h-5 text-[#E97B77]" />}
+      />
     </div>
   );
 }
