@@ -14,6 +14,7 @@ import {
   RefreshCw,
   Layers,
   FileText,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -667,86 +668,87 @@ export function UploadForm({
         </Card>
       </div>
 
-      {/* Right Column: Information & Pipeline Guide */}
+      {/* Right Column: Culinary Archive Experience Guide */}
       <div className="lg:col-span-5 space-y-6">
-        <Card className="p-6 bg-white border border-[#DDDCD3]">
-          <div className="flex items-center gap-2 mb-3">
-            <Sparkles className="w-4 h-4 text-[#2E4742]" />
-            <h3 className="font-display text-lg text-[#202723] font-bold">
-              Cloudflare R2 Media Storage
-            </h3>
+        <Card className="p-6 bg-white border border-[#DDDCD3] shadow-xs">
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="w-8 h-8 rounded-lg bg-[#2E4742]/10 flex items-center justify-center text-[#2E4742]">
+              <Sparkles className="w-4 h-4 text-[#2E4742]" />
+            </div>
+            <div>
+              <h3 className="font-display text-lg text-[#202723] font-bold">
+                Preserving Family Heritage
+              </h3>
+              <p className="text-[10px] font-mono text-[#7A857F] uppercase tracking-wider">
+                Private &bull; Permanent &bull; Interactive
+              </p>
+            </div>
           </div>
-          <p className="text-xs text-warm-600 leading-relaxed mb-6">
-            All cooking videos are preserved in full quality in your private Cloudflare
-            R2 bucket. Presigned URLs allow direct, fast browser uploads without
-            exposing secret keys.
+          <p className="text-xs text-[#525B56] leading-relaxed mb-6">
+            Every family recording preserves irreplaceable cooking instincts that written recipes cannot capture—the sound of sizzling aromatics, the exact color of browned onions, and the tempo of a loved one&apos;s hands.
           </p>
 
-          <div className="space-y-4">
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-[#FAF9F5] border border-[#DDDCD3]">
-              <div className="w-6 h-6 rounded-full bg-[#2E4742]/10 text-[#2E4742] flex items-center justify-center font-bold font-mono text-xs shrink-0 mt-0.5">
+          <div className="space-y-3.5">
+            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-[#FAF9F5] border border-[#DDDCD3]">
+              <div className="w-7 h-7 rounded-full bg-[#2E4742] text-[#F2F2EB] flex items-center justify-center font-bold font-mono text-xs shrink-0 mt-0.5">
                 1
               </div>
               <div className="space-y-0.5">
                 <p className="text-xs font-semibold text-[#202723]">
-                  Direct Presigned Upload
+                  Full-Quality Preservation
                 </p>
-                <p className="text-[11px] text-[#202723]/60 leading-relaxed font-sans">
-                  Your browser uploads straight to Cloudflare R2 with a short-lived
-                  bearer token, avoiding serverless timeout limits.
+                <p className="text-[11px] text-[#525B56] leading-relaxed font-sans">
+                  Original cooking footage is archived in pristine fidelity so future generations can observe every subtle sensory tell.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-[#FAF9F5] border border-[#DDDCD3]">
-              <div className="w-6 h-6 rounded-full bg-[#2E4742]/10 text-[#2E4742] flex items-center justify-center font-bold font-mono text-xs shrink-0 mt-0.5">
+            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-[#FAF9F5] border border-[#DDDCD3]">
+              <div className="w-7 h-7 rounded-full bg-[#2E4742] text-[#F2F2EB] flex items-center justify-center font-bold font-mono text-xs shrink-0 mt-0.5">
                 2
               </div>
               <div className="space-y-0.5">
                 <p className="text-xs font-semibold text-[#202723]">
-                  Independent Verification
+                  Private to Your Kitchen
                 </p>
-                <p className="text-[11px] text-[#202723]/60 leading-relaxed font-sans">
-                  The server checks the object&apos;s presence and size using an S3 HEAD
-                  request before marking the upload completed.
+                <p className="text-[11px] text-[#525B56] leading-relaxed font-sans">
+                  Your recordings remain strictly private. Only members you explicitly invite to your family kitchen can view or cook along.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-[#FAF9F5] border border-[#DDDCD3]">
-              <div className="w-6 h-6 rounded-full bg-[#2E4742]/10 text-[#2E4742] flex items-center justify-center font-bold font-mono text-xs shrink-0 mt-0.5">
+            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-[#FAF9F5] border border-[#DDDCD3]">
+              <div className="w-7 h-7 rounded-full bg-[#2E4742] text-[#F2F2EB] flex items-center justify-center font-bold font-mono text-xs shrink-0 mt-0.5">
                 3
               </div>
               <div className="space-y-0.5">
                 <p className="text-xs font-semibold text-[#202723]">
-                  Authorized Playback
+                  Culinary Stage &amp; Technique Extraction
                 </p>
-                <p className="text-[11px] text-[#202723]/60 leading-relaxed font-sans">
-                  Videos remain strictly private. Family members stream using
-                  temporary 15-minute signed URLs.
+                <p className="text-[11px] text-[#525B56] leading-relaxed font-sans">
+                  AI extracts spoken steps, detects unspoken kitchen instincts, and builds a chronological recipe draft for family review.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-[#FAF9F5] border border-[#DDDCD3]">
-              <div className="w-6 h-6 rounded-full bg-[#2E4742]/10 text-[#2E4742] flex items-center justify-center font-bold font-mono text-xs shrink-0 mt-0.5">
+            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-[#FAF9F5] border border-[#DDDCD3]">
+              <div className="w-7 h-7 rounded-full bg-[#2E4742] text-[#F2F2EB] flex items-center justify-center font-bold font-mono text-xs shrink-0 mt-0.5">
                 4
               </div>
               <div className="space-y-0.5">
                 <p className="text-xs font-semibold text-[#202723]">
-                  AI Timeline & Sensory Cues
+                  Interactive Cook Along Experience
                 </p>
-                <p className="text-[11px] text-[#202723]/60 leading-relaxed font-sans">
-                  Background workers (FFmpeg, Faster-Whisper, Gemma) extract audio
-                  transcripts and visual cues for human review.
+                <p className="text-[11px] text-[#525B56] leading-relaxed font-sans">
+                  Once reviewed, family members can launch hands-free Cook Along mode to prepare the dish beside their family elders.
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-[#DDDCD3] flex items-center gap-2 text-xs text-[#202723]/60 font-mono">
-            <Info className="w-4 h-4 text-[#2E4742] shrink-0" />
-            <span>AI processing will be integrated in subsequent phases.</span>
+          <div className="mt-5 pt-4 border-t border-[#DDDCD3] flex items-center gap-2 text-xs text-[#2E4742] font-medium">
+            <ShieldCheck className="w-4 h-4 text-[#2E4742] shrink-0" />
+            <span>End-to-end encrypted transfer &bull; Family archive isolation</span>
           </div>
         </Card>
       </div>
