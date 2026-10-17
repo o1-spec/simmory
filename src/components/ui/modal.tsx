@@ -102,53 +102,56 @@ export function Modal({
         ref={modalRef}
         tabIndex={-1}
         className={cn(
-          "relative w-full rounded-2xl bg-[#FAF9F5] border border-[#DDDCD3] shadow-2xl shadow-[#202723]/15 overflow-hidden transition-all duration-300 animate-in fade-in zoom-in-95 focus:outline-none",
+          "relative w-full max-h-[calc(100dvh-2rem)] flex flex-col rounded-2xl bg-[#FAF9F5] border border-[#DDDCD3] shadow-2xl shadow-[#202723]/15 overflow-hidden transition-all duration-300 animate-in fade-in zoom-in-95 focus:outline-none",
           maxWidthClasses
         )}
       >
-        {/* Header */}
-        <div className="p-5 sm:p-6 pb-4 flex items-start gap-3.5">
-          {icon && (
-            <div className="w-10 h-10 rounded-xl bg-[#2E4742]/10 text-[#2E4742] flex items-center justify-center shrink-0">
-              {icon}
-            </div>
-          )}
+        {/* Scrollable Body Container */}
+        <div className="overflow-y-auto flex-1 min-h-0">
+          {/* Header */}
+          <div className="p-5 sm:p-6 pb-4 flex items-start gap-3.5">
+            {icon && (
+              <div className="w-10 h-10 rounded-xl bg-[#2E4742]/10 text-[#2E4742] flex items-center justify-center shrink-0">
+                {icon}
+              </div>
+            )}
 
-          <div className="flex-1 min-w-0 pr-4">
-            <h3
-              id="modal-title"
-              className="font-display text-xl font-bold text-[#202723] tracking-tight"
-            >
-              {title}
-            </h3>
-            {description && (
-              <p
-                id="modal-description"
-                className="mt-1 text-sm text-[#202723]/70 leading-relaxed"
+            <div className="flex-1 min-w-0 pr-4">
+              <h3
+                id="modal-title"
+                className="font-display text-xl font-bold text-[#202723] tracking-tight"
               >
-                {description}
-              </p>
+                {title}
+              </h3>
+              {description && (
+                <p
+                  id="modal-description"
+                  className="mt-1 text-sm text-[#202723]/70 leading-relaxed"
+                >
+                  {description}
+                </p>
+              )}
+            </div>
+
+            {showCloseButton && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="text-[#202723]/40 hover:text-[#202723] p-1.5 rounded-lg hover:bg-[#202723]/05 transition-colors absolute top-4 right-4"
+                aria-label="Close dialog"
+              >
+                <X className="w-5 h-5" />
+              </button>
             )}
           </div>
 
-          {showCloseButton && (
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-[#202723]/40 hover:text-[#202723] p-1.5 rounded-lg hover:bg-[#202723]/05 transition-colors absolute top-4 right-4"
-              aria-label="Close dialog"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          )}
+          {/* Content */}
+          {children && <div className="px-5 sm:px-6 py-2">{children}</div>}
         </div>
-
-        {/* Content */}
-        {children && <div className="px-5 sm:px-6 py-2">{children}</div>}
 
         {/* Footer */}
         {footer && (
-          <div className="p-4 sm:p-6 pt-3 bg-[#F2F2EB]/50 border-t border-[#DDDCD3]/60 flex items-center justify-end gap-3 mt-4">
+          <div className="p-4 sm:p-6 pt-3 bg-[#F2F2EB]/50 border-t border-[#DDDCD3]/60 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 shrink-0">
             {footer}
           </div>
         )}

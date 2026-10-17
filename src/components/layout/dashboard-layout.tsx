@@ -7,7 +7,7 @@ export interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col bg-[#F2F2EB] text-[#202723] pb-20 md:pb-12 selection:bg-[#2E4742] selection:text-cream-card">
+    <div className="min-h-screen flex flex-col bg-[#F2F2EB] text-[#202723] pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-12 selection:bg-[#2E4742] selection:text-cream-card">
       {/* Top Application Navigation Bar */}
       <Suspense fallback={<div className="h-20 border-b border-[#DDDCD3] bg-cream-card" />}>
         <AppNavbar />

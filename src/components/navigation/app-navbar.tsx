@@ -13,7 +13,6 @@ import {
   ChevronDown,
   Settings,
   LogOut,
-  User,
   Menu,
   X,
   Upload,
@@ -76,12 +75,14 @@ export function AppNavbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Close menus on pathname change
-  useEffect(() => {
+  // Close menus when pathname changes
+  const [lastPathname, setLastPathname] = useState(pathname);
+  if (pathname !== lastPathname) {
+    setLastPathname(pathname);
     setKitchenMenuOpen(false);
     setUserMenuOpen(false);
     setMobileMenuOpen(false);
-  }, [pathname]);
+  }
 
   // Fetch current user and accessible kitchens
   useEffect(() => {
@@ -517,7 +518,7 @@ export function AppNavbar() {
       {/* =================================================================== */}
       {/* MOBILE BOTTOM NAVIGATION BAR (Thumb-friendly on phones)             */}
       {/* =================================================================== */}
-      <div className="fixed bottom-0 inset-x-0 z-40 bg-[#FAF9F5]/95 backdrop-blur-md border-t border-[#DDDCD3] md:hidden px-3 py-2 flex items-center justify-around shadow-sm select-none">
+      <div className="fixed bottom-0 inset-x-0 z-40 bg-[#FAF9F5]/95 backdrop-blur-md border-t border-[#DDDCD3] md:hidden px-3 pt-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] flex items-center justify-around shadow-sm select-none">
         <Link
           href="/dashboard"
           className={cn(

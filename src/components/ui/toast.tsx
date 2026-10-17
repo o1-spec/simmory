@@ -11,10 +11,8 @@ import React, {
 import {
   CheckCircle2,
   AlertCircle,
-  Info,
   AlertTriangle,
   X,
-  ChefHat,
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -146,7 +144,7 @@ function ToastContainer({
     <aside
       aria-label="Notifications"
       aria-live="polite"
-      className="fixed z-[100] bottom-4 right-4 sm:top-5 sm:bottom-auto flex flex-col gap-2.5 max-w-sm sm:max-w-md w-full pointer-events-none px-4 sm:px-0"
+      className="fixed z-[100] bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] right-4 sm:top-5 sm:bottom-auto flex flex-col gap-2.5 max-w-sm sm:max-w-md w-full pointer-events-none px-4 sm:px-0"
     >
       {toasts.map((item) => (
         <ToastMessage key={item.id} toast={item} onDismiss={() => onRemove(item.id)} />

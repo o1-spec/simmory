@@ -1,5 +1,4 @@
 import React, { Suspense } from "react";
-import Link from "next/link";
 import { AppHeader } from "@/components/navigation/app-header";
 import { CinematicHero } from "@/components/landing/cinematic-hero";
 import { CulinaryGallery } from "@/components/landing/culinary-gallery";

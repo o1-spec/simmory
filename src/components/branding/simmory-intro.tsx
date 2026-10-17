@@ -322,7 +322,7 @@ export function SimmoryIntro({ onComplete, forcePlay = false }: SimmoryIntroProp
     <div ref={containerRef}>
       <div
         ref={overlayRef}
-        className="fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-[#F2F2EB] select-none pointer-events-auto overflow-hidden will-change-transform"
+        className="fixed inset-0 z-[10000] h-[100dvh] flex flex-col items-center justify-center bg-[#F2F2EB] select-none pointer-events-auto overflow-hidden will-change-transform"
         role="dialog"
         aria-modal="true"
         aria-label="Welcome to Simmory"
@@ -331,7 +331,7 @@ export function SimmoryIntro({ onComplete, forcePlay = false }: SimmoryIntroProp
         <div className="absolute inset-0 pointer-events-none opacity-[0.035] bg-[radial-gradient(#202723_1px,transparent_1px)] [background-size:24px_24px]" />
 
         {/* Skip Intro button */}
-        <div className="absolute top-5 right-5 sm:top-8 sm:right-8 z-20">
+        <div className="absolute top-[max(env(safe-area-inset-top),1.25rem)] right-[max(env(safe-area-inset-right),1.25rem)] z-20">
           <button
             type="button"
             onClick={handleSkip}
@@ -365,7 +365,7 @@ export function SimmoryIntro({ onComplete, forcePlay = false }: SimmoryIntroProp
           >
             <svg
               viewBox="0 0 360 320"
-              className="w-56 h-48 sm:w-72 sm:h-64 select-none overflow-visible"
+              className="w-48 h-40 xs:w-56 xs:h-48 sm:w-72 sm:h-64 select-none overflow-visible"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               aria-hidden="true"

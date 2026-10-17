@@ -9,11 +9,6 @@ import {
   Play,
   Sparkles,
   ArrowRight,
-  Clock,
-  Heart,
-  UtensilsCrossed,
-  CheckCircle2,
-  BookmarkCheck,
 } from "lucide-react";
 import { requireUser } from "@/lib/auth/get-user";
 import { prisma } from "@/lib/db";

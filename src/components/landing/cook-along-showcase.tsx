@@ -95,10 +95,23 @@ export function CookAlongShowcase() {
   const containerRef = useRef<HTMLElement>(null);
   const pinWrapperRef = useRef<HTMLDivElement>(null);
 
-  // Fallback state for mobile & manual interactions
   const [activeStep, setActiveStep] = useState(1);
   const [timerRunning, setTimerRunning] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(1800);
+
+  React.useEffect(() => {
+    if (!timerRunning) return;
+    const interval = setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          setTimerRunning(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [timerRunning]);
 
   const formatTimer = (s: number) => {
     const mins = Math.floor(s / 60);
@@ -497,6 +510,50 @@ export function CookAlongShowcase() {
                 <p className="font-sans text-xs text-[#202723] italic leading-relaxed">
                   &ldquo;{currentManual.cue}&rdquo;
                 </p>
+              </div>
+
+              {/* Tactile Timer Panel on Mobile */}
+              <div className="p-3.5 rounded-2xl bg-[#F2F2EB] border border-[#DDDCD3] flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-[#2E4742]/10 text-[#2E4742] flex items-center justify-center">
+                    <Clock className="w-4 h-4 text-[#2E4742]" />
+                  </div>
+                  <div>
+                    <p className="font-mono text-base font-bold text-[#202723]">
+                      {formatTimer(secondsLeft)}
+                    </p>
+                    <p className="font-mono text-[10px] text-[#525B56]">Step Resting Timer</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setTimerRunning(!timerRunning)}
+                    className="px-3 py-1.5 rounded-xl bg-[#2E4742] text-[#F2F2EB] text-xs font-mono font-bold flex items-center gap-1.5 shadow-xs"
+                  >
+                    {timerRunning ? (
+                      <>
+                        <Pause className="w-3.5 h-3.5" /> Pause
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-3.5 h-3.5 fill-current" /> Start
+                      </>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTimerRunning(false);
+                      setSecondsLeft(currentManual.timerSeconds);
+                    }}
+                    className="p-1.5 rounded-xl bg-[#FAF9F5] border border-[#DDDCD3] text-[#525B56]"
+                    aria-label="Reset timer"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
 
               {/* Demonstration Media Preview */}

@@ -147,14 +147,37 @@ export function CookingFocusMode({
       </div>
 
       {/* Large Touch Navigation Controls at bottom */}
-      <div className="max-w-3xl mx-auto w-full pt-6 border-t border-warm-800 flex items-center justify-between gap-4">
+      <div className="max-w-3xl mx-auto w-full pt-4 sm:pt-6 border-t border-warm-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pb-[max(env(safe-area-inset-bottom),0.5rem)]">
+        <div className="flex items-center justify-between gap-3 sm:hidden">
+          <Button
+            variant="secondary"
+            size="lg"
+            onClick={onPrevious}
+            disabled={!canPrevious}
+            leftIcon={<ChevronLeft className="w-5 h-5" />}
+            className="flex-1 h-12 text-sm bg-warm-800 hover:bg-warm-700 text-white border-warm-700 justify-center"
+          >
+            Previous
+          </Button>
+          <Button
+            variant="secondary"
+            size="lg"
+            onClick={onNext}
+            disabled={!canNext}
+            rightIcon={<ChevronRight className="w-5 h-5" />}
+            className="flex-1 h-12 text-sm bg-warm-800 hover:bg-warm-700 text-white border-warm-700 justify-center"
+          >
+            Next
+          </Button>
+        </div>
+
         <Button
           variant="secondary"
           size="lg"
           onClick={onPrevious}
           disabled={!canPrevious}
           leftIcon={<ChevronLeft className="w-6 h-6" />}
-          className="h-14 px-6 text-base bg-warm-800 hover:bg-warm-700 text-white border-warm-700"
+          className="hidden sm:inline-flex h-14 px-6 text-base bg-warm-800 hover:bg-warm-700 text-white border-warm-700"
         >
           Previous
         </Button>
@@ -170,7 +193,7 @@ export function CookingFocusMode({
               <CheckCircle2 className="w-6 h-6 fill-white text-terracotta-600" />
             )
           }
-          className="h-14 px-8 text-base font-bold shadow-lg"
+          className="h-13 sm:h-14 px-6 sm:px-8 text-sm sm:text-base font-bold shadow-lg justify-center w-full sm:w-auto"
         >
           {isCompleted ? "Completed (Tap to undo)" : "Mark Step Complete"}
         </Button>
@@ -181,7 +204,7 @@ export function CookingFocusMode({
           onClick={onNext}
           disabled={!canNext}
           rightIcon={<ChevronRight className="w-6 h-6" />}
-          className="h-14 px-6 text-base bg-warm-800 hover:bg-warm-700 text-white border-warm-700"
+          className="hidden sm:inline-flex h-14 px-6 text-base bg-warm-800 hover:bg-warm-700 text-white border-warm-700"
         >
           Next
         </Button>

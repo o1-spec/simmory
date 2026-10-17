@@ -103,7 +103,7 @@ export function CinematicHero() {
         {/* ========================================================================= */}
         <div className="text-center max-w-4xl mx-auto space-y-6 sm:space-y-8">
           {/* Centered Editorial Headline */}
-          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-[5.4rem] font-extrabold text-[#202723] tracking-tight leading-[0.98]">
+          <h1 className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-[5.4rem] font-extrabold text-[#202723] tracking-tight leading-[1.02] sm:leading-[0.98]">
             <span className="hero-heading-line block">Every recipe has</span>
             <span className="hero-heading-line block text-[#2E4742]">
               a story worth keeping.
