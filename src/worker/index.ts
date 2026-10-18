@@ -1,4 +1,9 @@
 import "dotenv/config";
+
+if (process.env.NODE_ENV === "production" || !process.env.DATABASE_URL?.includes("localhost")) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
+
 import { db } from "../lib/db";
 import { isRedisConfigured, closeSharedRedis } from "../lib/queue/redis";
 import { closeQueues } from "../lib/queue";

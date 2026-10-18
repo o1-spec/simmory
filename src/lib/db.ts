@@ -11,6 +11,10 @@ function isLocalhost(url: string): boolean {
   return url.includes("localhost") || url.includes("127.0.0.1") || url.includes("simmory_test");
 }
 
+if (!process.env.DATABASE_URL || !isLocalhost(process.env.DATABASE_URL)) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
+
 function createPrismaClient(): PrismaClient {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
