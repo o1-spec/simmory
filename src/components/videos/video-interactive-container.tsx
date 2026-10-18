@@ -61,6 +61,7 @@ export function VideoInteractiveView({
   sizeMb,
 }: VideoInteractiveViewProps) {
   const [seekTime, setSeekTime] = useState<number | null>(null);
+  const [validationStatus, setValidationStatus] = useState(video.validationStatus);
 
   const handleSeek = (seconds: number) => {
     setSeekTime((prev) => (prev === seconds ? seconds + 0.0001 : seconds));
@@ -220,12 +221,13 @@ export function VideoInteractiveView({
         initialFps={video.fps}
         initialError={video.validationError}
         canModify={canModify}
+        onStatusChange={setValidationStatus}
       />
 
       {/* AI Speech & Sensory Cue Reconstruction (Phase 6) */}
       <AiAnalysisCard
         videoId={video.id}
-        validationStatus={video.validationStatus}
+        validationStatus={validationStatus}
         initialProcessingStatus={video.processingStatus}
         canModify={canModify}
         onSeekToTimestamp={handleSeek}

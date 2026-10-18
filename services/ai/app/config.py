@@ -23,7 +23,7 @@ class Settings:
 
     # Processing & Resource Limits
     FRAME_SAMPLING_INTERVAL_SECONDS: float = float(
-        os.getenv("FRAME_SAMPLING_INTERVAL_SECONDS", "10.0")
+        os.getenv("FRAME_SAMPLING_INTERVAL_SECONDS", "20.0")
     )
     MAX_FRAMES_PER_VIDEO: int = int(os.getenv("MAX_FRAMES_PER_VIDEO", "30"))
     MAX_VIDEO_DURATION_SECONDS: float = float(

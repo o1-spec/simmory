@@ -27,6 +27,7 @@ export interface VideoProcessingCardProps {
   initialFps?: number | null;
   initialError?: string | null;
   canModify: boolean;
+  onStatusChange?: (status: string) => void;
 }
 
 export function VideoProcessingCard({
@@ -41,6 +42,7 @@ export function VideoProcessingCard({
   initialFps,
   initialError,
   canModify,
+  onStatusChange,
 }: VideoProcessingCardProps) {
   const [validationStatus, setValidationStatus] = useState(initialValidationStatus);
   const [stage, setStage] = useState<string | null>(null);
@@ -63,6 +65,7 @@ export function VideoProcessingCard({
 
       if (data.video) {
         setValidationStatus(data.video.validationStatus);
+        onStatusChange?.(data.video.validationStatus);
         if (data.video.validationError) {
           setErrorMsg(data.video.validationError);
         }

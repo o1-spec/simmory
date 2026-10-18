@@ -17,7 +17,7 @@ export function createAiAnalysisWorker(concurrency = 1): Worker<AiAnalysisJobPay
     {
       connection,
       concurrency,
-      lockDuration: 1200000,
+      lockDuration: 1800000, // 30 minutes to match local Ollama inference
       stalledInterval: 60000,
       maxStalledCount: 3,
     }

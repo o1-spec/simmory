@@ -37,7 +37,7 @@ export async function processAiAnalysisJob(job: Job<AiAnalysisJobPayload>) {
     );
   }
 
-  await db.processingJob.update({
+  await db.processingJob.updateMany({
     where: { id: jobId },
     data: {
       status: "PROCESSING",
@@ -59,7 +59,7 @@ export async function processAiAnalysisJob(job: Job<AiAnalysisJobPayload>) {
     await downloadStorageObject(video.storageKey, tempFilePath);
     await job.updateProgress(20);
 
-    await db.processingJob.update({
+    await db.processingJob.updateMany({
       where: { id: jobId },
       data: {
         stage: "ANALYZING_MEDIA",
@@ -73,7 +73,7 @@ export async function processAiAnalysisJob(job: Job<AiAnalysisJobPayload>) {
     const analysisResponse = await aiServiceClient.analyzeLocalVideoPath(tempFilePath);
     await job.updateProgress(80);
 
-    await db.processingJob.update({
+    await db.processingJob.updateMany({
       where: { id: jobId },
       data: {
         stage: "SAVING_RESULTS",
@@ -96,7 +96,7 @@ export async function processAiAnalysisJob(job: Job<AiAnalysisJobPayload>) {
     const errorMsg = sanitizeErrorMessage(error);
     logger.error(`[AI Worker] Job ${jobId} failed:`, { error: errorMsg });
 
-    await db.processingJob.update({
+    await db.processingJob.updateMany({
       where: { id: jobId },
       data: {
         status: "FAILED",
@@ -106,7 +106,7 @@ export async function processAiAnalysisJob(job: Job<AiAnalysisJobPayload>) {
       },
     });
 
-    await db.cookingVideo.update({
+    await db.cookingVideo.updateMany({
       where: { id: videoId },
       data: {
         processingStatus: "FAILED",

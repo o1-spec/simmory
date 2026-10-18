@@ -94,9 +94,14 @@ export function AiAnalysisCard({
   onSeekToTimestamp,
 }: AiAnalysisCardProps) {
   const [aiStatus, setAiStatus] = useState(initialProcessingStatus);
+  const [mediaValidationStatus, setMediaValidationStatus] = useState(validationStatus);
   const [stage, setStage] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    setMediaValidationStatus(validationStatus);
+  }, [validationStatus]);
 
   const [summary, setSummary] = useState<AIAnalysisSummary | null>(null);
   const [events, setEvents] = useState<ProposedEvent[]>([]);
@@ -143,15 +148,22 @@ export function AiAnalysisCard({
 
     async function initialFetch() {
       try {
-        const [sumRes, evRes, trRes, obsRes] = await Promise.all([
+        const [sumRes, evRes, trRes, obsRes, procRes] = await Promise.all([
           fetch(`/api/videos/${videoId}/analysis`),
           fetch(`/api/videos/${videoId}/analysis/events`),
           fetch(`/api/videos/${videoId}/analysis/transcript`),
           fetch(`/api/videos/${videoId}/analysis/observations`),
+          fetch(`/api/videos/${videoId}/processing`),
         ]);
 
         if (isCancelled) return;
 
+        if (procRes.ok) {
+          const procData = await procRes.json();
+          if (!isCancelled && procData.video?.validationStatus) {
+            setMediaValidationStatus(procData.video.validationStatus);
+          }
+        }
         if (sumRes.ok) {
           const sumData = await sumRes.json();
           if (!isCancelled) {
@@ -196,6 +208,9 @@ export function AiAnalysisCard({
 
       if (data.video) {
         setAiStatus(data.video.processingStatus);
+        if (data.video.validationStatus) {
+          setMediaValidationStatus(data.video.validationStatus);
+        }
       }
       if (data.latestAiJob) {
         setStage(data.latestAiJob.stage);
@@ -248,7 +263,7 @@ export function AiAnalysisCard({
     }
   };
 
-  const isMediaValidated = validationStatus === "VALIDATED";
+  const isMediaValidated = mediaValidationStatus === "VALIDATED";
   const isCompleted = aiStatus === "COMPLETED";
   const isProcessing = aiStatus === "QUEUED" || aiStatus === "PROCESSING";
   const isFailed = aiStatus === "FAILED";

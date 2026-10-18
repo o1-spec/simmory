@@ -94,7 +94,7 @@ export class AIServiceClient {
   constructor(
     baseUrl = process.env.AI_SERVICE_URL || "http://127.0.0.1:8001",
     internalKey = process.env.SIMMORY_AI_INTERNAL_KEY || "simmory_dev_internal_ai_secret_key_2026_change_in_prod",
-    timeoutMs = 600000 // 10 minutes max for video processing
+    timeoutMs = Number(process.env.AI_SERVICE_TIMEOUT_MS) || 1800000 // 30 minutes max for local multi-frame video inference
   ) {
     this.baseUrl = baseUrl.replace(/\/+$/, "");
     this.internalKey = internalKey;
