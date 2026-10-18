@@ -7,6 +7,10 @@ const globalForPrisma = globalThis as unknown as {
   pgPool: Pool | undefined;
 };
 
+function isLocalhost(url: string): boolean {
+  return url.includes("localhost") || url.includes("127.0.0.1") || url.includes("simmory_test");
+}
+
 function createPrismaClient(): PrismaClient {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
@@ -19,6 +23,7 @@ function createPrismaClient(): PrismaClient {
       connectionString,
       max: process.env.NODE_ENV === "production" ? 10 : 2,
       idleTimeoutMillis: 30000,
+      ssl: isLocalhost(connectionString) ? false : { rejectUnauthorized: false },
     });
 
   if (process.env.NODE_ENV !== "production") {
