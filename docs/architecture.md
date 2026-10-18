@@ -215,7 +215,7 @@ Phase 2 replaces the static placeholder authentication and mock states with a pr
 
 ### 6.1 Database Schema (Prisma ORM & PostgreSQL)
 
-The schema is defined in [`prisma/schema.prisma`](file:///Users/macbook/simmory-web/prisma/schema.prisma) and managed through Prisma 7 using `@prisma/adapter-pg` with a pooled PostgreSQL client ([`src/lib/db.ts`](file:///Users/macbook/simmory-web/src/lib/db.ts)).
+The schema is defined in [`prisma/schema.prisma`](../prisma/schema.prisma) and managed through Prisma 7 using `@prisma/adapter-pg` with a pooled PostgreSQL client ([`src/lib/db.ts`](../src/lib/db.ts)).
 
 ```mermaid
 erDiagram
@@ -367,9 +367,9 @@ sequenceDiagram
 1. **Replay Attack Detection:**
    When an access token expires, the client calls `/api/auth/refresh`. If an attacker attempts to reuse an older refresh token that was already rotated (`revokedAt !== null`), the system flags a session replay attack and **immediately revokes every active session for that user**, logging out all sessions and neutralizing the stolen credential.
 2. **CSRF & Origin Verification:**
-   All mutating state routes (`POST`, `PUT`, `PATCH`, `DELETE` under `/api/*`) validate the `Origin` and `Referer` headers against the application's base URL ([`src/lib/auth/origin.ts`](file:///Users/macbook/simmory-web/src/lib/auth/origin.ts)) to block cross-site request forgery.
+   All mutating state routes (`POST`, `PUT`, `PATCH`, `DELETE` under `/api/*`) validate the `Origin` and `Referer` headers against the application's base URL ([`src/lib/auth/origin.ts`](../src/lib/auth/origin.ts)) to block cross-site request forgery.
 3. **Open Redirect Prevention:**
-   The `from` query parameter used in login/registration redirects is sanitized via [`src/lib/auth/redirect.ts`](file:///Users/macbook/simmory-web/src/lib/auth/redirect.ts). It permits only safe relative internal application paths (e.g., `/dashboard`, `/upload`) and rejects external protocol prefixes (`https://`, `//`, `javascript:`).
+   The `from` query parameter used in login/registration redirects is sanitized via [`src/lib/auth/redirect.ts`](../src/lib/auth/redirect.ts). It permits only safe relative internal application paths (e.g., `/dashboard`, `/upload`) and rejects external protocol prefixes (`https://`, `//`, `javascript:`).
 4. **Strict Server-Side Authorization:**
    Client code is never trusted to assert auth state. Protected server components execute `requireUser()` inside React `<Suspense>` boundaries to verify the cookie server-side before rendering protected layouts or data.
 
