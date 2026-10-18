@@ -101,11 +101,16 @@ export class AIServiceClient {
     this.timeoutMs = timeoutMs;
   }
 
+  private getBaseUrl(): string {
+    const raw = process.env.AI_SERVICE_URL || this.baseUrl || "http://127.0.0.1:8001";
+    return raw.replace(/\/+$/, "");
+  }
+
   /**
    * Probes the Python AI service health endpoint.
    */
   async checkHealth(): Promise<AIHealthData> {
-    const url = `${this.baseUrl}/health`;
+    const url = `${this.getBaseUrl()}/health`;
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
 
@@ -130,16 +135,17 @@ export class AIServiceClient {
       throw new Error(`Video file does not exist at path: ${resolvedPath}`);
     }
 
-    const http = await import("node:http");
-    const urlObj = new URL(`${this.baseUrl}/api/analyze/path`);
+    const urlObj = new URL(`${this.getBaseUrl()}/api/analyze/path`);
+    const isHttps = urlObj.protocol === "https:";
+    const transport = isHttps ? await import("node:https") : await import("node:http");
     const postData = JSON.stringify({ video_path: resolvedPath });
 
     return new Promise<AIAnalysisResponseData>((resolve, reject) => {
-      const req = http.request(
+      const req = transport.request(
         {
           hostname: urlObj.hostname,
-          port: urlObj.port,
-          path: urlObj.pathname,
+          port: urlObj.port || (isHttps ? 443 : 80),
+          path: urlObj.pathname + urlObj.search,
           method: "POST",
           headers: {
             "Content-Type": "application/json",
